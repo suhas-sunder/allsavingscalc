@@ -2,7 +2,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.allsavingscalculators.com.com/sitemap.xml
+Sitemap: https://www.allsavingscalculators.com/sitemap.xml
 
 # --- disallowed paths (typical CMS / system dirs) ---
 Disallow: /wp-admin/
