@@ -4,20 +4,29 @@ import type { Route } from "./+types/home";
 
 // ---------- META ----------
 export function meta({}: Route.MetaArgs) {
+  const title =
+    "Savings Calculator | End Balance, Interest Earned, Taxes, Inflation";
+  const description =
+    "Project your savings end balance fast. Adjust deposit, contributions, interest rate, compounding, taxes on interest, and inflation. Includes a clear yearly schedule.";
+  const canonical = "https://www.allsavingscalculators.com/";
+
   return [
-    { title: "Savings Calculator | AllSavingsCalculators" },
-    {
-      name: "description",
-      content:
-        "Free savings calculator that models compound interest with annual and monthly contributions, growth rates, taxes, and inflation. Get end balance, total interest, and an annual schedule with clear charts.",
-    },
+    { title },
+    { name: "description", content: description },
     {
       name: "keywords",
       content:
-        "savings calculator, compound interest, contribution growth, tax on interest, inflation adjusted returns, financial planning tools",
+        "savings calculator, compound interest calculator, end balance calculator, interest earned calculator, inflation adjusted savings calculator, tax on interest calculator, contribution growth calculator",
     },
     { name: "robots", content: "index,follow" },
     { name: "theme-color", content: "#0b2447" },
+    { tagName: "link", rel: "canonical", href: canonical },
+
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: canonical },
+    { name: "twitter:card", content: "summary" },
   ];
 }
 
@@ -25,16 +34,42 @@ export function loader({}: Route.LoaderArgs) {
   return { ok: true };
 }
 
+// ---------- DESIGN TOKENS (flat colors, higher contrast) ----------
+const COLORS = {
+  navy: "#0b2447",
+  navy2: "#071a36",
+  pageBg: "#f6f7fb",
+  cardBg: "#ffffff",
+
+  text: "#0b0f17",
+  muted: "#2f3744", // higher contrast than typical gray
+  border: "#d2d9ea",
+  borderStrong: "#b2bfdc",
+
+  accentGreen: "#16a34a",
+  accentYellow: "#f59e0b",
+  focusRing: "rgba(245,158,11,0.28)",
+
+  softBlue: "#dbeafe",
+  softGreen: "#dcfce7",
+  softYellow: "#fef3c7",
+
+  tableHead: "#eef2ff",
+  tableRowAlt: "#f8fafc",
+  rowHover: "#eef2ff",
+};
+
 // ---------- STYLES ----------
 const styles: Record<string, React.CSSProperties> = {
   page: {
-    background: "#f7f8fb",
-    color: "#111317",
+    background: COLORS.pageBg,
+    color: COLORS.text,
     fontFamily:
       "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial",
     margin: 0,
   },
   wrap: { maxWidth: 1160, margin: "0 auto", padding: 24 },
+
   header: {
     display: "flex",
     alignItems: "center",
@@ -45,78 +80,214 @@ const styles: Record<string, React.CSSProperties> = {
   logo: {
     width: 44,
     height: 44,
-    border: "2px solid #0b2447",
+    border: `2px solid ${COLORS.navy}`,
     borderRadius: 10,
-    background: "#fff",
+    background: COLORS.cardBg,
     position: "relative",
+    flex: "0 0 auto",
   },
-  siteTitle: { fontWeight: 800, letterSpacing: 0.3, fontSize: "1.15rem" },
-  tagline: { color: "#5a616c", fontSize: ".95rem" },
+  siteTitle: {
+    fontWeight: 950,
+    letterSpacing: 0.2,
+    fontSize: 18,
+    color: COLORS.navy,
+    lineHeight: 1.1,
+  },
+  pill: {
+    border: `1px solid ${COLORS.border}`,
+    padding: "9px 12px",
+    borderRadius: 999,
+    background: COLORS.cardBg,
+    color: COLORS.navy,
+    fontWeight: 950,
+    fontSize: 13,
+    lineHeight: 1,
+    whiteSpace: "nowrap",
+  },
+
+  hero: {
+    display: "grid",
+    gridTemplateColumns: "1fr",
+    gap: 12,
+    padding: "10px 0 10px",
+  },
   h1: {
-    fontSize: "clamp(1.8rem, 2.6vw + 1rem, 3rem)",
-    lineHeight: 1.15,
+    fontSize: "clamp(2.1rem, 2.7vw + 1rem, 3.2rem)",
+    lineHeight: 1.08,
     margin: 0,
+    letterSpacing: -0.3,
+    color: COLORS.navy2,
   },
-  lead: { marginTop: 8, color: "#5a616c", fontSize: "1.06rem" },
-  card: {
-    background: "#fff",
-    border: "1px solid #e6e8ef",
-    borderRadius: 16,
-    boxShadow: "0 1px 0 rgba(11,36,71,0.14)",
+  lead: {
+    marginTop: 10,
+    color: COLORS.muted,
+    fontSize: "clamp(1.05rem, 0.35vw + 1rem, 1.2rem)", // larger, readable
+    margin: 0,
+    maxWidth: 860,
+    lineHeight: 1.45,
   },
-  cardPad: { padding: 16 },
-  section: { padding: "8px 0 24px" },
-  sectionTitle: { fontSize: "1.35rem", margin: "0 0 12px" },
-  grid2: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 },
+
+  calcShell: {
+    borderRadius: 20,
+    border: `1px solid ${COLORS.borderStrong}`,
+    background: COLORS.cardBg,
+    boxShadow: "0 10px 22px rgba(11,36,71,0.10)",
+  },
+  calcShellPad: { padding: 18 },
+
+  calcTopRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    flexWrap: "wrap",
+  },
+  calcTitle: { fontWeight: 950, color: COLORS.navy, fontSize: 15 },
+
   grid3: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr 1fr",
-    gap: 12,
+    gap: 14,
   },
-  label: { fontSize: ".9rem", color: "#5a616c", fontWeight: 600 },
+
+  label: {
+    fontSize: 14.5, // bigger labels
+    color: COLORS.muted,
+    fontWeight: 800,
+    letterSpacing: 0.1,
+  },
   input: {
     width: "100%",
-    minHeight: 40,
-    padding: "10px 12px",
-    border: "1px solid #e6e8ef",
-    borderRadius: 10,
-    background: "#fff",
-    color: "#111317",
-    font: "600 0.98rem/1 ui-sans-serif, system-ui",
+    minHeight: 44, // bigger target
+    padding: "12px 12px",
+    border: `1px solid ${COLORS.border}`,
+    borderRadius: 12,
+    background: COLORS.cardBg,
+    color: COLORS.text,
+    font: "800 16px/1 ui-sans-serif, system-ui",
+    outline: "none",
+  },
+  inputFocus: {
+    border: `1px solid ${COLORS.navy}`,
+    boxShadow: `0 0 0 4px ${COLORS.focusRing}`,
   },
   select: {
     width: "100%",
-    minHeight: 40,
+    minHeight: 44,
+    padding: "12px 12px",
+    border: `1px solid ${COLORS.border}`,
+    borderRadius: 12,
+    background: COLORS.cardBg,
+    color: COLORS.text,
+    font: "800 16px/1 ui-sans-serif, system-ui",
+    outline: "none",
+  },
+
+  btn: {
+    border: `1px solid ${COLORS.border}`,
+    background: COLORS.cardBg,
+    color: COLORS.text,
     padding: "10px 12px",
-    border: "1px solid #e6e8ef",
-    borderRadius: 10,
-    background: "#fff",
-    color: "#111317",
-    font: "600 0.98rem/1 ui-sans-serif, system-ui",
+    borderRadius: 12,
+    fontWeight: 950,
+    cursor: "pointer",
+    lineHeight: 1,
+    fontSize: 14,
+    whiteSpace: "nowrap",
   },
   btnPrimary: {
-    border: "1px solid #0b2447",
-    background: "#0b2447",
+    border: `1px solid ${COLORS.navy}`,
+    background: COLORS.navy,
     color: "#fff",
-    padding: "10px 14px",
-    borderRadius: 10,
-    fontWeight: 800,
     cursor: "pointer",
   },
-  btnGhost: {
-    border: "1px solid #e6e8ef",
-    background: "#fff",
-    color: "#111317",
-    padding: "10px 14px",
-    borderRadius: 10,
-    fontWeight: 800,
+  btnActive: {
+    border: `1px solid ${COLORS.navy}`,
+    background: COLORS.navy,
+    color: "#fff",
     cursor: "pointer",
   },
+
+  resultsCard: {
+    border: `1px solid ${COLORS.border}`,
+    borderRadius: 16,
+    padding: 16,
+    background: COLORS.cardBg,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 950,
+    margin: "0 0 10px",
+    color: COLORS.navy2,
+    letterSpacing: -0.1,
+  },
+
+  howWrap: {
+    border: `1px solid ${COLORS.border}`,
+    borderRadius: 16,
+    padding: 16,
+    background: COLORS.cardBg,
+  },
+  steps: {
+    display: "grid",
+    gridTemplateColumns: "1fr",
+    gap: 10,
+    marginTop: 10,
+  },
+  step: {
+    border: `1px solid ${COLORS.border}`,
+    borderRadius: 14,
+    padding: 12,
+    background: COLORS.cardBg,
+  },
+  stepTitle: {
+    fontWeight: 950,
+    color: COLORS.navy,
+    marginBottom: 4,
+    fontSize: 15.5,
+  },
+  stepBody: { color: COLORS.muted, margin: 0, fontSize: 15, lineHeight: 1.45 },
+
+  faqWrap: {
+    border: `1px solid ${COLORS.border}`,
+    borderRadius: 16,
+    background: COLORS.cardBg,
+    overflow: "hidden",
+  },
+  faqItem: {
+    borderTop: `1px solid ${COLORS.border}`,
+    padding: 0,
+    background: COLORS.cardBg,
+  },
+  faqSummary: {
+    padding: "14px 16px",
+    cursor: "pointer",
+    fontWeight: 950,
+    color: COLORS.navy2,
+    fontSize: 16,
+    listStyle: "none",
+  },
+  faqAnswer: {
+    padding: "0 16px 14px",
+    color: COLORS.muted,
+    fontSize: 15,
+    lineHeight: 1.5,
+  },
+
+  disclaimer: {
+    color: COLORS.muted,
+    fontSize: 12.5,
+    lineHeight: 1.5,
+    borderTop: `1px solid ${COLORS.border}`,
+    paddingTop: 14,
+    marginTop: 18,
+  },
+
   footer: {
-    color: "#5a616c",
-    fontSize: ".9rem",
+    color: COLORS.muted,
+    fontSize: 13,
     textAlign: "center",
-    padding: "28px 0",
+    padding: "18px 0 8px",
   },
 };
 
@@ -130,7 +301,7 @@ function LogoBars() {
           right: 8,
           top: 12,
           height: 3,
-          background: "#0b2447",
+          background: COLORS.navy,
           borderRadius: 2,
         }}
       />
@@ -141,7 +312,18 @@ function LogoBars() {
           width: "60%",
           bottom: 12,
           height: 3,
-          background: "#0b2447",
+          background: COLORS.navy,
+          borderRadius: 2,
+        }}
+      />
+      <span
+        style={{
+          position: "absolute",
+          right: 8,
+          bottom: 12,
+          width: 8,
+          height: 8,
+          background: COLORS.accentYellow,
           borderRadius: 2,
         }}
       />
@@ -207,32 +389,10 @@ function freqToN(f: Frequency): number {
   }
 }
 
-// Future value of a growing annuity with growth once per year for the annual stream.
-// This returns the value at end of year t for an annual contribution stream.
-function fvGrowingAnnuity(
-  contribution: number,
-  rate: number,
-  growth: number,
-  years: number
-): number {
-  if (rate === growth) {
-    // limit case
-    return contribution * years * Math.pow(1 + rate, years - 1);
-  }
-  return (
-    (contribution * (Math.pow(1 + rate, years) - Math.pow(1 + growth, years))) /
-    (rate - growth)
-  );
-}
-
 // ---------- CORE ENGINE ----------
-// We simulate at the finer of monthly or compounding frequency to allow taxes and monthly deposits.
-// Tax is applied each sub-period on interest before it is added to principal.
 function computeSavings(inputs: CalcInputs): CalcOutputs {
   const nCompound = freqToN(inputs.frequency);
-  const stepsPerYear = Math.max(nCompound, 12); // at least monthly resolution for monthly contributions
-  const dt = 1 / stepsPerYear;
-
+  const stepsPerYear = Math.max(nCompound, 12);
   const rNominal = inputs.annualInterestRatePct / 100;
   const rStep = rNominal / stepsPerYear;
   const taxRate = inputs.taxRatePct / 100;
@@ -246,26 +406,22 @@ function computeSavings(inputs: CalcInputs): CalcOutputs {
   let annualContribution = inputs.annualContribution;
   let monthlyContribution = inputs.monthlyContribution;
 
-  // Special case: match Calculator.net logic exactly for annual compounding
   if (inputs.frequency === "annually") {
     const r = inputs.annualInterestRatePct / 100;
 
     for (let year = 1; year <= inputs.years; year++) {
-      // Interest on starting balance
       const interestThisYear = balance * r;
       let depositsThisYear = 0;
 
       balance += interestThisYear;
       totalInterestAccrued += interestThisYear;
 
-      // Annual contribution added at end of year
-      if (annualContribution > 0) {
+      if (annualContribution !== 0) {
         balance += annualContribution;
         depositsThisYear += annualContribution;
       }
 
-      // Optional: lump in monthly contributions (treated as year-end sum)
-      if (monthlyContribution > 0) {
+      if (monthlyContribution !== 0) {
         const yearlyMonthly = monthlyContribution * 12;
         balance += yearlyMonthly;
         depositsThisYear += yearlyMonthly;
@@ -280,50 +436,45 @@ function computeSavings(inputs: CalcInputs): CalcOutputs {
         endingBalance: round2(balance),
       });
 
-      // Grow contributions for next year
       annualContribution *= 1 + inputs.annualContributionGrowthPct / 100;
       monthlyContribution *= 1 + inputs.monthlyContributionGrowthPct / 100;
     }
   } else {
-    // Default logic for monthly / quarterly / daily (your original fine-grained loop)
     for (let year = 1; year <= inputs.years; year++) {
       let interestThisYear = 0;
       let depositsThisYear = 0;
 
+      const monthStep = Math.max(1, Math.round(stepsPerYear / 12));
+
       for (let k = 1; k <= stepsPerYear; k++) {
-        const isMonthBoundary = k % Math.round(stepsPerYear / 12) === 0;
+        const isMonthBoundary = k % monthStep === 0;
         const isYearEnd = k === stepsPerYear;
 
-        // 1) Add periodic contributions
         if (!inputs.contributionsAtPeriodEnd) {
-          if (isMonthBoundary && monthlyContribution > 0) {
+          if (isMonthBoundary && monthlyContribution !== 0) {
             balance += monthlyContribution;
             depositsThisYear += monthlyContribution;
           }
-          // For the fine-grained simulation (non-annual compounding), add the
-          // annual contribution at the first sub-step of the year when using
-          // beginning-of-period timing.
-          if (k === 1 && annualContribution > 0) {
+          if (k === 1 && annualContribution !== 0) {
             balance += annualContribution;
             depositsThisYear += annualContribution;
           }
         }
 
-        // 2) Interest this step
         const interestGross = balance * rStep;
         const taxOnInterest = interestGross * taxRate;
         const interestNet = interestGross - taxOnInterest;
         balance += interestNet;
+
         interestThisYear += interestNet;
         totalInterestAccrued += interestNet;
 
-        // 3) End-timing contributions
         if (inputs.contributionsAtPeriodEnd) {
-          if (isMonthBoundary && monthlyContribution > 0) {
+          if (isMonthBoundary && monthlyContribution !== 0) {
             balance += monthlyContribution;
             depositsThisYear += monthlyContribution;
           }
-          if (isYearEnd && annualContribution > 0) {
+          if (isYearEnd && annualContribution !== 0) {
             balance += annualContribution;
             depositsThisYear += annualContribution;
           }
@@ -355,7 +506,7 @@ function computeSavings(inputs: CalcInputs): CalcOutputs {
 
   return {
     endBalance,
-    totalContributions: totalContrib + inputs.initialDeposit, // for reporting breakdown we include initial
+    totalContributions: totalContrib + inputs.initialDeposit,
     totalInterest: totalInt,
     schedule,
     realEndBalance,
@@ -366,7 +517,7 @@ function round2(n: number) {
   return Math.round(n * 100) / 100;
 }
 
-// ---------- MINI CHARTS (SVG, no libs) ----------
+// ---------- MINI CHARTS ----------
 function DonutChart({
   parts,
   size = 160,
@@ -383,6 +534,12 @@ function DonutChart({
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       <g transform={`translate(${size / 2},${size / 2})`}>
+        <circle
+          r={radius}
+          fill="none"
+          stroke={COLORS.border}
+          strokeWidth={stroke}
+        />
         {parts.map((p, i) => {
           const frac = p.value / total;
           const dash = 2 * Math.PI * radius * frac;
@@ -408,7 +565,7 @@ function DonutChart({
 
 function StackedBars({
   items,
-  height = 120,
+  height = 110,
 }: {
   items: { label: string; value: number; color: string }[];
   height?: number;
@@ -422,9 +579,10 @@ function StackedBars({
           .map((i) => `${(i.value / total) * 100}%`)
           .join(" "),
         height,
-        border: "1px solid #e6e8ef",
+        border: `1px solid ${COLORS.border}`,
         borderRadius: 12,
         overflow: "hidden",
+        background: COLORS.cardBg,
       }}
     >
       {items.map((i, idx) => (
@@ -438,9 +596,28 @@ function StackedBars({
   );
 }
 
+// ---------- FAQ DATA ----------
+const FAQS = [
+  {
+    q: "Why does my result differ from my bank?",
+    a: "Banks can use different rounding, posting schedules, fee rules, and calendars. Use this as a fast estimate and confirm with your institution.",
+  },
+  {
+    q: "What does tax on interest do here?",
+    a: "We reduce each interest step by your tax rate before crediting it to the balance. This helps approximate taxable accounts.",
+  },
+  {
+    q: "What does inflation-adjusted end balance mean?",
+    a: "It shows the end balance in today’s purchasing power using your inflation rate. Turn it on only if you want the real-value view.",
+  },
+  {
+    q: "Can I model withdrawals?",
+    a: "Yes. Enter a negative monthly or annual contribution to represent withdrawals.",
+  },
+];
+
 // ---------- PAGE ----------
 export default function Home() {
-  // inputs, initialized to safe server defaults to avoid hydration issues
   const [initialDeposit, setInitialDeposit] = React.useState(20000);
   const [annualContribution, setAnnualContribution] = React.useState(5000);
   const [annualContributionGrowthPct, setAnnualContributionGrowthPct] =
@@ -456,34 +633,33 @@ export default function Home() {
   const [contributionsAtPeriodEnd, setContributionsAtPeriodEnd] =
     React.useState(true);
 
-  // compute on input changes
   const outputs = React.useMemo(() => {
     const safeInputs: CalcInputs = {
       initialDeposit: clampNumber(Number(initialDeposit) || 0, 0, 1e9),
       annualContribution: clampNumber(
         Number(annualContribution) || 0,
         -1e8,
-        1e8
+        1e8,
       ),
       annualContributionGrowthPct: clampNumber(
         Number(annualContributionGrowthPct) || 0,
         -100,
-        100
+        100,
       ),
       monthlyContribution: clampNumber(
         Number(monthlyContribution) || 0,
         -1e8,
-        1e8
+        1e8,
       ),
       monthlyContributionGrowthPct: clampNumber(
         Number(monthlyContributionGrowthPct) || 0,
         -100,
-        100
+        100,
       ),
       annualInterestRatePct: clampNumber(
         Number(annualInterestRatePct) || 0,
         -50,
-        100
+        100,
       ),
       frequency,
       years: clampNumber(Number(years) || 0, 0, 100),
@@ -507,142 +683,176 @@ export default function Home() {
   ]);
 
   const breakdown = React.useMemo(() => {
-    const principal = Number(initialDeposit);
+    const principal = Number(initialDeposit) || 0;
     const contribs = outputs.totalContributions - principal;
     const interest = outputs.totalInterest;
+
     return [
       {
         label: "Initial deposit",
         value: Math.max(principal, 0),
-        color: "#cbe7ff",
+        color: COLORS.softBlue,
       },
       {
         label: "Contributions",
         value: Math.max(contribs, 0),
-        color: "#b6f3e1",
+        color: COLORS.softGreen,
       },
-      { label: "Interest", value: Math.max(interest, 0), color: "#ffd6a6" },
+      {
+        label: "Interest",
+        value: Math.max(interest, 0),
+        color: COLORS.softYellow,
+      },
     ];
   }, [outputs, initialDeposit]);
 
-  // percent labels
   const totalForPct = breakdown.reduce((a, b) => a + b.value, 0) || 1;
   const pct = breakdown.map((b) => Math.round((b.value / totalForPct) * 100));
 
-  // JSON-LD
+  const onPrint = React.useCallback(() => {
+    if (typeof window !== "undefined") window.print();
+  }, []);
+
+  // ---------- JSON-LD ----------
   const baseUrl = "https://www.allsavingscalculators.com";
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": `${baseUrl}#org`,
-        name: "AllSavingsCalculators",
-        url: baseUrl,
-        logo: { "@type": "ImageObject", url: `${baseUrl}/logo.png` },
-      },
-      {
-        "@type": "WebSite",
-        "@id": `${baseUrl}#website`,
-        url: baseUrl,
-        name: "AllSavingsCalculators",
-        inLanguage: "en",
-        publisher: { "@id": `${baseUrl}#org` },
-      },
-      {
-        "@type": "WebPage",
-        "@id": `${baseUrl}/#webpage`,
-        url: baseUrl + "/",
-        name: "Savings Calculator",
-        description:
-          "Calculate compound savings with monthly and annual contributions, growth rates, taxes, and inflation. Includes annual schedule and charts.",
-        isPartOf: { "@id": `${baseUrl}#website` },
-      },
-      {
-        "@type": "FAQPage",
-        "@id": `${baseUrl}#faq`,
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: "How is compound interest calculated here?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Interest compounds at the selected frequency. Monthly and annual contributions can grow each year. Interest is taxed at the input rate each step before being added back to principal. Results are estimates only.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "Does the calculator account for inflation?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Yes. If an inflation rate is entered, the calculator shows an inflation-adjusted end balance using standard real value deflation.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "Are contributions assumed at the beginning or end of periods?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "By default, contributions are at the end of each period. You can switch to beginning-of-period timing to model annuity due style deposits.",
-            },
-          },
-        ],
-      },
-    ],
-  };
+  const jsonLd = React.useMemo(() => {
+    const faqEntities = FAQS.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    }));
+
+    return {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": `${baseUrl}#org`,
+          name: "AllSavingsCalculators",
+          url: baseUrl,
+          logo: { "@type": "ImageObject", url: `${baseUrl}/logo.png` },
+        },
+        {
+          "@type": "WebSite",
+          "@id": `${baseUrl}#website`,
+          url: baseUrl,
+          name: "AllSavingsCalculators",
+          inLanguage: "en",
+          publisher: { "@id": `${baseUrl}#org` },
+        },
+        {
+          "@type": "WebPage",
+          "@id": `${baseUrl}/#webpage`,
+          url: `${baseUrl}/`,
+          name: "Savings Calculator",
+          description:
+            "Project end balance using deposits, contributions, interest rate, compounding, taxes, and inflation.",
+          isPartOf: { "@id": `${baseUrl}#website` },
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": `${baseUrl}/#app`,
+          name: "Savings Calculator",
+          applicationCategory: "FinanceApplication",
+          operatingSystem: "Web",
+          url: `${baseUrl}/`,
+          offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        },
+        {
+          "@type": "FAQPage",
+          "@id": `${baseUrl}/#faq`,
+          mainEntity: faqEntities,
+        },
+      ],
+    };
+  }, []);
 
   return (
     <div style={styles.page}>
+      {/* Print rules: flat, readable, no gradients */}
+      <style>{`
+        :root { color-scheme: light; }
+        button { cursor: pointer; }
+        summary { cursor: pointer; }
+        @media (max-width: 900px) {
+          .grid3 { grid-template-columns: 1fr !important; }
+          .resultsGrid { grid-template-columns: 1fr !important; }
+          .split { grid-template-columns: 1fr !important; }
+        }
+        @media print {
+          .noPrint { display: none !important; }
+          body { background: #ffffff !important; }
+          table { page-break-inside: avoid; }
+          a { text-decoration: none !important; color: inherit !important; }
+        }
+      `}</style>
+
       <div style={styles.wrap}>
         {/* NAV */}
         <header style={styles.header}>
           <div style={styles.brand}>
-            <div style={styles.logo}>
+            <div style={styles.logo} aria-hidden="true">
               <LogoBars />
             </div>
             <div>
               <div style={styles.siteTitle}>AllSavingsCalculators</div>
-              <div style={styles.tagline}>
-                Clear savings math for real decisions.
-              </div>
             </div>
           </div>
-          <span className="border border-[#e6e8ef] py-2 px-4 text-sm sm:text-base rounded-full bg-white text-[#0b2447] font-extrabold text-center">
-            Savings Calculator
-          </span>
+          <span style={styles.pill}>Savings Calculator</span>
         </header>
 
-        {/* HERO */}
-        <section className="flex flex-col sm:flex-row gap-8 mt-6 mb-8 sm:mb-2">
+        {/* 1) HERO (above the fold) */}
+        <section style={styles.hero}>
           <div>
-            <h1 style={styles.h1}>
-              Savings Calculator with Taxes, Growth, and Inflation
-            </h1>
-            <p style={styles.lead}>
-              Estimate your end balance with compound interest and flexible
-              contributions. Model annual and monthly deposits with growth
-              rates, tax on interest, multiple compounding options, and an
-              annual schedule that shows deposits and interest earned.
+            <h1 style={styles.h1}>Savings Calculator</h1>
+            <p style={styles.lead} className="!mt-2">
+              Estimate your end balance from deposits, contributions, interest,
+              taxes, and inflation in seconds.
             </p>
           </div>
-          <div className="card" style={{ ...styles.card, ...styles.cardPad }}>
-            <div style={{ fontWeight: 800, color: "#0b2447" }}>Heads up</div>
-            <p style={{ color: "#5a616c", margin: 0 }}>
-              Results are estimates. Banks may use different rounding rules,
-              credit interest on different schedules, or adjust for fees. Always
-              verify with your institution.
-            </p>
-          </div>
-        </section>
 
-        {/* CALCULATOR */}
-        <section aria-labelledby="calc-title" style={styles.section}>
-          <h2 id="calc-title" style={styles.sectionTitle}>
-            Savings Calculator
-          </h2>
+          {/* 2) CALCULATOR UTILITY CARD (dominant) */}
+          <div style={{ ...styles.calcShell, ...styles.calcShellPad }}>
+            <div style={styles.calcTopRow}>
+              <div style={styles.calcTitle}>Calculator</div>
 
-          <div style={{ ...styles.card, ...styles.cardPad }}>
-            <div style={styles.grid3}>
+              <div className="ml-auto">
+                <div style={styles.label}>Contribution timing</div>
+                <div
+                  className="flex items-center gap-2 mt-2"
+                  role="group"
+                  aria-label="Contribution timing"
+                  style={{ marginTop: 8, display: "flex", gap: 10 }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setContributionsAtPeriodEnd(true)}
+                    style={{
+                      ...styles.btn,
+                      ...(contributionsAtPeriodEnd ? styles.btnActive : null),
+                    }}
+                    aria-pressed={contributionsAtPeriodEnd}
+                  >
+                    End
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setContributionsAtPeriodEnd(false)}
+                    style={{
+                      ...styles.btn,
+                      ...(!contributionsAtPeriodEnd ? styles.btnActive : null),
+                    }}
+                    aria-pressed={!contributionsAtPeriodEnd}
+                  >
+                    Beginning
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ height: 14 }} />
+
+            <div className="grid3" style={styles.grid3}>
               <LabeledNumber
                 label="Initial deposit"
                 value={initialDeposit}
@@ -663,13 +873,13 @@ export default function Home() {
                 value={annualContributionGrowthPct}
                 setValue={setAnnualContributionGrowthPct}
                 step="0.5"
-                suffix="% /yr"
+                suffix="%/yr"
               />
             </div>
 
-            <div style={{ height: 12 }} />
+            <div style={{ height: 14 }} />
 
-            <div style={styles.grid3}>
+            <div className="grid3" style={styles.grid3}>
               <LabeledNumber
                 label="Monthly contribution"
                 value={monthlyContribution}
@@ -682,7 +892,7 @@ export default function Home() {
                 value={monthlyContributionGrowthPct}
                 setValue={setMonthlyContributionGrowthPct}
                 step="0.5"
-                suffix="% /yr"
+                suffix="%/yr"
               />
               <LabeledSelect
                 label="Compound frequency"
@@ -697,9 +907,9 @@ export default function Home() {
               />
             </div>
 
-            <div style={{ height: 12 }} />
+            <div style={{ height: 14 }} />
 
-            <div style={styles.grid3}>
+            <div className="grid3" style={styles.grid3}>
               <LabeledNumber
                 label="Interest rate"
                 value={annualInterestRatePct}
@@ -708,7 +918,7 @@ export default function Home() {
                 suffix="% APR"
               />
               <LabeledNumber
-                label="Years to save"
+                label="Years"
                 value={years}
                 setValue={setYears}
                 min={0}
@@ -726,9 +936,9 @@ export default function Home() {
               />
             </div>
 
-            <div style={{ height: 12 }} />
+            <div style={{ height: 14 }} />
 
-            <div style={styles.grid3}>
+            <div className="grid3" style={styles.grid3}>
               <LabeledNumber
                 label="Inflation rate (optional)"
                 value={inflationRatePct}
@@ -738,65 +948,58 @@ export default function Home() {
                 step="0.5"
                 suffix="%"
               />
-              <div>
-                <div style={styles.label}>Contribution timing</div>
-                <div
-                  className="flex items-center gap-2 mt-2"
-                  role="group"
-                  aria-label="Contribution timing"
-                >
-                  <button
-                    onClick={() => setContributionsAtPeriodEnd(true)}
-                    style={{
-                      ...styles.btnGhost,
-                      background: contributionsAtPeriodEnd ? "#0b2447" : "#fff",
-                      color: contributionsAtPeriodEnd ? "#fff" : "#111317",
-                    }}
-                  >
-                    End of period
-                  </button>
-                  <button
-                    onClick={() => setContributionsAtPeriodEnd(false)}
-                    style={{
-                      ...styles.btnGhost,
-                      background: !contributionsAtPeriodEnd
-                        ? "#0b2447"
-                        : "#fff",
-                      color: !contributionsAtPeriodEnd ? "#fff" : "#111317",
-                    }}
-                  >
-                    Beginning of period
-                  </button>
-                </div>
-              </div>
               <div />
             </div>
 
-            {/* RESULTS */}
-            <div className="grid gap-4 md:grid-cols-2 mt-6">
-              <div className="rounded-xl border border-[#e6e8ef] p-4 bg-white">
-                <div className="text-sm font-semibold text-[#5a616c]">
+            <div style={{ height: 16 }} />
+
+            {/* RESULTS + CHARTS */}
+            <div
+              className="split"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 14,
+                alignItems: "start",
+              }}
+            >
+              <div style={styles.resultsCard}>
+                <div
+                  style={{ color: COLORS.muted, fontWeight: 900, fontSize: 14 }}
+                >
                   Results
                 </div>
-                <div className="grid grid-cols-2 gap-3 mt-3">
+
+                <div
+                  className="resultsGrid"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 12,
+                    marginTop: 12,
+                  }}
+                >
                   <KeyVal
                     label="End balance"
                     value={toCurrency(outputs.endBalance)}
                     big
+                    accent="green"
                   />
                   <KeyVal
                     label="Initial deposit"
-                    value={toCurrency(Number(initialDeposit))}
+                    value={toCurrency(Number(initialDeposit) || 0)}
                   />
                   <KeyVal
                     label="Total contributions"
                     value={toCurrency(
-                      outputs.totalContributions - Number(initialDeposit)
+                      outputs.totalContributions -
+                        (Number(initialDeposit) || 0),
                     )}
                   />
                   <KeyVal
                     label="Total interest earned"
                     value={toCurrency(outputs.totalInterest)}
+                    accent="yellow"
                   />
                   {inflationRatePct > 0 && (
                     <KeyVal
@@ -806,238 +1009,234 @@ export default function Home() {
                   )}
                 </div>
 
-                <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-                  <div className="flex items-center gap-4">
+                <div
+                  style={{
+                    marginTop: 16,
+                    display: "grid",
+                    gridTemplateColumns: "1fr",
+                    gap: 12,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 14,
+                      flexWrap: "wrap",
+                    }}
+                  >
                     <DonutChart parts={breakdown} />
-                    <ul className="text-sm">
+                    <ul
+                      style={{
+                        margin: 0,
+                        padding: 0,
+                        listStyle: "none",
+                        fontSize: 15,
+                      }}
+                    >
                       {breakdown.map((b, i) => (
-                        <li key={i} className="mb-1">
+                        <li key={i} style={{ marginBottom: 8 }}>
                           <span
+                            aria-hidden="true"
                             style={{
                               display: "inline-block",
-                              width: 10,
-                              height: 10,
-                              borderRadius: 2,
+                              width: 12,
+                              height: 12,
+                              borderRadius: 3,
                               background: b.color,
+                              border: `1px solid ${COLORS.border}`,
                               marginRight: 8,
+                              verticalAlign: "middle",
                             }}
                           />
-                          {b.label}: <strong>{toCurrency(b.value)}</strong>{" "}
-                          <span className="text-gray-500">({pct[i]}%)</span>
+                          <span style={{ color: COLORS.text }}>
+                            {b.label}:{" "}
+                            <strong style={{ color: COLORS.navy2 }}>
+                              {toCurrency(b.value)}
+                            </strong>{" "}
+                            <span style={{ color: COLORS.muted }}>
+                              ({pct[i]}%)
+                            </span>
+                          </span>
                         </li>
                       ))}
                     </ul>
                   </div>
+
                   <div>
-                    <div className="text-sm font-semibold text-[#5a616c] mb-2">
-                      Principal vs Contributions vs Interest
+                    <div
+                      style={{
+                        color: COLORS.muted,
+                        fontWeight: 900,
+                        fontSize: 14,
+                        marginBottom: 8,
+                      }}
+                    >
+                      Breakdown
                     </div>
                     <StackedBars items={breakdown} height={110} />
                   </div>
                 </div>
-
-                <p className="text-xs text-gray-600 mt-3">
-                  Note: This calculator assumes contributions occur at the
-                  selected timing per period. Interest is taxed each subperiod
-                  before being added to principal.
-                </p>
               </div>
 
-              {/* HOW IT WORKS + CITATION */}
-              <div className="rounded-xl border border-[#e6e8ef] p-4 bg-white">
-                <div className="text-sm font-semibold text-[#5a616c]">
-                  How it works
-                </div>
-                <p className="text-gray-700 text-sm mt-2">
-                  The balance accrues interest at the chosen compounding
-                  frequency. Annual and monthly contributions can grow once per
-                  year by their respective growth rates. Taxes on interest are
-                  applied each subperiod, then interest is credited. If an
-                  inflation rate is provided, the end balance is deflated to
-                  show a real value.
-                </p>
-                <div className="text-xs text-gray-600">
-                  <div className="font-semibold mt-2">Formulas and sources</div>
-                  <ul className="list-disc ml-5 space-y-1 mt-1">
-                    <li>
-                      Compound interest and future value of annuities follow
-                      standard time value of money relationships as presented in{" "}
-                      <em>
-                        Brigham, E. & Ehrhardt, M., Financial Management: Theory
-                        & Practice
-                      </em>
-                      , Cengage, 2022.
-                    </li>
-                    <li>
-                      Savings account characteristics and insurance limits:
-                      FDIC, “Deposit Insurance at a Glance,” fdic.gov.
-                    </li>
-                    <li>
-                      Inflation adjustment uses a constant annual inflation rate
-                      to compute real value: Fisher equation, Federal Reserve
-                      education resources.
-                    </li>
-                  </ul>
-                </div>
-                <div className="text-xs text-amber-700 mt-3">
-                  Educational use only. Not financial advice.
-                </div>
-              </div>
-            </div>
-
-            {/* SCHEDULE */}
-            <div className="mt-6">
-              <div className="text-sm font-semibold text-[#5a616c] mb-2">
-                Annual Schedule
-              </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full border-collapse text-sm">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <Th>Year</Th>
-                      <Th>Deposit</Th>
-                      <Th>Interest</Th>
-                      <Th>Ending balance</Th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {outputs.schedule.map((row) => (
-                      <tr
-                        key={row.year}
-                        className="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition"
-                      >
-                        <Td>{row.year}</Td>
-                        <Td>{toCurrency(row.deposit)}</Td>
-                        <Td>{toCurrency(row.interest)}</Td>
-                        <Td>{toCurrency(row.endingBalance)}</Td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <p className="text-xs text-gray-600 mt-2">
-                Contributions and interest are shown at yearly resolution.
-                Internally, the engine simulates using the finer of monthly or
-                the chosen compounding frequency to support monthly deposits and
-                per-step tax on interest.
-              </p>
-            </div>
-
-            {/* DISCLAIMER UNDER CALCULATOR */}
-            <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-3 text-amber-900 text-sm">
-              <strong>Disclaimer:</strong> This tool is for education and
-              planning. It does not consider fees, account minimums, or special
-              bank rules. Tax treatment varies by jurisdiction. Always confirm
-              results with your financial institution and consider consulting a
-              qualified professional for advice.
-            </div>
-          </div>
-        </section>
-
-        {/* COMING SOON */}
-        <section aria-labelledby="coming-title" style={styles.section}>
-          <h2 id="coming-title" style={styles.sectionTitle}>
-            More calculators coming soon
-          </h2>
-          <div style={{ ...styles.card, ...styles.cardPad }}>
-            <ul className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 text-gray-800">
-              {[
-                "CD Ladder Calculator",
-                "High-Yield Savings Comparison",
-                "Emergency Fund Planner",
-                "Goal-Date Savings Planner",
-                "Inflation-Adjusted Savings Target",
-                "Tax-Deferred vs Taxable Savings",
-              ].map((t) => (
-                <li
-                  key={t}
-                  className="border border-[#e6e8ef] rounded-lg px-3 py-2 bg-white"
+              {/* SCHEDULE */}
+              <div style={{ ...styles.resultsCard }}>
+                <div
+                  style={{ color: COLORS.muted, fontWeight: 900, fontSize: 14 }}
                 >
-                  {t}
-                </li>
-              ))}
-            </ul>
+                  Yearly schedule
+                </div>
+
+                <div style={{ marginTop: 10, overflowX: "auto" }}>
+                  <table
+                    style={{
+                      minWidth: 640,
+                      width: "100%",
+                      borderCollapse: "collapse",
+                      fontSize: 15,
+                    }}
+                  >
+                    <thead style={{ background: COLORS.tableHead }}>
+                      <tr>
+                        <Th>Year</Th>
+                        <Th>Deposit</Th>
+                        <Th>Interest</Th>
+                        <Th>Ending balance</Th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {outputs.schedule.map((row) => (
+                        <tr
+                          key={row.year}
+                          style={{
+                            background:
+                              row.year % 2 === 0
+                                ? COLORS.tableRowAlt
+                                : COLORS.cardBg,
+                          }}
+                          onMouseEnter={(e) => {
+                            (
+                              e.currentTarget as HTMLTableRowElement
+                            ).style.background = COLORS.rowHover;
+                          }}
+                          onMouseLeave={(e) => {
+                            (
+                              e.currentTarget as HTMLTableRowElement
+                            ).style.background =
+                              row.year % 2 === 0
+                                ? COLORS.tableRowAlt
+                                : COLORS.cardBg;
+                          }}
+                        >
+                          <Td>{row.year}</Td>
+                          <Td>{toCurrency(row.deposit)}</Td>
+                          <Td>{toCurrency(row.interest)}</Td>
+                          <Td>
+                            <span
+                              style={{ fontWeight: 950, color: COLORS.navy2 }}
+                            >
+                              {toCurrency(row.endingBalance)}
+                            </span>
+                          </Td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div
+                  style={{
+                    marginTop: 10,
+                    color: COLORS.muted,
+                    fontSize: 13.5,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  Schedule is shown yearly. Monthly contributions and tax on
+                  interest are modeled during the simulation.
+                </div>
+              </div>
+            </div>
+
+            <div
+              className="flex w-full ml-auto mt-4"
+              style={{ display: "flex", gap: 10, alignItems: "center" }}
+            >
+              <button
+                type="button"
+                onClick={onPrint}
+                className="bg-white border rounded-full px-2 py-1 cursor-pointer hover:bg-green-900 hover:text-white"
+                aria-label="Print or save as PDF"
+              >
+                Print / Save PDF
+              </button>
+            </div>
           </div>
         </section>
 
-        {/* LONG SEO CONTENT */}
-        <section style={styles.section} aria-labelledby="learn-title">
-          <h2 id="learn-title" style={styles.sectionTitle}>
-            Savings basics
-          </h2>
-          <div style={{ ...styles.card, ...styles.cardPad }}>
-            <p className="text-gray-700">
-              Savings accounts provide liquidity and principal safety under U.S.
-              FDIC insurance up to applicable limits. They are useful for
-              emergency funds and near-term goals. Money market accounts and
-              certificates of deposit can offer different yields and withdrawal
-              rules. The right mix balances yield, access, and risk tolerance.
-            </p>
-            <h3 className="mt-4 font-bold text-[#0b2447]">
-              How compound interest grows savings
-            </h3>
-            <p className="text-gray-700">
-              Compounding means interest can earn interest. Regular
-              contributions can significantly increase the end balance,
-              especially when they grow each year with income or budget
-              increases. Taxes on interest reduce the effective growth rate.
-              Inflation reduces the future purchasing power of nominal balances,
-              so it helps to compare both nominal and real amounts.
-            </p>
-            <h3 className="mt-4 font-bold text-[#0b2447]">
-              Common rules of thumb
-            </h3>
-            <ul className="list-disc ml-6 text-gray-700">
-              <li>Emergency fund covering three to six months of expenses.</li>
-              <li>Automate contributions to stay consistent.</li>
-              <li>Review rates and fees periodically.</li>
-            </ul>
-            <h3 className="mt-4 font-bold text-[#0b2447]">References</h3>
-            <ul className="list-disc ml-6 text-gray-700">
-              <li>FDIC. Deposit Insurance at a Glance. fdic.gov</li>
-              <li>
-                Federal Reserve Education. Time Value of Money and the Fisher
-                Relationship.
-              </li>
-              <li>
-                Brigham, E. & Ehrhardt, M. Financial Management: Theory &
-                Practice. 2022.
-              </li>
-              <li>OECD. Household Saving Rates. oecd.org</li>
-            </ul>
+        {/* 3) HOW IT WORKS (below tool, skimmable) */}
+        <section style={{ marginTop: 18 }}>
+          <div style={styles.howWrap}>
+            <div style={styles.sectionTitle}>How it works</div>
+            <div style={styles.steps}>
+              <div style={styles.step}>
+                <div style={styles.stepTitle}>1) Enter your numbers</div>
+                <p style={styles.stepBody}>
+                  Set your deposit, contributions, rate, and timeline.
+                </p>
+              </div>
+              <div style={styles.step}>
+                <div style={styles.stepTitle}>2) We calculate instantly</div>
+                <p style={styles.stepBody}>
+                  Compounding, taxes, and contribution timing apply
+                  automatically.
+                </p>
+              </div>
+              <div style={styles.step}>
+                <div style={styles.stepTitle}>3) Review results clearly</div>
+                <p style={styles.stepBody}>
+                  See your end balance plus a clean yearly breakdown.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* FAQ */}
-        <section id="faq" style={styles.section} aria-labelledby="faq-title">
-          <h2 id="faq-title" style={styles.sectionTitle}>
-            Frequently asked questions
-          </h2>
-          <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-200 shadow-sm">
-            {FAQS.map((f) => (
-              <details key={f.q} className="group open:bg-slate-50">
-                <summary className="cursor-pointer list-none px-6 py-5 text-lg font-semibold text-[#0b2447]">
-                  {f.q}
-                </summary>
-                <div className="px-6 pb-5 text-slate-700 text-base">{f.a}</div>
+        {/* 4) OPTIONAL SUPPORTING COPY (single section, includes FAQ) */}
+        <section style={{ marginTop: 18 }}>
+          <div style={styles.sectionTitle}>FAQ</div>
+          <div style={styles.faqWrap} id="faq">
+            {FAQS.map((f, idx) => (
+              <details
+                key={f.q}
+                style={idx === 0 ? { padding: 0 } : styles.faqItem}
+              >
+                <summary style={styles.faqSummary}>{f.q}</summary>
+                <div style={styles.faqAnswer}>{f.a}</div>
               </details>
             ))}
           </div>
         </section>
 
-        {/* FOOTER DISCLAIMER */}
-        <section className="mt-8">
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-amber-900 text-sm">
-            <strong>General information only:</strong> AllSavingsCalculators
-            provides educational tools. We do not provide personalized financial
-            advice. Consider speaking with a licensed professional before making
-            financial decisions.
+        {/* 5) DISCLAIMERS (bottom only) */}
+        <section style={styles.disclaimer} aria-label="Disclaimers">
+          <div
+            style={{ fontWeight: 950, color: COLORS.navy2, marginBottom: 6 }}
+          >
+            Disclaimers
+          </div>
+          <div>
+            Results are estimates. Real outcomes can differ due to rounding,
+            posting schedules, fees, minimums, and institution-specific rules.
+          </div>
+          <div style={{ marginTop: 6 }}>
+            This tool does not provide financial, tax, or legal advice. Confirm
+            details with your institution or a qualified professional.
           </div>
         </section>
 
         <footer style={styles.footer}>
-          © {new Date().getFullYear()} AllSavingsCalculators. Educational tools
-          for better money decisions.
+          © {new Date().getFullYear()} AllSavingsCalculators
         </footer>
       </div>
 
@@ -1070,24 +1269,41 @@ function LabeledNumber({
   prefix?: string;
   suffix?: string;
 }) {
+  const [isFocused, setIsFocused] = React.useState(false);
+
   return (
     <div>
       <div style={styles.label}>{label}</div>
-      <div className="relative mt-2">
+      <div style={{ position: "relative", marginTop: 8 }}>
         {prefix && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+          <span
+            style={{
+              position: "absolute",
+              left: 12,
+              top: "50%",
+              transform: "translateY(-50%)",
+              color: COLORS.muted,
+              fontWeight: 950,
+              fontSize: 14,
+              pointerEvents: "none",
+            }}
+          >
             {prefix}
           </span>
         )}
+
         <input
           inputMode="decimal"
           step={step || "1"}
           style={{
             ...styles.input,
-            paddingLeft: prefix ? 28 : 12,
-            paddingRight: suffix ? 40 : 12,
+            ...(isFocused ? styles.inputFocus : null),
+            paddingLeft: prefix ? 30 : 12,
+            paddingRight: suffix ? 52 : 12,
           }}
           value={value}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           onChange={(e) => {
             const raw = e.target.value.replace(/,/g, "");
             const n = Number(raw);
@@ -1100,9 +1316,22 @@ function LabeledNumber({
               setValue(0);
             }
           }}
+          aria-label={label}
         />
+
         {suffix && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+          <span
+            style={{
+              position: "absolute",
+              right: 12,
+              top: "50%",
+              transform: "translateY(-50%)",
+              color: COLORS.muted,
+              fontWeight: 950,
+              fontSize: 14,
+              pointerEvents: "none",
+            }}
+          >
             {suffix}
           </span>
         )}
@@ -1122,13 +1351,22 @@ function LabeledSelect<T extends string>({
   setValue: (v: T) => void;
   options: { value: T; label: string }[];
 }) {
+  const [isFocused, setIsFocused] = React.useState(false);
+
   return (
     <div>
       <div style={styles.label}>{label}</div>
       <select
         value={value}
         onChange={(e) => setValue(e.target.value as T)}
-        style={{ ...styles.select, marginTop: 8 }}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        style={{
+          ...styles.select,
+          ...(isFocused ? styles.inputFocus : null),
+          marginTop: 8,
+        }}
+        aria-label={label}
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -1144,18 +1382,49 @@ function KeyVal({
   label,
   value,
   big = false,
+  accent,
 }: {
   label: string;
   value: string;
   big?: boolean;
+  accent?: "green" | "yellow";
 }) {
+  const accentBorder =
+    accent === "green"
+      ? COLORS.accentGreen
+      : accent === "yellow"
+        ? COLORS.accentYellow
+        : COLORS.border;
+
+  const ring =
+    accent === "green"
+      ? "rgba(22,163,74,0.14)"
+      : accent === "yellow"
+        ? "rgba(245,158,11,0.16)"
+        : "transparent";
+
   return (
-    <div className="border border-[#e6e8ef] rounded-xl p-3 bg-white">
-      <div className="text-xs text-[#5a616c]">{label}</div>
+    <div
+      style={{
+        border: `1px solid ${accentBorder}`,
+        borderRadius: 14,
+        padding: 12,
+        background: COLORS.cardBg,
+        boxShadow: ring === "transparent" ? "none" : `0 0 0 4px ${ring}`,
+      }}
+    >
+      <div style={{ color: COLORS.muted, fontWeight: 900, fontSize: 13.5 }}>
+        {label}
+      </div>
       <div
-        className={
-          big ? "text-2xl font-extrabold mt-1" : "text-lg font-bold mt-1"
-        }
+        style={{
+          marginTop: 8,
+          fontWeight: 950,
+          fontSize: big ? 28 : 18,
+          lineHeight: 1.15,
+          color: COLORS.navy2,
+          letterSpacing: -0.2,
+        }}
       >
         {value}
       </div>
@@ -1165,40 +1434,32 @@ function KeyVal({
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
-    <th className="py-2 px-3 text-left font-semibold border-b border-[#e6e8ef] text-[#0b2447]">
+    <th
+      style={{
+        padding: "10px 12px",
+        textAlign: "left",
+        fontWeight: 950,
+        borderBottom: `1px solid ${COLORS.border}`,
+        color: COLORS.navy2,
+        whiteSpace: "nowrap",
+      }}
+    >
       {children}
     </th>
   );
 }
 
 function Td({ children }: { children: React.ReactNode }) {
-  return <td className="py-2 px-3 border-b border-[#e6e8ef]">{children}</td>;
+  return (
+    <td
+      style={{
+        padding: "10px 12px",
+        borderBottom: `1px solid ${COLORS.border}`,
+        whiteSpace: "nowrap",
+        color: COLORS.text,
+      }}
+    >
+      {children}
+    </td>
+  );
 }
-
-// ---------- FAQ DATA ----------
-const FAQS = [
-  {
-    q: "What compounding options are supported?",
-    a: "You can choose annual, quarterly, monthly, or daily compounding. Internally, the simulation runs at the finer of monthly or your chosen frequency to support monthly contribution streams and per-step tax on interest.",
-  },
-  {
-    q: "How are contribution increases applied?",
-    a: "Annual and monthly contributions can grow once per year by their respective growth rates. This models raises or budget step-ups over time.",
-  },
-  {
-    q: "How is tax on interest modeled?",
-    a: "At each simulation step, interest is computed, tax is deducted at the specified rate, and the net interest is added to the balance. This approximates taxable accounts where interest is recognized as ordinary income.",
-  },
-  {
-    q: "What does inflation-adjusted end balance mean?",
-    a: "It deflates the nominal end balance using a constant annual inflation rate so you can compare purchasing power in today’s dollars. It uses the standard real value approach consistent with the Fisher relationship.",
-  },
-  {
-    q: "Do negative contributions work?",
-    a: "Yes. Negative values represent withdrawals. For example, a negative monthly amount can simulate a regular draw from the account.",
-  },
-  {
-    q: "Why do results differ from my bank?",
-    a: "Banks can use different rounding rules, credit interest on different calendars, or apply fees and minimums. Treat this as an estimate.",
-  },
-];
