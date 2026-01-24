@@ -1,13 +1,11 @@
-// app/routes/_index.tsx
 import * as React from "react";
 import type { Route } from "./+types/home";
 
-// ---------- META ----------
 export function meta({}: Route.MetaArgs) {
   const title =
     "Savings Calculator | End Balance, Interest Earned, Taxes, Inflation";
   const description =
-    "Project your savings end balance fast. Adjust deposit, contributions, interest rate, compounding, taxes on interest, and inflation. Includes a clear yearly schedule.";
+    "Calculate your savings end balance fast. Adjust deposit, contributions, interest rate, compounding, taxes on interest, and inflation. Includes a clear yearly schedule.";
   const canonical = "https://www.allsavingscalculators.com/";
 
   return [
@@ -20,8 +18,8 @@ export function meta({}: Route.MetaArgs) {
     },
     { name: "robots", content: "index,follow" },
     { name: "theme-color", content: "#0b2447" },
+    { name: "viewport", content: "width=device-width, initial-scale=1" },
     { tagName: "link", rel: "canonical", href: canonical },
-
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
@@ -34,305 +32,16 @@ export function loader({}: Route.LoaderArgs) {
   return { ok: true };
 }
 
-// ---------- DESIGN TOKENS (flat colors, higher contrast) ----------
 const COLORS = {
-  navy: "#0b2447",
-  navy2: "#071a36",
-  pageBg: "#f6f7fb",
-  cardBg: "#ffffff",
-
-  text: "#0b0f17",
-  muted: "#2f3744", // higher contrast than typical gray
   border: "#d2d9ea",
-  borderStrong: "#b2bfdc",
-
-  accentGreen: "#16a34a",
   accentYellow: "#f59e0b",
-  focusRing: "rgba(245,158,11,0.28)",
-
   softBlue: "#dbeafe",
   softGreen: "#dcfce7",
   softYellow: "#fef3c7",
-
-  tableHead: "#eef2ff",
-  tableRowAlt: "#f8fafc",
-  rowHover: "#eef2ff",
 };
 
-// ---------- STYLES ----------
-const styles: Record<string, React.CSSProperties> = {
-  page: {
-    background: COLORS.pageBg,
-    color: COLORS.text,
-    fontFamily:
-      "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial",
-    margin: 0,
-  },
-  wrap: { maxWidth: 1160, margin: "0 auto", padding: 24 },
-
-  header: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "16px 0",
-  },
-  brand: { display: "flex", alignItems: "center", gap: 12 },
-  logo: {
-    width: 44,
-    height: 44,
-    border: `2px solid ${COLORS.navy}`,
-    borderRadius: 10,
-    background: COLORS.cardBg,
-    position: "relative",
-    flex: "0 0 auto",
-  },
-  siteTitle: {
-    fontWeight: 950,
-    letterSpacing: 0.2,
-    fontSize: 18,
-    color: COLORS.navy,
-    lineHeight: 1.1,
-  },
-  pill: {
-    border: `1px solid ${COLORS.border}`,
-    padding: "9px 12px",
-    borderRadius: 999,
-    background: COLORS.cardBg,
-    color: COLORS.navy,
-    fontWeight: 950,
-    fontSize: 13,
-    lineHeight: 1,
-    whiteSpace: "nowrap",
-  },
-
-  hero: {
-    display: "grid",
-    gridTemplateColumns: "1fr",
-    gap: 12,
-    padding: "10px 0 10px",
-  },
-  h1: {
-    fontSize: "clamp(2.1rem, 2.7vw + 1rem, 3.2rem)",
-    lineHeight: 1.08,
-    margin: 0,
-    letterSpacing: -0.3,
-    color: COLORS.navy2,
-  },
-  lead: {
-    marginTop: 10,
-    color: COLORS.muted,
-    fontSize: "clamp(1.05rem, 0.35vw + 1rem, 1.2rem)", // larger, readable
-    margin: 0,
-    maxWidth: 860,
-    lineHeight: 1.45,
-  },
-
-  calcShell: {
-    borderRadius: 20,
-    border: `1px solid ${COLORS.borderStrong}`,
-    background: COLORS.cardBg,
-    boxShadow: "0 10px 22px rgba(11,36,71,0.10)",
-  },
-  calcShellPad: { padding: 18 },
-
-  calcTopRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-    flexWrap: "wrap",
-  },
-  calcTitle: { fontWeight: 950, color: COLORS.navy, fontSize: 15 },
-
-  grid3: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr 1fr",
-    gap: 14,
-  },
-
-  label: {
-    fontSize: 14.5, // bigger labels
-    color: COLORS.muted,
-    fontWeight: 800,
-    letterSpacing: 0.1,
-  },
-  input: {
-    width: "100%",
-    minHeight: 44, // bigger target
-    padding: "12px 12px",
-    border: `1px solid ${COLORS.border}`,
-    borderRadius: 12,
-    background: COLORS.cardBg,
-    color: COLORS.text,
-    font: "800 16px/1 ui-sans-serif, system-ui",
-    outline: "none",
-  },
-  inputFocus: {
-    border: `1px solid ${COLORS.navy}`,
-    boxShadow: `0 0 0 4px ${COLORS.focusRing}`,
-  },
-  select: {
-    width: "100%",
-    minHeight: 44,
-    padding: "12px 12px",
-    border: `1px solid ${COLORS.border}`,
-    borderRadius: 12,
-    background: COLORS.cardBg,
-    color: COLORS.text,
-    font: "800 16px/1 ui-sans-serif, system-ui",
-    outline: "none",
-  },
-
-  btn: {
-    border: `1px solid ${COLORS.border}`,
-    background: COLORS.cardBg,
-    color: COLORS.text,
-    padding: "10px 12px",
-    borderRadius: 12,
-    fontWeight: 950,
-    cursor: "pointer",
-    lineHeight: 1,
-    fontSize: 14,
-    whiteSpace: "nowrap",
-  },
-  btnPrimary: {
-    border: `1px solid ${COLORS.navy}`,
-    background: COLORS.navy,
-    color: "#fff",
-    cursor: "pointer",
-  },
-  btnActive: {
-    border: `1px solid ${COLORS.navy}`,
-    background: COLORS.navy,
-    color: "#fff",
-    cursor: "pointer",
-  },
-
-  resultsCard: {
-    border: `1px solid ${COLORS.border}`,
-    borderRadius: 16,
-    padding: 16,
-    background: COLORS.cardBg,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 950,
-    margin: "0 0 10px",
-    color: COLORS.navy2,
-    letterSpacing: -0.1,
-  },
-
-  howWrap: {
-    border: `1px solid ${COLORS.border}`,
-    borderRadius: 16,
-    padding: 16,
-    background: COLORS.cardBg,
-  },
-  steps: {
-    display: "grid",
-    gridTemplateColumns: "1fr",
-    gap: 10,
-    marginTop: 10,
-  },
-  step: {
-    border: `1px solid ${COLORS.border}`,
-    borderRadius: 14,
-    padding: 12,
-    background: COLORS.cardBg,
-  },
-  stepTitle: {
-    fontWeight: 950,
-    color: COLORS.navy,
-    marginBottom: 4,
-    fontSize: 15.5,
-  },
-  stepBody: { color: COLORS.muted, margin: 0, fontSize: 15, lineHeight: 1.45 },
-
-  faqWrap: {
-    border: `1px solid ${COLORS.border}`,
-    borderRadius: 16,
-    background: COLORS.cardBg,
-    overflow: "hidden",
-  },
-  faqItem: {
-    borderTop: `1px solid ${COLORS.border}`,
-    padding: 0,
-    background: COLORS.cardBg,
-  },
-  faqSummary: {
-    padding: "14px 16px",
-    cursor: "pointer",
-    fontWeight: 950,
-    color: COLORS.navy2,
-    fontSize: 16,
-    listStyle: "none",
-  },
-  faqAnswer: {
-    padding: "0 16px 14px",
-    color: COLORS.muted,
-    fontSize: 15,
-    lineHeight: 1.5,
-  },
-
-  disclaimer: {
-    color: COLORS.muted,
-    fontSize: 12.5,
-    lineHeight: 1.5,
-    borderTop: `1px solid ${COLORS.border}`,
-    paddingTop: 14,
-    marginTop: 18,
-  },
-
-  footer: {
-    color: COLORS.muted,
-    fontSize: 13,
-    textAlign: "center",
-    padding: "18px 0 8px",
-  },
-};
-
-function LogoBars() {
-  return (
-    <>
-      <span
-        style={{
-          position: "absolute",
-          left: 8,
-          right: 8,
-          top: 12,
-          height: 3,
-          background: COLORS.navy,
-          borderRadius: 2,
-        }}
-      />
-      <span
-        style={{
-          position: "absolute",
-          left: 8,
-          width: "60%",
-          bottom: 12,
-          height: 3,
-          background: COLORS.navy,
-          borderRadius: 2,
-        }}
-      />
-      <span
-        style={{
-          position: "absolute",
-          right: 8,
-          bottom: 12,
-          width: 8,
-          height: 8,
-          background: COLORS.accentYellow,
-          borderRadius: 2,
-        }}
-      />
-    </>
-  );
-}
-
-// ---------- CALC TYPES ----------
 type Frequency = "annually" | "quarterly" | "monthly" | "daily";
+
 type ScheduleRow = {
   year: number;
   deposit: number;
@@ -343,14 +52,14 @@ type ScheduleRow = {
 type CalcInputs = {
   initialDeposit: number;
   annualContribution: number;
-  annualContributionGrowthPct: number; // percent per year
+  annualContributionGrowthPct: number;
   monthlyContribution: number;
-  monthlyContributionGrowthPct: number; // percent per year
+  monthlyContributionGrowthPct: number;
   annualInterestRatePct: number;
   frequency: Frequency;
   years: number;
-  taxRatePct: number; // on interest
-  inflationRatePct: number; // optional, can be zero
+  taxRatePct: number;
+  inflationRatePct: number;
   contributionsAtPeriodEnd: boolean;
 };
 
@@ -359,17 +68,21 @@ type CalcOutputs = {
   totalContributions: number;
   totalInterest: number;
   schedule: ScheduleRow[];
-  realEndBalance: number; // inflation adjusted
+  realEndBalance: number;
 };
 
-// ---------- UTIL ----------
 const clampNumber = (n: number, min: number, max: number) =>
   Math.max(min, Math.min(max, n));
+
+function round2(n: number) {
+  return Math.round(n * 100) / 100;
+}
 
 function toCurrency(n: number): string {
   return n.toLocaleString(undefined, {
     style: "currency",
     currency: "USD",
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
 }
@@ -389,14 +102,10 @@ function freqToN(f: Frequency): number {
   }
 }
 
-// ---------- CORE ENGINE ----------
 function computeSavings(inputs: CalcInputs): CalcOutputs {
-  const nCompound = freqToN(inputs.frequency);
-  const stepsPerYear = Math.max(nCompound, 12);
-  const rNominal = inputs.annualInterestRatePct / 100;
-  const rStep = rNominal / stepsPerYear;
-  const taxRate = inputs.taxRatePct / 100;
-  const inflationRate = inputs.inflationRatePct / 100;
+  const taxRate = clampNumber(inputs.taxRatePct / 100, 0, 1);
+  const inflationRate = clampNumber(inputs.inflationRatePct / 100, 0, 10);
+  const years = Math.max(0, Math.floor(inputs.years));
 
   let balance = inputs.initialDeposit;
   let totalContribution = inputs.initialDeposit;
@@ -406,64 +115,32 @@ function computeSavings(inputs: CalcInputs): CalcOutputs {
   let annualContribution = inputs.annualContribution;
   let monthlyContribution = inputs.monthlyContribution;
 
-  if (inputs.frequency === "annually") {
-    const r = inputs.annualInterestRatePct / 100;
+  if (inputs.frequency === "daily") {
+    const stepsPerYear = 365;
+    const rDaily = inputs.annualInterestRatePct / 100 / stepsPerYear;
+    const monthStep = Math.max(1, Math.round(stepsPerYear / 12));
 
-    for (let year = 1; year <= inputs.years; year++) {
-      const interestThisYear = balance * r;
+    for (let year = 1; year <= years; year++) {
       let depositsThisYear = 0;
-
-      balance += interestThisYear;
-      totalInterestAccrued += interestThisYear;
-
-      if (annualContribution !== 0) {
-        balance += annualContribution;
-        depositsThisYear += annualContribution;
-      }
-
-      if (monthlyContribution !== 0) {
-        const yearlyMonthly = monthlyContribution * 12;
-        balance += yearlyMonthly;
-        depositsThisYear += yearlyMonthly;
-      }
-
-      totalContribution += depositsThisYear;
-
-      schedule.push({
-        year,
-        deposit: round2(depositsThisYear),
-        interest: round2(interestThisYear),
-        endingBalance: round2(balance),
-      });
-
-      annualContribution *= 1 + inputs.annualContributionGrowthPct / 100;
-      monthlyContribution *= 1 + inputs.monthlyContributionGrowthPct / 100;
-    }
-  } else {
-    for (let year = 1; year <= inputs.years; year++) {
       let interestThisYear = 0;
-      let depositsThisYear = 0;
-
-      const monthStep = Math.max(1, Math.round(stepsPerYear / 12));
 
       for (let k = 1; k <= stepsPerYear; k++) {
         const isMonthBoundary = k % monthStep === 0;
         const isYearEnd = k === stepsPerYear;
 
         if (!inputs.contributionsAtPeriodEnd) {
-          if (isMonthBoundary && monthlyContribution !== 0) {
-            balance += monthlyContribution;
-            depositsThisYear += monthlyContribution;
-          }
           if (k === 1 && annualContribution !== 0) {
             balance += annualContribution;
             depositsThisYear += annualContribution;
           }
+          if (isMonthBoundary && monthlyContribution !== 0) {
+            balance += monthlyContribution;
+            depositsThisYear += monthlyContribution;
+          }
         }
 
-        const interestGross = balance * rStep;
-        const taxOnInterest = interestGross * taxRate;
-        const interestNet = interestGross - taxOnInterest;
+        const interestGross = balance * rDaily;
+        const interestNet = interestGross * (1 - taxRate);
         balance += interestNet;
 
         interestThisYear += interestNet;
@@ -493,46 +170,124 @@ function computeSavings(inputs: CalcInputs): CalcOutputs {
       annualContribution *= 1 + inputs.annualContributionGrowthPct / 100;
       monthlyContribution *= 1 + inputs.monthlyContributionGrowthPct / 100;
     }
+  } else {
+    const monthsPerYear = 12;
+    const rMonthly = inputs.annualInterestRatePct / 100 / monthsPerYear;
+    const periodsPerYear = freqToN(inputs.frequency);
+    const monthsPerCompound = Math.max(
+      1,
+      Math.round(monthsPerYear / periodsPerYear),
+    );
+
+    for (let year = 1; year <= years; year++) {
+      let depositsThisYear = 0;
+      let interestCreditedThisYear = 0;
+      let accruedInterest = 0;
+
+      for (let m = 1; m <= monthsPerYear; m++) {
+        if (!inputs.contributionsAtPeriodEnd) {
+          if (m === 1 && annualContribution !== 0) {
+            balance += annualContribution;
+            depositsThisYear += annualContribution;
+          }
+          if (monthlyContribution !== 0) {
+            balance += monthlyContribution;
+            depositsThisYear += monthlyContribution;
+          }
+        }
+
+        accruedInterest += balance * rMonthly;
+
+        const isCompoundBoundary = m % monthsPerCompound === 0;
+        if (isCompoundBoundary) {
+          const creditedNet = accruedInterest * (1 - taxRate);
+          balance += creditedNet;
+          interestCreditedThisYear += creditedNet;
+          totalInterestAccrued += creditedNet;
+          accruedInterest = 0;
+        }
+
+        if (inputs.contributionsAtPeriodEnd) {
+          if (monthlyContribution !== 0) {
+            balance += monthlyContribution;
+            depositsThisYear += monthlyContribution;
+          }
+          if (m === 12 && annualContribution !== 0) {
+            balance += annualContribution;
+            depositsThisYear += annualContribution;
+          }
+        }
+      }
+
+      totalContribution += depositsThisYear;
+
+      schedule.push({
+        year,
+        deposit: round2(depositsThisYear),
+        interest: round2(interestCreditedThisYear),
+        endingBalance: round2(balance),
+      });
+
+      annualContribution *= 1 + inputs.annualContributionGrowthPct / 100;
+      monthlyContribution *= 1 + inputs.monthlyContributionGrowthPct / 100;
+    }
   }
 
   const endBalance = round2(balance);
-  const totalContrib = round2(totalContribution - inputs.initialDeposit);
+  const totalContribExInitial = round2(
+    totalContribution - inputs.initialDeposit,
+  );
   const totalInt = round2(totalInterestAccrued);
 
   const realEndBalance =
     inflationRate > 0
-      ? round2(endBalance / Math.pow(1 + inflationRate, inputs.years))
+      ? round2(endBalance / Math.pow(1 + inflationRate, years))
       : endBalance;
 
   return {
     endBalance,
-    totalContributions: totalContrib + inputs.initialDeposit,
+    totalContributions: round2(totalContribExInitial + inputs.initialDeposit),
     totalInterest: totalInt,
     schedule,
     realEndBalance,
   };
 }
 
-function round2(n: number) {
-  return Math.round(n * 100) / 100;
-}
-
-// ---------- MINI CHARTS ----------
 function DonutChart({
   parts,
+  percents,
   size = 160,
   stroke = 24,
+  className = "",
 }: {
   parts: { label: string; value: number; color: string }[];
+  percents: number[];
   size?: number;
   stroke?: number;
+  className?: string;
 }) {
   const total = parts.reduce((a, b) => a + b.value, 0) || 1;
   const radius = (size - stroke) / 2;
-  let offset = 0;
+  const C = 2 * Math.PI * radius;
+
+  const startAngle = -Math.PI / 2;
+
+  let dashOffset = 0;
+  let angleAcc = 0;
+
+  const labelRadius = radius;
+  const fontSize = Math.max(11, Math.round(size * 0.085));
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    <svg
+      viewBox={`0 0 ${size} ${size}`}
+      width="100%"
+      height="100%"
+      preserveAspectRatio="xMidYMid meet"
+      className={["shrink-0", className].join(" ").trim()}
+      aria-label="Breakdown chart"
+      role="img"
+    >
       <g transform={`translate(${size / 2},${size / 2})`}>
         <circle
           r={radius}
@@ -540,10 +295,12 @@ function DonutChart({
           stroke={COLORS.border}
           strokeWidth={stroke}
         />
+
         {parts.map((p, i) => {
           const frac = p.value / total;
-          const dash = 2 * Math.PI * radius * frac;
-          const gap = 2 * Math.PI * radius - dash;
+          const dash = C * frac;
+          const gap = C - dash;
+
           const el = (
             <circle
               key={i}
@@ -552,63 +309,258 @@ function DonutChart({
               stroke={p.color}
               strokeWidth={stroke}
               strokeDasharray={`${dash} ${gap}`}
-              strokeDashoffset={-offset}
+              strokeDashoffset={
+                -(dashOffset + C * (startAngle / (2 * Math.PI)))
+              }
+              strokeLinecap="butt"
+              transform="rotate(-90)"
             />
           );
-          offset += dash;
+
+          dashOffset += dash;
           return el;
+        })}
+
+        {parts.map((p, i) => {
+          if (p.value <= 0) return null;
+
+          const frac = p.value / total;
+          const mid = angleAcc + frac * Math.PI * 2 * 0.5;
+          angleAcc += frac * Math.PI * 2;
+
+          const a = startAngle + mid;
+          const x = Math.cos(a) * labelRadius;
+          const y = Math.sin(a) * labelRadius;
+
+          const pctVal = percents[i] ?? Math.round(frac * 100);
+
+          return (
+            <text
+              key={`pct-${i}`}
+              x={x}
+              y={y}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize={fontSize}
+              fontWeight={900}
+              fill="#0f172a"
+              stroke="#ffffff"
+              strokeWidth={3}
+              paintOrder="stroke"
+            >
+              {pctVal}%
+            </text>
+          );
         })}
       </g>
     </svg>
   );
 }
 
-function StackedBars({
-  items,
-  height = 110,
+function YearlyStackedBars({
+  schedule,
+  initialDeposit,
+  colors,
+  height = 240,
 }: {
-  items: { label: string; value: number; color: string }[];
+  schedule: ScheduleRow[];
+  initialDeposit: number;
+  colors: { principal: string; contributions: string; interest: string };
   height?: number;
 }) {
-  const total = items.reduce((a, b) => a + b.value, 0) || 1;
+  const years = schedule.length;
+  if (years === 0) return null;
+
+  let contribCum = 0;
+  let interestCum = 0;
+
+  const points = schedule.map((row) => {
+    contribCum += row.deposit;
+    interestCum += row.interest;
+
+    const principal = Math.max(initialDeposit, 0);
+    const contrib = Math.max(contribCum, 0);
+    const interest = Math.max(interestCum, 0);
+    const total = principal + contrib + interest;
+
+    return { year: row.year, principal, contrib, interest, total };
+  });
+
+  const maxTotal = Math.max(...points.map((p) => p.total), 1);
+
+  const W = 760;
+  const H = height;
+  const padL = 56;
+  const padR = 18;
+  const padT = 16;
+  const padB = 40;
+
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+
+  const gap = Math.max(10, Math.round(plotW / (years * 10)));
+  const barW = Math.max(18, Math.floor((plotW - gap * (years - 1)) / years));
+  const r = 14;
+
+  const y = (v: number) => padT + (1 - v / maxTotal) * plotH;
+  const h = (v: number) => (v / maxTotal) * plotH;
+
+  const tickCount = 5;
+  const ticks = Array.from({ length: tickCount + 1 }, (_, i) => {
+    const frac = i / tickCount;
+    const value = maxTotal * frac;
+    return { value, y: y(value) };
+  });
+
+  const fmtAxis = (n: number) => {
+    if (n >= 1_000_000) return `$${Math.round(n / 1_000_000)}M`;
+    if (n >= 1_000) return `$${Math.round(n / 1_000)}K`;
+    return `$${Math.round(n)}`;
+  };
+
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: items
-          .map((i) => `${(i.value / total) * 100}%`)
-          .join(" "),
-        height,
-        border: `1px solid ${COLORS.border}`,
-        borderRadius: 12,
-        overflow: "hidden",
-        background: COLORS.cardBg,
-      }}
-    >
-      {items.map((i, idx) => (
-        <div
-          key={idx}
-          title={`${i.label}: ${toCurrency(i.value)}`}
-          style={{ background: i.color }}
-        />
-      ))}
+    <div className="w-full max-w-full overflow-x-auto">
+      <svg
+        className="block w-full max-w-none"
+        width="100%"
+        viewBox={`0 0 ${W} ${H}`}
+        height={H}
+        role="img"
+        aria-label="Yearly stacked balances chart"
+      >
+        {ticks.map((t, i) => (
+          <g key={i}>
+            <line
+              x1={padL}
+              x2={W - padR}
+              y1={t.y}
+              y2={t.y}
+              stroke="#e2e8f0"
+              strokeWidth={1}
+            />
+            <text
+              x={padL - 8}
+              y={t.y}
+              textAnchor="end"
+              dominantBaseline="middle"
+              fontSize={12}
+              fill="#475569"
+              fontWeight={800}
+            >
+              {fmtAxis(t.value)}
+            </text>
+          </g>
+        ))}
+
+        <defs>
+          {points.map((p, idx) => {
+            const x = padL + idx * (barW + gap);
+            const topY = y(p.total);
+            const totalH = h(p.total);
+
+            return (
+              <clipPath key={p.year} id={`bar-clip-${p.year}`}>
+                <rect
+                  x={x}
+                  y={topY}
+                  width={barW}
+                  height={totalH}
+                  rx={r}
+                  ry={r}
+                />
+              </clipPath>
+            );
+          })}
+        </defs>
+
+        {points.map((p, idx) => {
+          const x = padL + idx * (barW + gap);
+
+          const principalH = h(p.principal);
+          const contribH = h(p.contrib);
+          const interestH = h(p.interest);
+
+          const totalTopY = y(p.total);
+
+          const interestY = totalTopY;
+          const contribY = totalTopY + interestH;
+          const principalY = totalTopY + interestH + contribH;
+
+          return (
+            <g key={p.year}>
+              <title>
+                {`Year ${p.year}\nInitial deposit: ${toCurrency(p.principal)}\nContributions: ${toCurrency(
+                  p.contrib,
+                )}\nInterest: ${toCurrency(p.interest)}\nTotal: ${toCurrency(p.total)}`}
+              </title>
+
+              <g clipPath={`url(#bar-clip-${p.year})`}>
+                <rect
+                  x={x}
+                  y={principalY}
+                  width={barW}
+                  height={principalH}
+                  fill={colors.principal}
+                />
+                <rect
+                  x={x}
+                  y={contribY}
+                  width={barW}
+                  height={contribH}
+                  fill={colors.contributions}
+                />
+                <rect
+                  x={x}
+                  y={interestY}
+                  width={barW}
+                  height={interestH}
+                  fill={colors.interest}
+                />
+              </g>
+
+              <text
+                x={x + barW / 2}
+                y={H - 16}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize={12}
+                fill="#475569"
+                fontWeight={800}
+              >
+                {p.year}
+              </text>
+            </g>
+          );
+        })}
+
+        <text
+          x={padL + plotW / 2}
+          y={H - 6}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={12}
+          fill="#334155"
+          fontWeight={900}
+        >
+          Year
+        </text>
+      </svg>
     </div>
   );
 }
 
-// ---------- FAQ DATA ----------
 const FAQS = [
   {
     q: "Why does my result differ from my bank?",
-    a: "Banks can use different rounding, posting schedules, fee rules, and calendars. Use this as a fast estimate and confirm with your institution.",
+    a: "Banks can use different rounding, posting schedules, fee rules, and calendars. Use this as an estimate and confirm with your institution.",
   },
   {
     q: "What does tax on interest do here?",
-    a: "We reduce each interest step by your tax rate before crediting it to the balance. This helps approximate taxable accounts.",
+    a: "We apply your tax rate to interest at each interest crediting event, then add the net interest to the balance. This approximates taxable accounts.",
   },
   {
     q: "What does inflation-adjusted end balance mean?",
-    a: "It shows the end balance in today’s purchasing power using your inflation rate. Turn it on only if you want the real-value view.",
+    a: "It shows the end balance in today’s purchasing power using your inflation rate.",
   },
   {
     q: "Can I model withdrawals?",
@@ -616,7 +568,44 @@ const FAQS = [
   },
 ];
 
-// ---------- PAGE ----------
+function parseNumericInput(raw: string): number | null {
+  const s = raw
+    .trim()
+    .replace(/[,\s]/g, "")
+    .replace(/[$£€¥₹]/g, "")
+    .replace(/%/g, "");
+
+  if (s === "" || s === "-" || s === "." || s === "-.") return null;
+  if (!/^-?\d*\.?\d*$/.test(s)) return null;
+
+  const n = Number(s);
+  if (!Number.isFinite(n)) return null;
+  return n;
+}
+
+function formatWithGrouping(n: number, maxFractionDigits: number) {
+  const frac = Math.abs(n % 1);
+  const hasFrac = frac > 0 && frac < 1;
+  const digits = hasFrac ? maxFractionDigits : 0;
+
+  return n.toLocaleString(undefined, {
+    useGrouping: true,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: digits,
+  });
+}
+
+function formatPlain(n: number, maxFractionDigits: number) {
+  const frac = Math.abs(n % 1);
+  const hasFrac = frac > 0 && frac < 1;
+  if (!hasFrac) return String(Math.trunc(n));
+  return n.toLocaleString(undefined, {
+    useGrouping: false,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: maxFractionDigits,
+  });
+}
+
 export default function Home() {
   const [initialDeposit, setInitialDeposit] = React.useState(20000);
   const [annualContribution, setAnnualContribution] = React.useState(5000);
@@ -713,7 +702,6 @@ export default function Home() {
     if (typeof window !== "undefined") window.print();
   }, []);
 
-  // ---------- JSON-LD ----------
   const baseUrl = "https://www.allsavingscalculators.com";
   const jsonLd = React.useMemo(() => {
     const faqEntities = FAQS.map((f) => ({
@@ -768,17 +756,8 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={styles.page}>
-      {/* Print rules: flat, readable, no gradients */}
+    <div className="min-h-screen bg-slate-200 text-slate-900 overflow-x-hidden">
       <style>{`
-        :root { color-scheme: light; }
-        button { cursor: pointer; }
-        summary { cursor: pointer; }
-        @media (max-width: 900px) {
-          .grid3 { grid-template-columns: 1fr !important; }
-          .resultsGrid { grid-template-columns: 1fr !important; }
-          .split { grid-template-columns: 1fr !important; }
-        }
         @media print {
           .noPrint { display: none !important; }
           body { background: #ffffff !important; }
@@ -787,460 +766,447 @@ export default function Home() {
         }
       `}</style>
 
-      <div style={styles.wrap}>
-        {/* NAV */}
-        <header style={styles.header}>
-          <div style={styles.brand}>
-            <div style={styles.logo} aria-hidden="true">
-              <LogoBars />
-            </div>
-            <div>
-              <div style={styles.siteTitle}>AllSavingsCalculators</div>
-            </div>
-          </div>
-          <span style={styles.pill}>Savings Calculator</span>
-        </header>
+      <div className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-6">
+        <section className="grid gap-4">
+          <div className="rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-900/5">
+            <div className="p-3 md:p-5">
+              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-6">
+                <div className="">
+                  <h1 className="text-xl font-black leading-[1.08] tracking-tight text-blue-950 md:text-2xl">
+                    Savings Calculator
+                  </h1>
+                  <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600 md:text-base">
+                    Estimate your end balance from deposits, contributions,
+                    interest, taxes, and inflation in seconds.
+                  </p>
+                </div>
 
-        {/* 1) HERO (above the fold) */}
-        <section style={styles.hero}>
-          <div>
-            <h1 style={styles.h1}>Savings Calculator</h1>
-            <p style={styles.lead} className="!mt-2">
-              Estimate your end balance from deposits, contributions, interest,
-              taxes, and inflation in seconds.
-            </p>
-          </div>
-
-          {/* 2) CALCULATOR UTILITY CARD (dominant) */}
-          <div style={{ ...styles.calcShell, ...styles.calcShellPad }}>
-            <div style={styles.calcTopRow}>
-              <div style={styles.calcTitle}>Calculator</div>
-
-              <div className="ml-auto">
-                <div style={styles.label}>Contribution timing</div>
-                <div
-                  className="flex items-center gap-2 mt-2"
-                  role="group"
-                  aria-label="Contribution timing"
-                  style={{ marginTop: 8, display: "flex", gap: 10 }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setContributionsAtPeriodEnd(true)}
-                    style={{
-                      ...styles.btn,
-                      ...(contributionsAtPeriodEnd ? styles.btnActive : null),
-                    }}
-                    aria-pressed={contributionsAtPeriodEnd}
+                <div className="w-full md:w-auto ">
+                  <div className="text-xs font-black uppercase tracking-wide text-slate-700">
+                    Contribution timing
+                  </div>
+                  <div
+                    className="mt-2 flex w-full gap-2"
+                    role="group"
+                    aria-label="Contribution timing"
                   >
-                    End
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setContributionsAtPeriodEnd(false)}
-                    style={{
-                      ...styles.btn,
-                      ...(!contributionsAtPeriodEnd ? styles.btnActive : null),
-                    }}
-                    aria-pressed={!contributionsAtPeriodEnd}
-                  >
-                    Beginning
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => setContributionsAtPeriodEnd(true)}
+                      aria-pressed={contributionsAtPeriodEnd}
+                      className={[
+                        "flex-1 cursor-pointer rounded-xl border px-3 py-2 text-sm font-black shadow-sm transition md:flex-none ",
+                        contributionsAtPeriodEnd
+                          ? "border-blue-600 bg-blue-600 text-white shadow-blue-600/20"
+                          : "border-slate-200 bg-white text-slate-900 hover:bg-slate-50",
+                      ].join(" ")}
+                    >
+                      End
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setContributionsAtPeriodEnd(false)}
+                      aria-pressed={!contributionsAtPeriodEnd}
+                      className={[
+                        "flex-1 cursor-pointer rounded-xl border px-3 py-2 text-sm font-black shadow-sm transition md:flex-none ",
+                        !contributionsAtPeriodEnd
+                          ? "border-blue-600 bg-blue-600 text-white shadow-blue-600/20"
+                          : "border-slate-200 bg-white text-slate-900 hover:bg-slate-50",
+                      ].join(" ")}
+                    >
+                      Beginning
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div style={{ height: 14 }} />
+              <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-3 sm:p-4">
+                <div className="mb-3 text-xs font-black uppercase tracking-wide text-slate-700">
+                  Inputs
+                </div>
 
-            <div className="grid3" style={styles.grid3}>
-              <LabeledNumber
-                label="Initial deposit"
-                value={initialDeposit}
-                setValue={setInitialDeposit}
-                min={0}
-                step="100"
-                prefix="$"
-              />
-              <LabeledNumber
-                label="Annual contribution"
-                value={annualContribution}
-                setValue={setAnnualContribution}
-                step="100"
-                prefix="$"
-              />
-              <LabeledNumber
-                label="Annual contribution increase"
-                value={annualContributionGrowthPct}
-                setValue={setAnnualContributionGrowthPct}
-                step="0.5"
-                suffix="%/yr"
-              />
-            </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <LabeledNumber
+                    label="Initial deposit"
+                    value={initialDeposit}
+                    setValue={setInitialDeposit}
+                    min={0}
+                    max={1e9}
+                    maxFractionDigits={2}
+                    prefix="$"
+                  />
+                  <LabeledNumber
+                    label="Annual contribution"
+                    value={annualContribution}
+                    setValue={setAnnualContribution}
+                    min={-1e8}
+                    max={1e8}
+                    maxFractionDigits={2}
+                    prefix="$"
+                  />
+                  <LabeledNumber
+                    label="Annual contribution increase"
+                    value={annualContributionGrowthPct}
+                    setValue={setAnnualContributionGrowthPct}
+                    min={-100}
+                    max={100}
+                    maxFractionDigits={4}
+                    suffix="%/yr"
+                  />
+                  <LabeledNumber
+                    label="Monthly contribution"
+                    value={monthlyContribution}
+                    setValue={setMonthlyContribution}
+                    min={-1e8}
+                    max={1e8}
+                    maxFractionDigits={2}
+                    prefix="$"
+                  />
+                  <LabeledNumber
+                    label="Monthly contribution increase"
+                    value={monthlyContributionGrowthPct}
+                    setValue={setMonthlyContributionGrowthPct}
+                    min={-100}
+                    max={100}
+                    maxFractionDigits={4}
+                    suffix="%/yr"
+                  />
+                  <LabeledSelect
+                    label="Compound frequency"
+                    value={frequency}
+                    setValue={(v) => setFrequency(v as Frequency)}
+                    options={[
+                      { value: "annually", label: "Annually" },
+                      { value: "quarterly", label: "Quarterly" },
+                      { value: "monthly", label: "Monthly" },
+                      { value: "daily", label: "Daily (approx)" },
+                    ]}
+                  />
+                  <LabeledNumber
+                    label="Interest rate"
+                    value={annualInterestRatePct}
+                    setValue={setAnnualInterestRatePct}
+                    min={-50}
+                    max={100}
+                    maxFractionDigits={4}
+                    suffix="% APR"
+                  />
+                  <LabeledNumber
+                    label="Years"
+                    value={years}
+                    setValue={setYears}
+                    min={0}
+                    max={100}
+                    maxFractionDigits={0}
+                    integer
+                  />
+                  <LabeledNumber
+                    label="Tax rate on interest"
+                    value={taxRatePct}
+                    setValue={setTaxRatePct}
+                    min={0}
+                    max={60}
+                    maxFractionDigits={4}
+                    suffix="%"
+                  />
+                  <LabeledNumber
+                    label="Inflation rate (optional)"
+                    value={inflationRatePct}
+                    setValue={setInflationRatePct}
+                    min={0}
+                    max={50}
+                    maxFractionDigits={4}
+                    suffix="%"
+                  />
+                </div>
+              </div>
 
-            <div style={{ height: 14 }} />
-
-            <div className="grid3" style={styles.grid3}>
-              <LabeledNumber
-                label="Monthly contribution"
-                value={monthlyContribution}
-                setValue={setMonthlyContribution}
-                step="50"
-                prefix="$"
-              />
-              <LabeledNumber
-                label="Monthly contribution increase"
-                value={monthlyContributionGrowthPct}
-                setValue={setMonthlyContributionGrowthPct}
-                step="0.5"
-                suffix="%/yr"
-              />
-              <LabeledSelect
-                label="Compound frequency"
-                value={frequency}
-                setValue={(v) => setFrequency(v as Frequency)}
-                options={[
-                  { value: "annually", label: "Annually" },
-                  { value: "quarterly", label: "Quarterly" },
-                  { value: "monthly", label: "Monthly" },
-                  { value: "daily", label: "Daily (approx)" },
-                ]}
-              />
-            </div>
-
-            <div style={{ height: 14 }} />
-
-            <div className="grid3" style={styles.grid3}>
-              <LabeledNumber
-                label="Interest rate"
-                value={annualInterestRatePct}
-                setValue={setAnnualInterestRatePct}
-                step="0.1"
-                suffix="% APR"
-              />
-              <LabeledNumber
-                label="Years"
-                value={years}
-                setValue={setYears}
-                min={0}
-                max={100}
-                step="1"
-              />
-              <LabeledNumber
-                label="Tax rate on interest"
-                value={taxRatePct}
-                setValue={setTaxRatePct}
-                min={0}
-                max={60}
-                step="0.5"
-                suffix="%"
-              />
-            </div>
-
-            <div style={{ height: 14 }} />
-
-            <div className="grid3" style={styles.grid3}>
-              <LabeledNumber
-                label="Inflation rate (optional)"
-                value={inflationRatePct}
-                setValue={setInflationRatePct}
-                min={0}
-                max={50}
-                step="0.5"
-                suffix="%"
-              />
-              <div />
-            </div>
-
-            <div style={{ height: 16 }} />
-
-            {/* RESULTS + CHARTS */}
-            <div
-              className="split"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 14,
-                alignItems: "start",
-              }}
-            >
-              <div style={styles.resultsCard}>
-                <div
-                  style={{ color: COLORS.muted, fontWeight: 900, fontSize: 14 }}
-                >
+              <div className="my-6 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:p-4">
+                <div className="text-xs font-black uppercase tracking-wide text-slate-700">
                   Results
                 </div>
 
-                <div
-                  className="resultsGrid"
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: 12,
-                    marginTop: 12,
-                  }}
-                >
-                  <KeyVal
-                    label="End balance"
-                    value={toCurrency(outputs.endBalance)}
-                    big
-                    accent="green"
-                  />
-                  <KeyVal
-                    label="Initial deposit"
-                    value={toCurrency(Number(initialDeposit) || 0)}
-                  />
-                  <KeyVal
-                    label="Total contributions"
-                    value={toCurrency(
-                      outputs.totalContributions -
-                        (Number(initialDeposit) || 0),
-                    )}
-                  />
-                  <KeyVal
-                    label="Total interest earned"
-                    value={toCurrency(outputs.totalInterest)}
-                    accent="yellow"
-                  />
+                <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+                  <div className="rounded-xl border border-slate-200 border-l-4 border-l-green-600 bg-white p-4 shadow-sm">
+                    <div className="text-sm font-semibold text-slate-700">
+                      End balance
+                    </div>
+                    <div className="mt-2 break-words text-2xl font-black tracking-tight text-green-700 md:text-3xl">
+                      {toCurrency(outputs.endBalance)}
+                    </div>
+                    <div className="mt-1 text-xs text-slate-500">
+                      Balance after interest, contributions, taxes, and timing.
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="text-sm font-semibold text-slate-700">
+                      Initial deposit
+                    </div>
+                    <div className="mt-2 break-words text-lg font-black tracking-tight text-slate-900 md:text-xl">
+                      {toCurrency(Number(initialDeposit) || 0)}
+                    </div>
+                    <div className="mt-1 text-xs text-slate-500">
+                      Your starting principal.
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 border-l-4 border-l-blue-600 bg-white p-4 shadow-sm">
+                    <div className="text-sm font-semibold text-slate-700">
+                      Total contributions
+                    </div>
+                    <div className="mt-2 break-words text-lg font-black tracking-tight text-blue-700 md:text-xl">
+                      {toCurrency(
+                        outputs.totalContributions -
+                          (Number(initialDeposit) || 0),
+                      )}
+                    </div>
+                    <div className="mt-1 text-xs text-slate-500">
+                      Total contributed over the timeline (excluding the initial
+                      deposit).
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 border-l-4 border-l-amber-500 bg-white p-4 shadow-sm">
+                    <div className="text-sm font-semibold text-slate-700">
+                      Total interest earned
+                    </div>
+                    <div className="mt-2 break-words text-lg font-black tracking-tight text-amber-700 md:text-xl">
+                      {toCurrency(outputs.totalInterest)}
+                    </div>
+                    <div className="mt-1 text-xs text-slate-500">
+                      Net interest after tax (if enabled).
+                    </div>
+                  </div>
+
                   {inflationRatePct > 0 && (
-                    <KeyVal
-                      label="Inflation-adjusted end"
-                      value={toCurrency(outputs.realEndBalance)}
-                    />
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm md:col-span-2">
+                      <div className="text-sm font-semibold text-slate-700">
+                        Inflation-adjusted end balance
+                      </div>
+                      <div className="mt-2 break-words text-xl font-black tracking-tight text-slate-900 md:text-2xl">
+                        {toCurrency(outputs.realEndBalance)}
+                      </div>
+                      <div className="mt-1 text-xs text-slate-500">
+                        Expressed in today’s purchasing power.
+                      </div>
+                    </div>
                   )}
                 </div>
 
-                <div
-                  style={{
-                    marginTop: 16,
-                    display: "grid",
-                    gridTemplateColumns: "1fr",
-                    gap: 12,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 14,
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <DonutChart parts={breakdown} />
-                    <ul
-                      style={{
-                        margin: 0,
-                        padding: 0,
-                        listStyle: "none",
-                        fontSize: 15,
-                      }}
-                    >
-                      {breakdown.map((b, i) => (
-                        <li key={i} style={{ marginBottom: 8 }}>
-                          <span
-                            aria-hidden="true"
-                            style={{
-                              display: "inline-block",
-                              width: 12,
-                              height: 12,
-                              borderRadius: 3,
-                              background: b.color,
-                              border: `1px solid ${COLORS.border}`,
-                              marginRight: 8,
-                              verticalAlign: "middle",
-                            }}
-                          />
-                          <span style={{ color: COLORS.text }}>
-                            {b.label}:{" "}
-                            <strong style={{ color: COLORS.navy2 }}>
-                              {toCurrency(b.value)}
-                            </strong>{" "}
-                            <span style={{ color: COLORS.muted }}>
-                              ({pct[i]}%)
-                            </span>
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <div
-                      style={{
-                        color: COLORS.muted,
-                        fontWeight: 900,
-                        fontSize: 14,
-                        marginBottom: 8,
-                      }}
-                    >
-                      Breakdown
+                <div className="mt-4 grid gap-3">
+                  <div className="">
+                    <div className="mb-2 text-xs font-black uppercase tracking-wide text-slate-700">
+                      Balance by year
                     </div>
-                    <StackedBars items={breakdown} height={110} />
+                    <YearlyStackedBars
+                      schedule={outputs.schedule}
+                      initialDeposit={Number(initialDeposit) || 0}
+                      colors={{
+                        principal: COLORS.softBlue,
+                        contributions: COLORS.softGreen,
+                        interest: COLORS.softYellow,
+                      }}
+                      height={240}
+                    />
                   </div>
+                </div>
+
+                <div className="mt-8 flex w-full flex-col items-center justify-center gap-4 md:flex-row md:flex-wrap md:items-center md:justify-center md:gap-6">
+                  <div className="h-28 w-28 sm:h-32 sm:w-32 md:h-36 md:w-36 lg:h-40 lg:w-40">
+                    <DonutChart
+                      parts={breakdown}
+                      percents={pct}
+                      className="h-full w-full"
+                    />
+                  </div>
+                  <ul className="m-0 w-full max-w-full list-none p-0 text-sm md:w-auto ">
+                    {breakdown.map((b, i) => (
+                      <li
+                        key={i}
+                        className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1"
+                      >
+                        <span
+                          className="inline-block h-3 w-3 shrink-0 rounded-sm border border-slate-200 align-middle"
+                          style={{ background: b.color }}
+                          aria-hidden="true"
+                        />
+                        <span className="break-words text-slate-700">
+                          {b.label}:{" "}
+                          <strong className="inline-block max-w-full break-words font-black text-slate-900">
+                            {toCurrency(b.value)}
+                          </strong>{" "}
+                          <span className="text-slate-500">({pct[i]}%)</span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
 
-              {/* SCHEDULE */}
-              <div style={{ ...styles.resultsCard }}>
-                <div
-                  style={{ color: COLORS.muted, fontWeight: 900, fontSize: 14 }}
-                >
+              <div className=" rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:p-4">
+                <div className="text-xs font-black uppercase tracking-wide text-slate-700">
                   Yearly schedule
                 </div>
 
-                <div style={{ marginTop: 10, overflowX: "auto" }}>
-                  <table
-                    style={{
-                      minWidth: 640,
-                      width: "100%",
-                      borderCollapse: "collapse",
-                      fontSize: 15,
-                    }}
-                  >
-                    <thead style={{ background: COLORS.tableHead }}>
+                <div className="mt-3 overflow-x-auto">
+                  <table className="w-full  border-collapse text-xs  md:text-sm">
+                    <thead className="bg-slate-100">
                       <tr>
-                        <Th>Year</Th>
-                        <Th>Deposit</Th>
-                        <Th>Interest</Th>
-                        <Th>Ending balance</Th>
+                        <th className="whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[8px] font-black uppercase tracking-wide text-slate-700 sm:px-3 sm:py-3 sm:text-xs">
+                          Year
+                        </th>
+                        <th className="whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[8px] font-black uppercase tracking-wide text-slate-700 sm:px-3 sm:py-3 sm:text-xs">
+                          Deposit
+                        </th>
+                        <th className="whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[8px] font-black uppercase tracking-wide text-slate-700 sm:px-3 sm:py-3 sm:text-xs">
+                          Interest
+                        </th>
+                        <th className="whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[8px] font-black uppercase tracking-wide text-slate-700 sm:px-3 sm:py-3 sm:text-xs">
+                          Ending balance
+                        </th>
                       </tr>
                     </thead>
-                    <tbody>
+
+                    <tbody className="divide-y divide-slate-200">
                       {outputs.schedule.map((row) => (
                         <tr
                           key={row.year}
-                          style={{
-                            background:
-                              row.year % 2 === 0
-                                ? COLORS.tableRowAlt
-                                : COLORS.cardBg,
-                          }}
-                          onMouseEnter={(e) => {
-                            (
-                              e.currentTarget as HTMLTableRowElement
-                            ).style.background = COLORS.rowHover;
-                          }}
-                          onMouseLeave={(e) => {
-                            (
-                              e.currentTarget as HTMLTableRowElement
-                            ).style.background =
-                              row.year % 2 === 0
-                                ? COLORS.tableRowAlt
-                                : COLORS.cardBg;
-                          }}
+                          className="transition-colors even:bg-slate-50 hover:bg-indigo-50/70"
                         >
-                          <Td>{row.year}</Td>
-                          <Td>{toCurrency(row.deposit)}</Td>
-                          <Td>{toCurrency(row.interest)}</Td>
-                          <Td>
-                            <span
-                              style={{ fontWeight: 950, color: COLORS.navy2 }}
-                            >
+                          <td className="whitespace-nowrap px-2 py-2 text-[10px]  font-semibold text-slate-800 sm:px-3 sm:py-3 sm:text-sm">
+                            {row.year}
+                          </td>
+                          <td className="whitespace-nowrap px-2 py-2 text-[10px] font-semibold text-slate-800 sm:px-3 sm:py-3 sm:text-sm">
+                            {toCurrency(row.deposit)}
+                          </td>
+                          <td className="whitespace-nowrap px-2 py-2 text-[10px] font-semibold text-slate-800 sm:px-3 sm:py-3 sm:text-sm">
+                            {toCurrency(row.interest)}
+                          </td>
+                          <td className="whitespace-nowrap px-2 py-2 text-[10px] font-semibold text-slate-800 sm:px-3 sm:py-3 sm:text-sm">
+                            <span className="font-black text-slate-900">
                               {toCurrency(row.endingBalance)}
                             </span>
-                          </Td>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
 
-                <div
-                  style={{
-                    marginTop: 10,
-                    color: COLORS.muted,
-                    fontSize: 13.5,
-                    lineHeight: 1.5,
-                  }}
-                >
+                <div className="mt-3 text-xs leading-relaxed text-slate-600">
                   Schedule is shown yearly. Monthly contributions and tax on
                   interest are modeled during the simulation.
                 </div>
               </div>
-            </div>
 
-            <div
-              className="flex w-full ml-auto mt-4"
-              style={{ display: "flex", gap: 10, alignItems: "center" }}
-            >
-              <button
-                type="button"
-                onClick={onPrint}
-                className="bg-white border rounded-full px-2 py-1 cursor-pointer hover:bg-green-900 hover:text-white"
-                aria-label="Print or save as PDF"
-              >
-                Print / Save PDF
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* 3) HOW IT WORKS (below tool, skimmable) */}
-        <section style={{ marginTop: 18 }}>
-          <div style={styles.howWrap}>
-            <div style={styles.sectionTitle}>How it works</div>
-            <div style={styles.steps}>
-              <div style={styles.step}>
-                <div style={styles.stepTitle}>1) Enter your numbers</div>
-                <p style={styles.stepBody}>
-                  Set your deposit, contributions, rate, and timeline.
-                </p>
-              </div>
-              <div style={styles.step}>
-                <div style={styles.stepTitle}>2) We calculate instantly</div>
-                <p style={styles.stepBody}>
-                  Compounding, taxes, and contribution timing apply
-                  automatically.
-                </p>
-              </div>
-              <div style={styles.step}>
-                <div style={styles.stepTitle}>3) Review results clearly</div>
-                <p style={styles.stepBody}>
-                  See your end balance plus a clean yearly breakdown.
-                </p>
+              <div className="noPrint mt-4 flex flex-col gap-3 md:flex-row md:items-center">
+                <button
+                  type="button"
+                  onClick={onPrint}
+                  aria-label="Print or save as PDF"
+                  className="w-full cursor-pointer rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-900 shadow-sm transition hover:bg-slate-50 md:w-auto"
+                >
+                  Print / Save PDF
+                </button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* 4) OPTIONAL SUPPORTING COPY (single section, includes FAQ) */}
-        <section style={{ marginTop: 18 }}>
-          <div style={styles.sectionTitle}>FAQ</div>
-          <div style={styles.faqWrap} id="faq">
-            {FAQS.map((f, idx) => (
-              <details
-                key={f.q}
-                style={idx === 0 ? { padding: 0 } : styles.faqItem}
-              >
-                <summary style={styles.faqSummary}>{f.q}</summary>
-                <div style={styles.faqAnswer}>{f.a}</div>
-              </details>
-            ))}
+        <section className="mt-5">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="text-lg font-black tracking-tight text-slate-900">
+              How this savings calculator works
+            </div>
+
+            <div className="mt-3 grid grid-cols-1 gap-3">
+              <div className="rounded-xl border border-slate-200 bg-white p-3">
+                <div className="text-sm font-black text-slate-900">
+                  1) Enter your savings assumptions
+                </div>
+                <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                  Provide your initial deposit, ongoing contributions, interest
+                  rate, compounding frequency, and time horizon. Optional inputs
+                  let you model contribution growth, taxes on interest, and
+                  inflation.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-3">
+                <div className="text-sm font-black text-slate-900">
+                  2) We model compounding and cash flows
+                </div>
+                <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                  Interest accrues monthly and is credited at your selected
+                  compounding frequency. Contributions are applied at the
+                  beginning or end of the period, and interest can be reduced by
+                  a tax rate before it is added to the balance.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-3">
+                <div className="text-sm font-black text-slate-900">
+                  3) Review projected balances and breakdowns
+                </div>
+                <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                  See end balance, total contributions, and total interest
+                  earned, plus a yearly schedule and visual breakdown of
+                  principal versus growth.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* 5) DISCLAIMERS (bottom only) */}
-        <section style={styles.disclaimer} aria-label="Disclaimers">
+        <section className="mt-8">
           <div
-            style={{ fontWeight: 950, color: COLORS.navy2, marginBottom: 6 }}
+            id="faq"
+            className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
           >
-            Disclaimers
-          </div>
-          <div>
-            Results are estimates. Real outcomes can differ due to rounding,
-            posting schedules, fees, minimums, and institution-specific rules.
-          </div>
-          <div style={{ marginTop: 6 }}>
-            This tool does not provide financial, tax, or legal advice. Confirm
-            details with your institution or a qualified professional.
+            <div className="mb-3 text-base font-black tracking-tight text-slate-900">
+              FAQ
+            </div>
+
+            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+              {FAQS.map((f, idx) => (
+                <details
+                  key={f.q}
+                  className={idx === 0 ? "" : "border-t border-slate-200"}
+                >
+                  <summary className="cursor-pointer px-4 py-4 text-sm font-semibold text-slate-900">
+                    {f.q}
+                  </summary>
+                  <div className="px-4 pb-4 text-sm leading-relaxed text-slate-600">
+                    {f.a}
+                  </div>
+                </details>
+              ))}
+            </div>
           </div>
         </section>
 
-        <footer style={styles.footer}>
-          © {new Date().getFullYear()} AllSavingsCalculators
-        </footer>
+        <section className="mt-8">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-700">
+              Disclaimers
+            </div>
+            <div className="text-xs leading-relaxed text-slate-600">
+              <p>
+                Results are estimates. Real outcomes can differ due to rounding,
+                posting schedules, fees, minimums, and institution-specific
+                rules.
+              </p>
+              <p className="mt-2">
+                This tool does not provide financial, tax, or legal advice.
+                Confirm details with your institution or a qualified
+                professional.
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
 
-      {/* STRUCTURED DATA */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -1249,89 +1215,111 @@ export default function Home() {
   );
 }
 
-// ---------- REUSABLE UI ----------
 function LabeledNumber({
   label,
   value,
   setValue,
   min,
   max,
-  step,
+  maxFractionDigits,
   prefix,
   suffix,
+  integer,
 }: {
   label: string;
   value: number;
   setValue: (n: number) => void;
   min?: number;
   max?: number;
-  step?: string;
+  maxFractionDigits: number;
   prefix?: string;
   suffix?: string;
+  integer?: boolean;
 }) {
-  const [isFocused, setIsFocused] = React.useState(false);
+  const [focused, setFocused] = React.useState(false);
+  const [text, setText] = React.useState(() =>
+    formatWithGrouping(value, maxFractionDigits),
+  );
+
+  React.useEffect(() => {
+    if (focused) return;
+    setText(formatWithGrouping(value, maxFractionDigits));
+  }, [value, focused, maxFractionDigits]);
+
+  const applyParsed = React.useCallback(
+    (raw: string) => {
+      const parsed = parseNumericInput(raw);
+      if (parsed === null) return null;
+
+      let n = parsed;
+      if (integer) n = Math.trunc(n);
+
+      if (typeof min === "number") n = Math.max(min, n);
+      if (typeof max === "number") n = Math.min(max, n);
+
+      setValue(n);
+      return n;
+    },
+    [integer, max, min, setValue],
+  );
 
   return (
-    <div>
-      <div style={styles.label}>{label}</div>
-      <div style={{ position: "relative", marginTop: 8 }}>
+    <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+      <div className="text-xs font-black text-slate-900">{label}</div>
+
+      <div className="relative mt-2">
         {prefix && (
-          <span
-            style={{
-              position: "absolute",
-              left: 12,
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: COLORS.muted,
-              fontWeight: 950,
-              fontSize: 14,
-              pointerEvents: "none",
-            }}
-          >
+          <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-black text-slate-900 shadow-sm sm:text-xs">
             {prefix}
           </span>
         )}
 
         <input
           inputMode="decimal"
-          step={step || "1"}
-          style={{
-            ...styles.input,
-            ...(isFocused ? styles.inputFocus : null),
-            paddingLeft: prefix ? 30 : 12,
-            paddingRight: suffix ? 52 : 12,
+          type="text"
+          value={text}
+          onFocus={() => {
+            setFocused(true);
+            setText(formatPlain(value, maxFractionDigits));
           }}
-          value={value}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          onChange={(e) => {
-            const raw = e.target.value.replace(/,/g, "");
-            const n = Number(raw);
-            if (Number.isFinite(n)) {
-              let m = n;
-              if (typeof min === "number") m = Math.max(min, m);
-              if (typeof max === "number") m = Math.min(max, m);
-              setValue(m);
-            } else {
-              setValue(0);
+          onBlur={() => {
+            setFocused(false);
+            const parsed = parseNumericInput(text);
+            if (parsed === null) {
+              setText(formatWithGrouping(value, maxFractionDigits));
+              return;
             }
+            const next = applyParsed(text);
+            if (next === null) {
+              setText(formatWithGrouping(value, maxFractionDigits));
+              return;
+            }
+            setText(formatWithGrouping(next, maxFractionDigits));
+          }}
+          onChange={(e) => {
+            const nextText = e.target.value;
+            setText(nextText);
+
+            const parsed = parseNumericInput(nextText);
+            if (parsed === null) return;
+
+            let n = parsed;
+            if (integer) n = Math.trunc(n);
+            if (typeof min === "number") n = Math.max(min, n);
+            if (typeof max === "number") n = Math.min(max, n);
+            setValue(n);
           }}
           aria-label={label}
+          className={[
+            "w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-black text-slate-900 shadow-inner shadow-slate-900/5 sm:text-base",
+            "outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100",
+            prefix ? "pl-12 sm:pl-14" : "",
+            suffix ? "pr-14 sm:pr-16" : "",
+          ].join(" ")}
         />
 
         {suffix && (
-          <span
-            style={{
-              position: "absolute",
-              right: 12,
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: COLORS.muted,
-              fontWeight: 950,
-              fontSize: 14,
-              pointerEvents: "none",
-            }}
-          >
+          <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-black text-slate-900 shadow-sm sm:text-xs">
             {suffix}
           </span>
         )}
@@ -1351,22 +1339,14 @@ function LabeledSelect<T extends string>({
   setValue: (v: T) => void;
   options: { value: T; label: string }[];
 }) {
-  const [isFocused, setIsFocused] = React.useState(false);
-
   return (
-    <div>
-      <div style={styles.label}>{label}</div>
+    <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+      <div className="text-xs font-black text-slate-900">{label}</div>
       <select
         value={value}
         onChange={(e) => setValue(e.target.value as T)}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        style={{
-          ...styles.select,
-          ...(isFocused ? styles.inputFocus : null),
-          marginTop: 8,
-        }}
         aria-label={label}
+        className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-black text-slate-900 shadow-inner shadow-slate-900/5 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100 sm:text-base"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -1375,91 +1355,5 @@ function LabeledSelect<T extends string>({
         ))}
       </select>
     </div>
-  );
-}
-
-function KeyVal({
-  label,
-  value,
-  big = false,
-  accent,
-}: {
-  label: string;
-  value: string;
-  big?: boolean;
-  accent?: "green" | "yellow";
-}) {
-  const accentBorder =
-    accent === "green"
-      ? COLORS.accentGreen
-      : accent === "yellow"
-        ? COLORS.accentYellow
-        : COLORS.border;
-
-  const ring =
-    accent === "green"
-      ? "rgba(22,163,74,0.14)"
-      : accent === "yellow"
-        ? "rgba(245,158,11,0.16)"
-        : "transparent";
-
-  return (
-    <div
-      style={{
-        border: `1px solid ${accentBorder}`,
-        borderRadius: 14,
-        padding: 12,
-        background: COLORS.cardBg,
-        boxShadow: ring === "transparent" ? "none" : `0 0 0 4px ${ring}`,
-      }}
-    >
-      <div style={{ color: COLORS.muted, fontWeight: 900, fontSize: 13.5 }}>
-        {label}
-      </div>
-      <div
-        style={{
-          marginTop: 8,
-          fontWeight: 950,
-          fontSize: big ? 28 : 18,
-          lineHeight: 1.15,
-          color: COLORS.navy2,
-          letterSpacing: -0.2,
-        }}
-      >
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function Th({ children }: { children: React.ReactNode }) {
-  return (
-    <th
-      style={{
-        padding: "10px 12px",
-        textAlign: "left",
-        fontWeight: 950,
-        borderBottom: `1px solid ${COLORS.border}`,
-        color: COLORS.navy2,
-        whiteSpace: "nowrap",
-      }}
-    >
-      {children}
-    </th>
-  );
-}
-
-function Td({ children }: { children: React.ReactNode }) {
-  return (
-    <td
-      style={{
-        padding: "10px 12px",
-        borderBottom: `1px solid ${COLORS.border}`,
-        whiteSpace: "nowrap",
-        color: COLORS.text,
-      }}
-    >
-      {children}
-    </td>
   );
 }

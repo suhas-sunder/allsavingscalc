@@ -11,6 +11,8 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import { PHogProvider } from "./client/providers/PHogProvider";
+import Navbar from "./client/components/navigation/NavBar";
+import Footer from "./client/components/navigation/Footer";
 
 /* ---------- Trailing slash helpers (one place, app-level) ---------- */
 function needsStrip(pathname: string) {
@@ -56,11 +58,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="min-w-[320px]">
         <PHogProvider>
+          <Navbar />
           {children}
           <ScrollRestoration />
           <Scripts />
+          <Footer />
         </PHogProvider>
       </body>
     </html>
