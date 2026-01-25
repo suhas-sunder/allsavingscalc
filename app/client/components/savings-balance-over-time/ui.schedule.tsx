@@ -23,8 +23,8 @@ export function ScheduleSection({
             Schedule
           </div>
           <div className="mt-1 text-xs text-slate-500">
-            Year-by-year and month-by-month breakdown (matches the contribution
-            mode above).
+            Period-by-period breakdown of deposits, interest, and ending balance.
+            The view matches the selected contribution mode.
           </div>
         </div>
 
@@ -64,12 +64,10 @@ export function ScheduleSection({
 
       {scheduleView === "yearly" ? (
         <>
-          {/* Mobile-friendly layout (prevents table from blowing out the viewport). */}
           <div className="mt-4 sm:hidden">
             <YearlyScheduleCards rows={outputs.schedule} />
           </div>
 
-          {/* Desktop/tablet: cap at 12 rows by default. */}
           <div className="mt-4 hidden sm:block">
             <DesktopTableWithCap
               rows={outputs.schedule}
@@ -148,9 +146,7 @@ function DesktopTableWithCap<T>({
               ? `Show first ${previewCount} ${
                   previewCount === 1 ? labelSingular : labelPlural
                 }`
-              : `Show all ${total} ${
-                  total === 1 ? labelSingular : labelPlural
-                }`}
+              : `Show all ${total} ${total === 1 ? labelSingular : labelPlural}`}
           </button>
         </div>
       ) : null}
@@ -191,7 +187,7 @@ function YearlyScheduleCards({
     <div className="rounded-xl border border-slate-200">
       <div className="max-h-[420px] overflow-y-auto p-2">
         <div className="mb-2 text-xs text-slate-500">
-          Yearly totals are aggregates of the underlying monthly simulation.
+          Yearly totals aggregate the underlying month-by-month simulation.
         </div>
         <div className="grid gap-2">
           {rows.map((r) => (
@@ -234,7 +230,7 @@ function MonthlyScheduleCards({
     <div className="rounded-xl border border-slate-200">
       <div className="max-h-[420px] overflow-y-auto p-2">
         <div className="mb-2 text-xs text-slate-500">
-          Monthly rows reflect contribution timing, tax on interest, and
+          Monthly rows reflect contribution timing, taxes on interest, and
           compounding converted to an effective monthly rate.
         </div>
         <div className="grid gap-2">
@@ -338,7 +334,7 @@ function YearlyScheduleTable({
   }[];
 }) {
   return (
-    <TableShell caption="Yearly totals are aggregates of the underlying monthly simulation.">
+    <TableShell caption="Yearly totals aggregate the underlying month-by-month simulation.">
       <thead>
         <tr>
           <Th>Year</Th>
@@ -375,7 +371,7 @@ function MonthlyScheduleTable({
   }[];
 }) {
   return (
-    <TableShell caption="Monthly rows reflect contribution timing, tax on interest, and compounding converted to an effective monthly rate.">
+    <TableShell caption="Monthly rows reflect contribution timing, taxes on interest, and compounding converted to an effective monthly rate.">
       <thead>
         <tr>
           <Th>Year</Th>

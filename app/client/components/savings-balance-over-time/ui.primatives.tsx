@@ -37,7 +37,12 @@ export function formatNumericStringPreserveFraction(
   integer?: boolean,
 ) {
   const trimmed = raw.trim();
-  if (trimmed === "" || trimmed === "-" || trimmed === "." || trimmed === "-.") {
+  if (
+    trimmed === "" ||
+    trimmed === "-" ||
+    trimmed === "." ||
+    trimmed === "-."
+  ) {
     return raw;
   }
 
@@ -153,7 +158,7 @@ export function LabeledNumber({
           }}
           onBlur={() => {
             const parsed = parseNumericInput(text);
-            const safe = parsed === null ? (Number(value) || 0) : parsed;
+            const safe = parsed === null ? Number(value) || 0 : parsed;
             const clamped = Math.max(min, Math.min(max, safe));
             const final = integer ? Math.trunc(clamped) : clamped;
 
@@ -163,9 +168,7 @@ export function LabeledNumber({
               setText(formatNumericStringPreserveFraction(text, integer));
             } else {
               setText(
-                integer
-                  ? formatNumberLoose(final)
-                  : formatNumberLoose(final),
+                integer ? formatNumberLoose(final) : formatNumberLoose(final),
               );
             }
 

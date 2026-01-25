@@ -1,19 +1,22 @@
 import * as React from "react";
-import { COLORS, type CalcOutputs, toCurrency } from "./savings.logic";
-import { DonutChart } from "./viz.donut";
+import {
+  COLORS,
+  type CalcOutputs,
+  toCurrency,
+  formatPercentLoose,
+} from "./compound.logic";
+import { DonutChart } from "../home/viz.donut";
 import { YearlyStackedBars } from "./viz.yearly";
 
 export function ResultsSection({
   outputs,
-  initialDeposit,
-  inflationRatePct,
+  principal,
   breakdown,
   pct,
   normalizeChartColor,
 }: {
   outputs: CalcOutputs;
-  initialDeposit: number;
-  inflationRatePct: number;
+  principal: number;
   breakdown: { label: string; value: number; color: string }[];
   pct: number[];
   normalizeChartColor: (c: string) => string;
@@ -21,7 +24,6 @@ export function ResultsSection({
   const strongColors = React.useMemo(
     () => ({
       principal: normalizeChartColor(COLORS.softBlue),
-      contributions: normalizeChartColor(COLORS.softGreen),
       interest: normalizeChartColor(COLORS.softYellow),
     }),
     [normalizeChartColor],
@@ -47,31 +49,19 @@ export function ResultsSection({
             {toCurrency(outputs.endBalance)}
           </div>
           <div className="mt-1 text-xs text-slate-500">
-            Balance after interest, contributions, taxes, and timing.
+            Principal compounded over the full timeline.
           </div>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="text-sm font-semibold text-slate-700">
-            Initial deposit
+            Starting principal
           </div>
           <div className="mt-2 break-words text-lg font-black tracking-tight text-slate-900 sm:text-xl">
-            {toCurrency(initialDeposit)}
+            {toCurrency(principal)}
           </div>
           <div className="mt-1 text-xs text-slate-500">
-            Your starting principal.
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-slate-200 border-l-4 border-l-blue-600 bg-white p-4 shadow-sm">
-          <div className="text-sm font-semibold text-slate-700">
-            Total contributions
-          </div>
-          <div className="mt-2 break-words text-lg font-black tracking-tight text-blue-700 sm:text-xl">
-            {toCurrency(outputs.totalContributionsExInitial)}
-          </div>
-          <div className="mt-1 text-xs text-slate-500">
-            Total contributed over the timeline (excluding the initial deposit).
+            Your initial amount.
           </div>
         </div>
 
@@ -83,23 +73,33 @@ export function ResultsSection({
             {toCurrency(outputs.totalInterest)}
           </div>
           <div className="mt-1 text-xs text-slate-500">
-            Net interest after tax (if enabled).
+            Interest only (end balance minus principal).
           </div>
         </div>
 
-        {inflationRatePct > 0 && (
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm md:col-span-2">
-            <div className="text-sm font-semibold text-slate-700">
-              Inflation-adjusted end balance
-            </div>
-            <div className="mt-2 break-words text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
-              {toCurrency(outputs.realEndBalance)}
-            </div>
-            <div className="mt-1 text-xs text-slate-500">
-              Expressed in today’s purchasing power.
-            </div>
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+          <div className="text-sm font-semibold text-slate-700">
+            APY (effective annual rate)
           </div>
-        )}
+          <div className="mt-2 break-words text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
+            {formatPercentLoose(outputs.effectiveAnnualRatePct)}%
+          </div>
+          <div className="mt-1 text-xs text-slate-500">
+            Includes the effect of your chosen compounding frequency.
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2">
+          <div className="text-sm font-semibold text-slate-700">
+            Growth multiple
+          </div>
+          <div className="mt-2 break-words text-lg font-black tracking-tight text-slate-900 sm:text-xl">
+            {outputs.growthMultiple > 0 ? `${outputs.growthMultiple}×` : "—"}
+          </div>
+          <div className="mt-1 text-xs text-slate-500">
+            End balance divided by starting principal.
+          </div>
+        </div>
       </div>
 
       <div className="mt-4">
@@ -149,15 +149,14 @@ export function ResultsSection({
               <span className="text-xs font-black text-slate-600">Show</span>
             </div>
             <div className="mt-1 text-xs leading-relaxed text-slate-600">
-              Stacked balance by year (initial deposit, contributions,
-              interest).
+              Stacked balance by year (principal vs interest).
             </div>
           </summary>
 
           <div className="mt-3">
             <YearlyStackedBars
               schedule={outputs.schedule}
-              initialDeposit={initialDeposit}
+              principal={principal}
               colors={strongColors}
               height={240}
               cornerRadius={8}
@@ -178,15 +177,14 @@ export function ResultsSection({
               <span className="text-xs font-black text-slate-600">Hide</span>
             </div>
             <div className="mt-1 text-xs leading-relaxed text-slate-600">
-              Stacked balance by year (initial deposit, contributions,
-              interest).
+              Stacked balance by year (principal vs interest).
             </div>
           </summary>
 
           <div className="mt-3">
             <YearlyStackedBars
               schedule={outputs.schedule}
-              initialDeposit={initialDeposit}
+              principal={principal}
               colors={strongColors}
               height={300}
               cornerRadius={8}

@@ -1,6 +1,9 @@
 import * as React from "react";
 import { FAQS } from "./savings.logic";
 
+const ROUTE_SLUG = "/savings-balance-over-time-calculator";
+const CANONICAL = `https://www.allsavingscalculators.com${ROUTE_SLUG}`;
+
 export function useMediaQuery(query: string) {
   const [matches, setMatches] = React.useState(() => {
     if (typeof window === "undefined") return false;
@@ -51,13 +54,13 @@ export function JsonLdScript({ jsonLd }: { jsonLd: any }) {
   );
 }
 
-export function useSavingsJsonLd() {
+export function useSavingsBalanceOverTimeJsonLd() {
   return React.useMemo(() => {
-    const canonical = "https://www.allsavingscalculators.com/";
+    const canonical = CANONICAL;
     const faqId = `${canonical}#faq`;
     const appId = `${canonical}#calculator`;
     const orgId = `${canonical}#organization`;
-    const siteId = `${canonical}#website`;
+    const siteId = `https://www.allsavingscalculators.com/#website`;
 
     const faqs = (FAQS || [])
       .filter((f) => f && typeof f.q === "string" && typeof f.a === "string")
@@ -71,7 +74,7 @@ export function useSavingsJsonLd() {
       }));
 
     const description =
-      "Free savings calculator to estimate an ending balance from an initial deposit, ongoing contributions, interest rate, compounding frequency, tax on interest, and inflation. Includes a yearly schedule, charts, and CSV export.";
+      "Chart-forward calculator that visualizes savings balance progression by month or year based on contributions, compounding, taxes on interest, and optional inflation adjustment. Includes schedules, CSV export, and print-to-PDF.";
 
     return {
       "@context": "https://schema.org",
@@ -80,12 +83,12 @@ export function useSavingsJsonLd() {
           "@type": "Organization",
           "@id": orgId,
           name: "AllSavingsCalculators",
-          url: canonical,
+          url: "https://www.allsavingscalculators.com/",
         },
         {
           "@type": "WebSite",
           "@id": siteId,
-          url: canonical,
+          url: "https://www.allsavingscalculators.com/",
           name: "AllSavingsCalculators",
           publisher: { "@id": orgId },
         },
@@ -93,7 +96,7 @@ export function useSavingsJsonLd() {
           "@type": "WebPage",
           "@id": canonical,
           url: canonical,
-          name: "Savings Calculator",
+          name: "Savings Balance Over Time Calculator",
           description,
           isPartOf: { "@id": siteId },
           publisher: { "@id": orgId },
@@ -102,12 +105,12 @@ export function useSavingsJsonLd() {
         {
           "@type": "SoftwareApplication",
           "@id": appId,
-          name: "Savings Calculator",
+          name: "Savings Balance Over Time Calculator",
           applicationCategory: "FinanceApplication",
           operatingSystem: "Web",
           url: canonical,
           description:
-            "Interactive savings calculator to estimate end balance, interest earned, contributions, taxes, and inflation over time.",
+            "Interactive balance progression tool with charts and schedules to project savings growth over time.",
           offers: {
             "@type": "Offer",
             price: "0",

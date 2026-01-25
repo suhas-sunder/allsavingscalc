@@ -1,38 +1,46 @@
 import * as React from "react";
 import type { Route } from "./+types/savings-balance-over-time-calculator";
-import { json } from "@remix-run/node";
 
 import {
   COLORS,
   FAQS,
   type Frequency,
-  type ChartPeriod,
   type CalcInputs,
   clampNumber,
-  computeSavingsBalanceOverTime,
-} from "../client/components/savings-balance-over-time-calculator/sbot.logic";
+  computeSavings,
+  computePercents,
+} from "../client/components/savings-balance-over-time/savings.logic";
 
 import {
   PageShell,
   CardShell,
   JsonLdScript,
   useSavingsBalanceOverTimeJsonLd,
-} from "../client/components/savings-balance-over-time-calculator/sbot.shell";
-import { HeaderSection } from "../client/components/savings-balance-over-time-calculator/sbot.header";
-import { InputsSection } from "../client/components/savings-balance-over-time-calculator/sbot.inputs";
-import { ChartSection } from "../client/components/savings-balance-over-time-calculator/sbot.chartSection";
-import { DataTableSection } from "../client/components/savings-balance-over-time-calculator/sbot.dataTable";
-import { HowItWorksSection } from "../client/components/savings-balance-over-time-calculator/sbot.howItWorks";
-import { FAQSection } from "../client/components/savings-balance-over-time-calculator/sbot.faq";
-import { DisclaimersSection } from "../client/components/savings-balance-over-time-calculator/sbot.disclaimers";
+} from "../client/components/savings-balance-over-time/ui.shell";
+
+import { HeaderSection } from "../client/components/savings-balance-over-time/ui.header";
+import { InputsSection } from "../client/components/savings-balance-over-time/ui.inputs";
+import { ResultsSection } from "../client/components/savings-balance-over-time/ui.results";
+import { ScheduleSection } from "../client/components/savings-balance-over-time/ui.schedule";
+import {
+  ActionsBar,
+  usePrint,
+  useExportCsv,
+} from "../client/components/savings-balance-over-time/ui.actions";
+import { HowItWorksSection } from "../client/components/savings-balance-over-time/ui.howitworks";
+import { FAQSection } from "../client/components/savings-balance-over-time/ui.faq";
+import { DisclaimersSection } from "../client/components/savings-balance-over-time/ui.disclaimers";
+
+const MAX_YEARS = 100;
+const ROUTE_SLUG = "/savings-balance-over-time-calculator";
+const CANONICAL = `https://www.allsavingscalculators.com${ROUTE_SLUG}`;
 
 export function meta({}: Route.MetaArgs) {
   const title =
-    "Savings Balance Over Time | Balance Growth Chart by Month, Quarter, or Year";
+    "Savings Balance Over Time Calculator | Chart Balance Growth by Period";
   const description =
-    "Visual savings balance over time calculator. See a chart-forward projection of your balance growth by month, quarter, or year based on deposits, contributions, interest rate, compounding, taxes on interest, and optional inflation adjustment. Includes CSV export and print-to-PDF.";
-  const canonical =
-    "https://www.allsavingscalculators.com/savings-balance-over-time";
+    "Visualize how your savings balance grows over time. Chart-forward view of balance progression by month or year with contribution timing, compounding, taxes on interest, and optional inflation adjustment. Includes schedules, CSV export, and print-to-PDF.";
+  const canonical = CANONICAL;
 
   return [
     { title },
@@ -40,7 +48,7 @@ export function meta({}: Route.MetaArgs) {
     {
       name: "keywords",
       content:
-        "savings balance over time, balance growth chart, savings projection chart, savings timeline calculator, compound interest timeline, interest growth chart, monthly savings growth, yearly savings growth",
+        "savings balance over time calculator, balance growth chart, savings growth by month, savings growth by year, balance progression calculator, compounding schedule, contribution timing, interest growth chart, savings timeline",
     },
     { name: "robots", content: "index,follow" },
     { name: "theme-color", content: "#0b2447" },
@@ -51,161 +59,207 @@ export function meta({}: Route.MetaArgs) {
     { property: "og:type", content: "website" },
     { property: "og:url", content: canonical },
     { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
   ];
 }
 
 export function loader({}: Route.LoaderArgs) {
-  return json({ ok: true });
+  return { ok: true };
 }
 
-export default function SavingsBalanceOverTimeRoute() {
+export default function SavingsBalanceOverTimeCalculator() {
+  const jsonLd = useSavingsBalanceOverTimeJsonLd();
+
   const [initialDeposit, setInitialDeposit] = React.useState(20000);
 
-  const [monthlyContribution, setMonthlyContribution] = React.useState(300);
+  // Keep both values so toggling does not destroy user input.
+  const [annualContribution, setAnnualContribution] = React.useState(5000);
+  const [annualContributionGrowthPct, setAnnualContributionGrowthPct] =
+    React.useState(3);
+
+  const [monthlyContribution, setMonthlyContribution] = React.useState(0);
   const [monthlyContributionGrowthPct, setMonthlyContributionGrowthPct] =
     React.useState(0);
 
-  const [annualContribution, setAnnualContribution] = React.useState(0);
-  const [annualContributionGrowthPct, setAnnualContributionGrowthPct] =
-    React.useState(0);
-
-  const [annualInterestRatePct, setAnnualInterestRatePct] = React.useState(4);
-
-  const [frequency, setFrequency] = React.useState<Frequency>("monthly");
+  const [annualInterestRatePct, setAnnualInterestRatePct] = React.useState(3);
+  const [frequency, setFrequency] = React.useState<Frequency>("annually");
   const [years, setYears] = React.useState(10);
-
   const [taxRatePct, setTaxRatePct] = React.useState(0);
   const [inflationRatePct, setInflationRatePct] = React.useState(0);
 
   const [contributionsAtPeriodEnd, setContributionsAtPeriodEnd] =
     React.useState(true);
 
-  const [chartPeriod, setChartPeriod] = React.useState<ChartPeriod>("yearly");
-  const [showReal, setShowReal] = React.useState(false);
+  // Single source of truth for Monthly vs Yearly across Inputs + Schedule.
+  const [scheduleView, setScheduleView] = React.useState<"yearly" | "monthly">(
+    "yearly",
+  );
 
-  const safeInputs: CalcInputs = React.useMemo(() => {
-    return {
+  // Authoritative clamp for years to prevent UI divergence (input shows 100, state holds 1000).
+  const setYearsSafe = React.useCallback((n: number) => {
+    setYears(clampNumber(Number(n) || 0, 0, MAX_YEARS));
+  }, []);
+
+  const outputs = React.useMemo(() => {
+    // Apply only the selected contribution cadence in the calculation.
+    const annualUsed =
+      scheduleView === "yearly" ? Number(annualContribution) || 0 : 0;
+
+    const annualGrowthUsed =
+      scheduleView === "yearly" ? Number(annualContributionGrowthPct) || 0 : 0;
+
+    const monthlyUsed =
+      scheduleView === "monthly" ? Number(monthlyContribution) || 0 : 0;
+
+    const monthlyGrowthUsed =
+      scheduleView === "monthly"
+        ? Number(monthlyContributionGrowthPct) || 0
+        : 0;
+
+    const safeInputs: CalcInputs = {
       initialDeposit: clampNumber(Number(initialDeposit) || 0, 0, 1e9),
-      monthlyContribution: clampNumber(
-        Number(monthlyContribution) || 0,
-        -1e8,
-        1e8,
-      ),
-      monthlyContributionGrowthPct: clampNumber(
-        Number(monthlyContributionGrowthPct) || 0,
-        -100,
-        100,
-      ),
-      annualContribution: clampNumber(
-        Number(annualContribution) || 0,
-        -1e8,
-        1e8,
-      ),
-      annualContributionGrowthPct: clampNumber(
-        Number(annualContributionGrowthPct) || 0,
-        -100,
-        100,
-      ),
+
+      annualContribution: clampNumber(annualUsed, -1e8, 1e8),
+      annualContributionGrowthPct: clampNumber(annualGrowthUsed, -100, 100),
+
+      monthlyContribution: clampNumber(monthlyUsed, -1e8, 1e8),
+      monthlyContributionGrowthPct: clampNumber(monthlyGrowthUsed, -100, 100),
+
       annualInterestRatePct: clampNumber(
         Number(annualInterestRatePct) || 0,
         -50,
         100,
       ),
       frequency,
-      years: clampNumber(Number(years) || 0, 0, 100),
+
+      // Keep compute aligned to the same max.
+      years: clampNumber(Number(years) || 0, 0, MAX_YEARS),
+
       taxRatePct: clampNumber(Number(taxRatePct) || 0, 0, 60),
       inflationRatePct: clampNumber(Number(inflationRatePct) || 0, 0, 50),
       contributionsAtPeriodEnd,
-      chartPeriod,
     };
+
+    return computeSavings(safeInputs);
   }, [
+    scheduleView,
+    initialDeposit,
     annualContribution,
     annualContributionGrowthPct,
-    annualInterestRatePct,
-    chartPeriod,
-    contributionsAtPeriodEnd,
-    frequency,
-    inflationRatePct,
-    initialDeposit,
     monthlyContribution,
     monthlyContributionGrowthPct,
-    taxRatePct,
+    annualInterestRatePct,
+    frequency,
     years,
+    taxRatePct,
+    inflationRatePct,
+    contributionsAtPeriodEnd,
   ]);
 
-  const outputs = React.useMemo(() => {
-    return computeSavingsBalanceOverTime(safeInputs);
-  }, [safeInputs]);
+  const breakdown = React.useMemo(() => {
+    const principal = Number(initialDeposit) || 0;
+    const contribs = outputs.totalContributionsExInitial;
+    const interest = outputs.totalInterest;
 
-  // Schedule table is always derived from the underlying monthly simulation
-  // so the user can toggle between Monthly and Yearly rows independent of the chart.
-  const scheduleMonthly = React.useMemo(() => {
-    return computeSavingsBalanceOverTime({
-      ...safeInputs,
-      chartPeriod: "monthly",
-    });
-  }, [safeInputs]);
+    return [
+      {
+        label: "Starting balance",
+        value: Math.max(principal, 0),
+        color: COLORS.softBlue,
+      },
+      {
+        label: "Contributions",
+        value: Math.max(contribs, 0),
+        color: COLORS.softGreen,
+      },
+      {
+        label: "Interest earned",
+        value: Math.max(interest, 0),
+        color: COLORS.softYellow,
+      },
+    ];
+  }, [
+    outputs.totalContributionsExInitial,
+    outputs.totalInterest,
+    initialDeposit,
+  ]);
 
-  const inflationEnabled = (Number(inflationRatePct) || 0) > 0;
+  // computePercents expects number[]
+  const pct = React.useMemo(
+    () => computePercents(breakdown.map((b) => b.value)),
+    [breakdown],
+  );
 
-  React.useEffect(() => {
-    if (inflationEnabled) return;
-    setShowReal(false);
-  }, [inflationEnabled]);
+  // Keep bar colors mapped to donut colors.
+  const normalizeChartColor = React.useCallback((c: string) => {
+    switch (c) {
+      case COLORS.softBlue:
+        return "#2563eb";
+      case COLORS.softGreen:
+        return "#16a34a";
+      case COLORS.softYellow:
+        return "#f59e0b";
+      default:
+        return c;
+    }
+  }, []);
 
-  const jsonLd = useSavingsBalanceOverTimeJsonLd();
+  const onPrint = usePrint();
+  const onExportCsv = useExportCsv(outputs, scheduleView);
 
   return (
     <PageShell>
       <div className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-6">
         <section className="grid gap-4">
           <CardShell>
-            <div className="p-3 md:p-5">
-              <HeaderSection
-                contributionsAtPeriodEnd={contributionsAtPeriodEnd}
-                setContributionsAtPeriodEnd={setContributionsAtPeriodEnd}
-              />
+            <div className="p-3 sm:p-5">
+              <HeaderSection />
 
               <InputsSection
+                contributionMode={scheduleView}
+                setContributionMode={setScheduleView}
+                contributionsAtPeriodEnd={contributionsAtPeriodEnd}
+                setContributionsAtPeriodEnd={setContributionsAtPeriodEnd}
                 initialDeposit={initialDeposit}
                 setInitialDeposit={setInitialDeposit}
+                annualContribution={annualContribution}
+                setAnnualContribution={setAnnualContribution}
+                annualContributionGrowthPct={annualContributionGrowthPct}
+                setAnnualContributionGrowthPct={setAnnualContributionGrowthPct}
                 monthlyContribution={monthlyContribution}
                 setMonthlyContribution={setMonthlyContribution}
                 monthlyContributionGrowthPct={monthlyContributionGrowthPct}
                 setMonthlyContributionGrowthPct={
                   setMonthlyContributionGrowthPct
                 }
-                annualContribution={annualContribution}
-                setAnnualContribution={setAnnualContribution}
-                annualContributionGrowthPct={annualContributionGrowthPct}
-                setAnnualContributionGrowthPct={setAnnualContributionGrowthPct}
-                chartPeriod={chartPeriod}
-                setChartPeriod={setChartPeriod}
                 frequency={frequency}
                 setFrequency={setFrequency}
                 annualInterestRatePct={annualInterestRatePct}
                 setAnnualInterestRatePct={setAnnualInterestRatePct}
                 years={years}
-                setYears={setYears}
+                setYears={setYearsSafe}
                 taxRatePct={taxRatePct}
                 setTaxRatePct={setTaxRatePct}
                 inflationRatePct={inflationRatePct}
                 setInflationRatePct={setInflationRatePct}
               />
 
-              <ChartSection
+              <ResultsSection
                 outputs={outputs}
-                showReal={showReal}
-                setShowReal={setShowReal}
-                inflationEnabled={inflationEnabled}
+                initialDeposit={Number(initialDeposit) || 0}
+                inflationRatePct={Number(inflationRatePct) || 0}
+                breakdown={breakdown}
+                pct={pct}
+                normalizeChartColor={normalizeChartColor}
+                scheduleView={scheduleView}
               />
 
-              <DataTableSection
-                monthlySeries={scheduleMonthly.series}
-                years={safeInputs.years}
+              <ScheduleSection
+                scheduleView={scheduleView}
+                setScheduleView={setScheduleView}
+                outputs={outputs}
               />
+
+              <ActionsBar onExportCsv={onExportCsv} onPrint={onPrint} />
             </div>
           </CardShell>
         </section>

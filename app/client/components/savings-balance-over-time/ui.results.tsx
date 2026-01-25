@@ -2,6 +2,7 @@ import * as React from "react";
 import { COLORS, type CalcOutputs, toCurrency } from "./savings.logic";
 import { DonutChart } from "./viz.donut";
 import { YearlyStackedBars } from "./viz.yearly";
+import { BalanceLineChart } from "./viz.balance-line";
 
 export function ResultsSection({
   outputs,
@@ -10,6 +11,7 @@ export function ResultsSection({
   breakdown,
   pct,
   normalizeChartColor,
+  scheduleView,
 }: {
   outputs: CalcOutputs;
   initialDeposit: number;
@@ -17,6 +19,7 @@ export function ResultsSection({
   breakdown: { label: string; value: number; color: string }[];
   pct: number[];
   normalizeChartColor: (c: string) => string;
+  scheduleView: "yearly" | "monthly";
 }) {
   const strongColors = React.useMemo(
     () => ({
@@ -36,30 +39,44 @@ export function ResultsSection({
     [breakdown, normalizeChartColor],
   );
 
+  const linePoints = React.useMemo(() => {
+    if (scheduleView === "monthly") {
+      return outputs.monthlySchedule.map((r) => ({
+        xLabel: `Y${r.year} M${r.month}`,
+        value: r.endingBalance,
+      }));
+    }
+
+    return outputs.schedule.map((r) => ({
+      xLabel: `Year ${r.year}`,
+      value: r.endingBalance,
+    }));
+  }, [outputs.monthlySchedule, outputs.schedule, scheduleView]);
+
   return (
     <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:p-4">
       <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
         <div className="rounded-xl border border-slate-200 border-l-4 border-l-green-600 bg-white p-4 shadow-sm">
           <div className="text-sm font-semibold text-slate-700">
-            End balance
+            Ending balance
           </div>
           <div className="mt-2 break-words text-2xl font-black tracking-tight text-green-700 sm:text-3xl">
             {toCurrency(outputs.endBalance)}
           </div>
           <div className="mt-1 text-xs text-slate-500">
-            Balance after interest, contributions, taxes, and timing.
+            The final balance at the end of the projection.
           </div>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="text-sm font-semibold text-slate-700">
-            Initial deposit
+            Starting balance
           </div>
           <div className="mt-2 break-words text-lg font-black tracking-tight text-slate-900 sm:text-xl">
             {toCurrency(initialDeposit)}
           </div>
           <div className="mt-1 text-xs text-slate-500">
-            Your starting principal.
+            Your balance at the beginning of the timeline.
           </div>
         </div>
 
@@ -71,7 +88,7 @@ export function ResultsSection({
             {toCurrency(outputs.totalContributionsExInitial)}
           </div>
           <div className="mt-1 text-xs text-slate-500">
-            Total contributed over the timeline (excluding the initial deposit).
+            Total added across periods (excluding the starting balance).
           </div>
         </div>
 
@@ -90,7 +107,7 @@ export function ResultsSection({
         {inflationRatePct > 0 && (
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm md:col-span-2">
             <div className="text-sm font-semibold text-slate-700">
-              Inflation-adjusted end balance
+              Inflation-adjusted ending balance
             </div>
             <div className="mt-2 break-words text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
               {toCurrency(outputs.realEndBalance)}
@@ -144,22 +161,29 @@ export function ResultsSection({
           <summary className="cursor-pointer list-none select-none">
             <div className="flex items-center justify-between">
               <div className="text-sm font-black text-slate-900">
-                Balance growth chart
+                Balance over time charts
               </div>
               <span className="text-xs font-black text-slate-600">Show</span>
             </div>
             <div className="mt-1 text-xs leading-relaxed text-slate-600">
-              Stacked balance by year (initial deposit, contributions,
-              interest).
+              Line chart of ending balance by period, plus a stacked breakdown.
             </div>
           </summary>
 
           <div className="mt-3">
+            <BalanceLineChart
+              points={linePoints}
+              height={240}
+              label="Balance over time line chart"
+            />
+          </div>
+
+          <div className="mt-4">
             <YearlyStackedBars
               schedule={outputs.schedule}
               initialDeposit={initialDeposit}
               colors={strongColors}
-              height={240}
+              height={220}
               cornerRadius={8}
             />
           </div>
@@ -173,17 +197,24 @@ export function ResultsSection({
           <summary className="cursor-pointer list-none select-none">
             <div className="flex items-center justify-between">
               <div className="text-sm font-black text-slate-900">
-                Balance growth chart
+                Balance over time charts
               </div>
               <span className="text-xs font-black text-slate-600">Hide</span>
             </div>
             <div className="mt-1 text-xs leading-relaxed text-slate-600">
-              Stacked balance by year (initial deposit, contributions,
-              interest).
+              Line chart of ending balance by period, plus a stacked breakdown.
             </div>
           </summary>
 
           <div className="mt-3">
+            <BalanceLineChart
+              points={linePoints}
+              height={280}
+              label="Balance over time line chart"
+            />
+          </div>
+
+          <div className="mt-4">
             <YearlyStackedBars
               schedule={outputs.schedule}
               initialDeposit={initialDeposit}

@@ -31,6 +31,8 @@ import { HowItWorksSection } from "../client/components/home/ui.howitworks";
 import { FAQSection } from "../client/components/home/ui.faq";
 import { DisclaimersSection } from "../client/components/home/ui.disclaimers";
 
+const MAX_YEARS = 100;
+
 export function meta({}: Route.MetaArgs) {
   const title =
     "Savings Calculator | End Balance, Interest Earned, Taxes, Inflation";
@@ -44,7 +46,7 @@ export function meta({}: Route.MetaArgs) {
     {
       name: "keywords",
       content:
-        "savings calculator, end balance calculator, compound interest calculator, interest earned calculator, contribution growth calculator, tax on interest calculator, inflation adjusted savings calculator, savings projection",
+        "savings calculator, compound interest calculator, end balance calculator, interest earned calculator, inflation adjusted savings calculator, tax on interest calculator, contribution growth calculator",
     },
     { name: "robots", content: "index,follow" },
     { name: "theme-color", content: "#0b2447" },
@@ -55,8 +57,6 @@ export function meta({}: Route.MetaArgs) {
     { property: "og:type", content: "website" },
     { property: "og:url", content: canonical },
     { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
   ];
 }
 
@@ -64,47 +64,54 @@ export function loader({}: Route.LoaderArgs) {
   return { ok: true };
 }
 
-type ViewMode = "yearly" | "monthly";
-
 export default function Home() {
+  const jsonLd = useSavingsJsonLd();
+
   const [initialDeposit, setInitialDeposit] = React.useState(20000);
+
+  // Keep both values so toggling does not destroy user input.
   const [annualContribution, setAnnualContribution] = React.useState(5000);
   const [annualContributionGrowthPct, setAnnualContributionGrowthPct] =
     React.useState(3);
+
   const [monthlyContribution, setMonthlyContribution] = React.useState(0);
   const [monthlyContributionGrowthPct, setMonthlyContributionGrowthPct] =
     React.useState(0);
+
   const [annualInterestRatePct, setAnnualInterestRatePct] = React.useState(3);
   const [frequency, setFrequency] = React.useState<Frequency>("annually");
   const [years, setYears] = React.useState(10);
   const [taxRatePct, setTaxRatePct] = React.useState(0);
   const [inflationRatePct, setInflationRatePct] = React.useState(0);
+
   const [contributionsAtPeriodEnd, setContributionsAtPeriodEnd] =
     React.useState(true);
 
-  // One shared state drives BOTH:
-  // - which contribution inputs are shown (yearly vs monthly)
-  // - which schedule table is shown (yearly vs monthly)
-  const [viewMode, setViewMode] = React.useState<ViewMode>(() => {
-    const a = Number(annualContribution) || 0;
-    const m = Number(monthlyContribution) || 0;
-    if (m !== 0 && a === 0) return "monthly";
-    return "yearly";
-  });
+  // Single source of truth for Monthly vs Yearly across Inputs + Schedule.
+  const [scheduleView, setScheduleView] = React.useState<"yearly" | "monthly">(
+    "yearly",
+  );
+
+  // Authoritative clamp for years to prevent UI divergence (input shows 100, state holds 1000).
+  const setYearsSafe = React.useCallback((n: number) => {
+    setYears(clampNumber(Number(n) || 0, 0, MAX_YEARS));
+  }, []);
 
   const outputs = React.useMemo(() => {
-    // Key fix:
-    // Do NOT clear contribution values when toggling.
-    // Instead, zero-out the inactive contribution type *for this calculation*.
+    // Apply only the selected contribution cadence in the calculation.
     const annualUsed =
-      viewMode === "yearly" ? Number(annualContribution) || 0 : 0;
+      scheduleView === "yearly" ? Number(annualContribution) || 0 : 0;
+
     const annualGrowthUsed =
-      viewMode === "yearly" ? Number(annualContributionGrowthPct) || 0 : 0;
+      scheduleView === "yearly" ? Number(annualContributionGrowthPct) || 0 : 0;
 
     const monthlyUsed =
-      viewMode === "monthly" ? Number(monthlyContribution) || 0 : 0;
+      scheduleView === "monthly" ? Number(monthlyContribution) || 0 : 0;
+
     const monthlyGrowthUsed =
-      viewMode === "monthly" ? Number(monthlyContributionGrowthPct) || 0 : 0;
+      scheduleView === "monthly"
+        ? Number(monthlyContributionGrowthPct) || 0
+        : 0;
 
     const safeInputs: CalcInputs = {
       initialDeposit: clampNumber(Number(initialDeposit) || 0, 0, 1e9),
@@ -121,7 +128,10 @@ export default function Home() {
         100,
       ),
       frequency,
-      years: clampNumber(Number(years) || 0, 0, 100),
+
+      // Keep compute aligned to the same max.
+      years: clampNumber(Number(years) || 0, 0, MAX_YEARS),
+
       taxRatePct: clampNumber(Number(taxRatePct) || 0, 0, 60),
       inflationRatePct: clampNumber(Number(inflationRatePct) || 0, 0, 50),
       contributionsAtPeriodEnd,
@@ -129,7 +139,7 @@ export default function Home() {
 
     return computeSavings(safeInputs);
   }, [
-    viewMode,
+    scheduleView,
     initialDeposit,
     annualContribution,
     annualContributionGrowthPct,
@@ -165,40 +175,48 @@ export default function Home() {
         color: COLORS.softYellow,
       },
     ];
-  }, [outputs, initialDeposit]);
+  }, [
+    outputs.totalContributionsExInitial,
+    outputs.totalInterest,
+    initialDeposit,
+  ]);
 
+  // computePercents expects number[]
   const pct = React.useMemo(
     () => computePercents(breakdown.map((b) => b.value)),
     [breakdown],
   );
 
+  // Keep bar colors mapped to donut colors.
   const normalizeChartColor = React.useCallback((c: string) => {
-    const STRONG = { blue: "#2563eb", green: "#16a34a", amber: "#f59e0b" };
-    if (c === COLORS.softBlue) return STRONG.blue;
-    if (c === COLORS.softGreen) return STRONG.green;
-    if (c === COLORS.softYellow) return STRONG.amber;
-    return c;
+    switch (c) {
+      case COLORS.softBlue:
+        return "#2563eb";
+      case COLORS.softGreen:
+        return "#16a34a";
+      case COLORS.softYellow:
+        return "#f59e0b";
+      default:
+        return c;
+    }
   }, []);
 
   const onPrint = usePrint();
-  const onExportCsv = useExportCsv(outputs, viewMode);
-
-  const jsonLd = useSavingsJsonLd();
+  const onExportCsv = useExportCsv(outputs, scheduleView);
 
   return (
     <PageShell>
       <div className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-6">
         <section className="grid gap-4">
           <CardShell>
-            <div className="p-3 md:p-5">
-              <HeaderSection
-                contributionsAtPeriodEnd={contributionsAtPeriodEnd}
-                setContributionsAtPeriodEnd={setContributionsAtPeriodEnd}
-              />
+            <div className="p-3 sm:p-5">
+              <HeaderSection />
 
               <InputsSection
-                contributionMode={viewMode}
-                setContributionMode={setViewMode}
+                contributionMode={scheduleView}
+                setContributionMode={setScheduleView}
+                contributionsAtPeriodEnd={contributionsAtPeriodEnd}
+                setContributionsAtPeriodEnd={setContributionsAtPeriodEnd}
                 initialDeposit={initialDeposit}
                 setInitialDeposit={setInitialDeposit}
                 annualContribution={annualContribution}
@@ -216,7 +234,7 @@ export default function Home() {
                 annualInterestRatePct={annualInterestRatePct}
                 setAnnualInterestRatePct={setAnnualInterestRatePct}
                 years={years}
-                setYears={setYears}
+                setYears={setYearsSafe}
                 taxRatePct={taxRatePct}
                 setTaxRatePct={setTaxRatePct}
                 inflationRatePct={inflationRatePct}
@@ -233,12 +251,12 @@ export default function Home() {
               />
 
               <ScheduleSection
-                scheduleView={viewMode}
-                setScheduleView={setViewMode}
+                scheduleView={scheduleView}
+                setScheduleView={setScheduleView}
                 outputs={outputs}
               />
 
-              <ActionsBar onPrint={onPrint} onExportCsv={onExportCsv} />
+              <ActionsBar onExportCsv={onExportCsv} onPrint={onPrint} />
             </div>
           </CardShell>
         </section>

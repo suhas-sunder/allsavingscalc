@@ -1,6 +1,6 @@
 import * as React from "react";
-import type { CalcOutputs } from "./savings.logic";
-import { toCurrency } from "./savings.logic";
+import type { CalcOutputs } from "./compound.logic";
+import { toCurrency } from "./compound.logic";
 
 export function ScheduleSection({
   scheduleView,
@@ -23,8 +23,7 @@ export function ScheduleSection({
             Schedule
           </div>
           <div className="mt-1 text-xs text-slate-500">
-            Year-by-year and month-by-month breakdown (matches the contribution
-            mode above).
+            Detailed breakdown by year or by month for pure compounding.
           </div>
         </div>
 
@@ -64,12 +63,10 @@ export function ScheduleSection({
 
       {scheduleView === "yearly" ? (
         <>
-          {/* Mobile-friendly layout (prevents table from blowing out the viewport). */}
           <div className="mt-4 sm:hidden">
             <YearlyScheduleCards rows={outputs.schedule} />
           </div>
 
-          {/* Desktop/tablet: cap at 12 rows by default. */}
           <div className="mt-4 hidden sm:block">
             <DesktopTableWithCap
               rows={outputs.schedule}
@@ -148,9 +145,7 @@ function DesktopTableWithCap<T>({
               ? `Show first ${previewCount} ${
                   previewCount === 1 ? labelSingular : labelPlural
                 }`
-              : `Show all ${total} ${
-                  total === 1 ? labelSingular : labelPlural
-                }`}
+              : `Show all ${total} ${total === 1 ? labelSingular : labelPlural}`}
           </button>
         </div>
       ) : null}
@@ -182,7 +177,7 @@ function YearlyScheduleCards({
 }: {
   rows: {
     year: number;
-    deposit: number;
+    startingBalance: number;
     interest: number;
     endingBalance: number;
   }[];
@@ -191,7 +186,7 @@ function YearlyScheduleCards({
     <div className="rounded-xl border border-slate-200">
       <div className="max-h-[420px] overflow-y-auto p-2">
         <div className="mb-2 text-xs text-slate-500">
-          Yearly totals are aggregates of the underlying monthly simulation.
+          Yearly rows are aggregates of the monthly simulation.
         </div>
         <div className="grid gap-2">
           {rows.map((r) => (
@@ -201,15 +196,9 @@ function YearlyScheduleCards({
             >
               <MobileCardRow label="Year" value={r.year} />
               <div className="mt-2 grid gap-2">
-                <MobileCardRow label="Deposit" value={toCurrency(r.deposit)} />
-                <MobileCardRow
-                  label="Interest"
-                  value={toCurrency(r.interest)}
-                />
-                <MobileCardRow
-                  label="Ending"
-                  value={toCurrency(r.endingBalance)}
-                />
+                <MobileCardRow label="Starting" value={toCurrency(r.startingBalance)} />
+                <MobileCardRow label="Interest" value={toCurrency(r.interest)} />
+                <MobileCardRow label="Ending" value={toCurrency(r.endingBalance)} />
               </div>
             </div>
           ))}
@@ -225,7 +214,7 @@ function MonthlyScheduleCards({
   rows: {
     year: number;
     month: number;
-    deposit: number;
+    startingBalance: number;
     interest: number;
     endingBalance: number;
   }[];
@@ -234,8 +223,7 @@ function MonthlyScheduleCards({
     <div className="rounded-xl border border-slate-200">
       <div className="max-h-[420px] overflow-y-auto p-2">
         <div className="mb-2 text-xs text-slate-500">
-          Monthly rows reflect contribution timing, tax on interest, and
-          compounding converted to an effective monthly rate.
+          Monthly rows use an equivalent monthly rate derived from your chosen compounding frequency.
         </div>
         <div className="grid gap-2">
           {rows.map((r, idx) => (
@@ -249,15 +237,9 @@ function MonthlyScheduleCards({
                 </div>
               </div>
               <div className="mt-2 grid gap-2">
-                <MobileCardRow label="Deposit" value={toCurrency(r.deposit)} />
-                <MobileCardRow
-                  label="Interest"
-                  value={toCurrency(r.interest)}
-                />
-                <MobileCardRow
-                  label="Ending"
-                  value={toCurrency(r.endingBalance)}
-                />
+                <MobileCardRow label="Starting" value={toCurrency(r.startingBalance)} />
+                <MobileCardRow label="Interest" value={toCurrency(r.interest)} />
+                <MobileCardRow label="Ending" value={toCurrency(r.endingBalance)} />
               </div>
             </div>
           ))}
@@ -308,18 +290,18 @@ function Th({
 function Td({
   children,
   align = "left",
-  mono,
+  subtle,
 }: {
   children: React.ReactNode;
   align?: "left" | "right";
-  mono?: boolean;
+  subtle?: boolean;
 }) {
   return (
     <td
       className={[
-        "border-b border-slate-100 px-3 py-2 text-slate-700",
-        align === "right" ? "text-right tabular-nums" : "text-left",
-        mono ? "font-mono" : "",
+        "border-b border-slate-100 px-3 py-2",
+        align === "right" ? "text-right" : "text-left",
+        subtle ? "text-slate-500" : "text-slate-900",
       ].join(" ")}
     >
       {children}
@@ -332,30 +314,28 @@ function YearlyScheduleTable({
 }: {
   rows: {
     year: number;
-    deposit: number;
+    startingBalance: number;
     interest: number;
     endingBalance: number;
   }[];
 }) {
   return (
-    <TableShell caption="Yearly totals are aggregates of the underlying monthly simulation.">
+    <TableShell caption="Yearly totals.">
       <thead>
         <tr>
           <Th>Year</Th>
-          <Th align="right">Deposit</Th>
+          <Th align="right">Starting</Th>
           <Th align="right">Interest</Th>
-          <Th align="right">Ending balance</Th>
+          <Th align="right">Ending</Th>
         </tr>
       </thead>
       <tbody>
         {rows.map((r) => (
-          <tr key={r.year} className="odd:bg-slate-50/60">
-            <Td mono>{r.year}</Td>
-            <Td align="right">{toCurrency(r.deposit)}</Td>
+          <tr key={r.year}>
+            <Td subtle>{r.year}</Td>
+            <Td align="right">{toCurrency(r.startingBalance)}</Td>
             <Td align="right">{toCurrency(r.interest)}</Td>
-            <Td align="right" mono>
-              {toCurrency(r.endingBalance)}
-            </Td>
+            <Td align="right">{toCurrency(r.endingBalance)}</Td>
           </tr>
         ))}
       </tbody>
@@ -369,35 +349,30 @@ function MonthlyScheduleTable({
   rows: {
     year: number;
     month: number;
-    deposit: number;
+    startingBalance: number;
     interest: number;
     endingBalance: number;
   }[];
 }) {
   return (
-    <TableShell caption="Monthly rows reflect contribution timing, tax on interest, and compounding converted to an effective monthly rate.">
+    <TableShell caption="Monthly rows (12 per year).">
       <thead>
         <tr>
           <Th>Year</Th>
           <Th>Month</Th>
-          <Th align="right">Deposit</Th>
+          <Th align="right">Starting</Th>
           <Th align="right">Interest</Th>
-          <Th align="right">Ending balance</Th>
+          <Th align="right">Ending</Th>
         </tr>
       </thead>
       <tbody>
         {rows.map((r, idx) => (
-          <tr
-            key={`${r.year}-${r.month}-${idx}`}
-            className="odd:bg-slate-50/60"
-          >
-            <Td mono>{r.year}</Td>
-            <Td mono>{r.month}</Td>
-            <Td align="right">{toCurrency(r.deposit)}</Td>
+          <tr key={`${r.year}-${r.month}-${idx}`}>
+            <Td subtle>{r.year}</Td>
+            <Td subtle>{r.month}</Td>
+            <Td align="right">{toCurrency(r.startingBalance)}</Td>
             <Td align="right">{toCurrency(r.interest)}</Td>
-            <Td align="right" mono>
-              {toCurrency(r.endingBalance)}
-            </Td>
+            <Td align="right">{toCurrency(r.endingBalance)}</Td>
           </tr>
         ))}
       </tbody>

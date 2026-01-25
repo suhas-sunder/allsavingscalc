@@ -1,34 +1,5 @@
 import * as React from "react";
-import { FAQS } from "./savings.logic";
-
-export function useMediaQuery(query: string) {
-  const [matches, setMatches] = React.useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia(query).matches;
-  });
-
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const m = window.matchMedia(query);
-    const onChange = () => setMatches(m.matches);
-
-    onChange();
-
-    if (typeof m.addEventListener === "function") {
-      m.addEventListener("change", onChange);
-      return () => m.removeEventListener("change", onChange);
-    }
-
-    // Safari fallback
-    // eslint-disable-next-line deprecation/deprecation
-    m.addListener(onChange);
-    // eslint-disable-next-line deprecation/deprecation
-    return () => m.removeListener(onChange);
-  }, [query]);
-
-  return matches;
-}
+import { COMPOUND_FAQS } from "./compound.logic";
 
 export function PageShell({ children }: { children: React.ReactNode }) {
   return <div className="min-h-screen bg-slate-50">{children}</div>;
@@ -51,27 +22,25 @@ export function JsonLdScript({ jsonLd }: { jsonLd: any }) {
   );
 }
 
-export function useSavingsJsonLd() {
+export function useCompoundInterestJsonLd() {
   return React.useMemo(() => {
-    const canonical = "https://www.allsavingscalculators.com/";
+    const canonical =
+      "https://www.allsavingscalculators.com/compound-interest-calculator";
     const faqId = `${canonical}#faq`;
     const appId = `${canonical}#calculator`;
-    const orgId = `${canonical}#organization`;
-    const siteId = `${canonical}#website`;
+    const orgId = `https://www.allsavingscalculators.com/#organization`;
+    const siteId = `https://www.allsavingscalculators.com/#website`;
 
-    const faqs = (FAQS || [])
+    const faqs = (COMPOUND_FAQS || [])
       .filter((f) => f && typeof f.q === "string" && typeof f.a === "string")
       .map((f) => ({
         "@type": "Question",
         name: f.q,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: f.a,
-        },
+        acceptedAnswer: { "@type": "Answer", text: f.a },
       }));
 
     const description =
-      "Free savings calculator to estimate an ending balance from an initial deposit, ongoing contributions, interest rate, compounding frequency, tax on interest, and inflation. Includes a yearly schedule, charts, and CSV export.";
+      "Free compound interest calculator for pure growth: starting principal, APR, compounding frequency, and years. Includes APY, charts, a detailed schedule, CSV export, and print-to-PDF.";
 
     return {
       "@context": "https://schema.org",
@@ -80,12 +49,12 @@ export function useSavingsJsonLd() {
           "@type": "Organization",
           "@id": orgId,
           name: "AllSavingsCalculators",
-          url: canonical,
+          url: "https://www.allsavingscalculators.com/",
         },
         {
           "@type": "WebSite",
           "@id": siteId,
-          url: canonical,
+          url: "https://www.allsavingscalculators.com/",
           name: "AllSavingsCalculators",
           publisher: { "@id": orgId },
         },
@@ -93,7 +62,7 @@ export function useSavingsJsonLd() {
           "@type": "WebPage",
           "@id": canonical,
           url: canonical,
-          name: "Savings Calculator",
+          name: "Compound Interest Calculator",
           description,
           isPartOf: { "@id": siteId },
           publisher: { "@id": orgId },
@@ -102,12 +71,12 @@ export function useSavingsJsonLd() {
         {
           "@type": "SoftwareApplication",
           "@id": appId,
-          name: "Savings Calculator",
+          name: "Compound Interest Calculator",
           applicationCategory: "FinanceApplication",
           operatingSystem: "Web",
           url: canonical,
           description:
-            "Interactive savings calculator to estimate end balance, interest earned, contributions, taxes, and inflation over time.",
+            "Interactive compound interest tool that computes pure compound growth, APY (effective annual rate), end balance, and schedules by month and year.",
           offers: {
             "@type": "Offer",
             price: "0",

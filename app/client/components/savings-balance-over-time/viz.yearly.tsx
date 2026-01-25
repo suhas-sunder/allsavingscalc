@@ -41,7 +41,6 @@ export function YearlyStackedBars({
 
   const maxTotal = Math.max(...points.map((p) => p.total), 1);
 
-  // Responsive-ish SVG: we keep a fixed viewBox width but render to 100% width.
   const W = 760;
   const H = height;
 
@@ -81,7 +80,7 @@ export function YearlyStackedBars({
         viewBox={`0 0 ${W} ${H}`}
         height={H}
         role="img"
-        aria-label="Yearly stacked balances chart"
+        aria-label="Yearly stacked balance chart"
       >
         {ticks.map((t, i) => (
           <g key={i}>
@@ -108,7 +107,8 @@ export function YearlyStackedBars({
         ))}
 
         <defs>
-          {points.map((p, idx) => {
+          {points.map((p) => {
+            const idx = p.year - 1;
             const x = padL + idx * (barW + gap);
             const topY = y(p.total);
             const totalH = h(p.total);
@@ -144,9 +144,13 @@ export function YearlyStackedBars({
           return (
             <g key={p.year}>
               <title>
-                {`Year ${p.year}\nInitial deposit: ${toCurrency(p.principal)}\nContributions: ${toCurrency(
+                {`Year ${p.year}\nStarting balance: ${toCurrency(
+                  p.principal,
+                )}\nContributions (cum): ${toCurrency(
                   p.contrib,
-                )}\nInterest: ${toCurrency(p.interest)}\nTotal: ${toCurrency(p.total)}`}
+                )}\nInterest (cum): ${toCurrency(p.interest)}\nTotal: ${toCurrency(
+                  p.total,
+                )}`}
               </title>
 
               <g clipPath={`url(#bar-clip-${p.year})`}>

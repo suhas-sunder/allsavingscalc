@@ -6,7 +6,7 @@ import {
   LabeledNumber,
   LabeledSelect,
   parseNumericInput,
-} from "./ui.primitives";
+} from "./ui.primatives";
 
 export type ContributionMode = "yearly" | "monthly";
 
@@ -37,7 +37,6 @@ function ContributionAmount({
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
       <div className="flex items-center justify-between gap-3">
-        {/* Match other input labels */}
         <div className="text-xs font-black uppercase tracking-wide text-slate-700">
           Contribution
         </div>
@@ -85,7 +84,6 @@ function ContributionAmount({
 
             const didClamp = clamped !== safe;
 
-            // No rounding: preserve whatever fractional digits user typed.
             setText(
               didClamp
                 ? formatNumberLoose(clamped)
@@ -175,7 +173,8 @@ function AdvancedOptionsBody({
           </button>
         </div>
         <div className="mt-2 text-xs leading-relaxed text-slate-600">
-          Applies contributions at the start or end of the period.
+          Controls whether contributions are applied before or after interest in
+          each period.
         </div>
       </div>
 
@@ -335,7 +334,7 @@ export function InputsSection(props: {
     <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3 sm:p-4">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <LabeledNumber
-          label="Initial deposit"
+          label="Starting balance"
           value={initialDeposit}
           setValue={setInitialDeposit}
           min={0}
@@ -364,7 +363,7 @@ export function InputsSection(props: {
         />
 
         <LabeledNumber
-          label="Years to save"
+          label="Years to project"
           value={years}
           setValue={setYears}
           min={0}

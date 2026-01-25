@@ -1,47 +1,43 @@
 import * as React from "react";
-import { toCurrency } from "./savings.logic";
+import { toCurrency } from "./compound.logic";
 
 type ScheduleRow = {
   year: number;
-  deposit: number;
+  startingBalance: number;
   interest: number;
   endingBalance: number;
 };
 
 export function YearlyStackedBars({
   schedule,
-  initialDeposit,
+  principal,
   colors,
   height = 240,
   cornerRadius = 8,
 }: {
   schedule: ScheduleRow[];
-  initialDeposit: number;
-  colors: { principal: string; contributions: string; interest: string };
+  principal: number;
+  colors: { principal: string; interest: string };
   height?: number;
   cornerRadius?: number;
 }) {
   const years = schedule.length;
   if (years === 0) return null;
 
-  let contribCum = 0;
   let interestCum = 0;
 
   const points = schedule.map((row) => {
-    contribCum += row.deposit;
     interestCum += row.interest;
 
-    const principal = Math.max(initialDeposit, 0);
-    const contrib = Math.max(contribCum, 0);
+    const p = Math.max(principal, 0);
     const interest = Math.max(interestCum, 0);
-    const total = principal + contrib + interest;
+    const total = p + interest;
 
-    return { year: row.year, principal, contrib, interest, total };
+    return { year: row.year, principal: p, interest, total };
   });
 
   const maxTotal = Math.max(...points.map((p) => p.total), 1);
 
-  // Responsive-ish SVG: we keep a fixed viewBox width but render to 100% width.
   const W = 760;
   const H = height;
 
@@ -115,14 +111,7 @@ export function YearlyStackedBars({
 
             return (
               <clipPath key={p.year} id={`bar-clip-${p.year}`}>
-                <rect
-                  x={x}
-                  y={topY}
-                  width={barW}
-                  height={totalH}
-                  rx={r}
-                  ry={r}
-                />
+                <rect x={x} y={topY} width={barW} height={totalH} rx={r} ry={r} />
               </clipPath>
             );
           })}
@@ -132,21 +121,19 @@ export function YearlyStackedBars({
           const x = padL + idx * (barW + gap);
 
           const principalH = h(p.principal);
-          const contribH = h(p.contrib);
           const interestH = h(p.interest);
 
           const totalTopY = y(p.total);
 
           const interestY = totalTopY;
-          const contribY = totalTopY + interestH;
-          const principalY = totalTopY + interestH + contribH;
+          const principalY = totalTopY + interestH;
 
           return (
             <g key={p.year}>
               <title>
-                {`Year ${p.year}\nInitial deposit: ${toCurrency(p.principal)}\nContributions: ${toCurrency(
-                  p.contrib,
-                )}\nInterest: ${toCurrency(p.interest)}\nTotal: ${toCurrency(p.total)}`}
+                {`Year ${p.year}\nPrincipal: ${toCurrency(p.principal)}\nInterest: ${toCurrency(
+                  p.interest,
+                )}\nTotal: ${toCurrency(p.total)}`}
               </title>
 
               <g clipPath={`url(#bar-clip-${p.year})`}>
@@ -156,13 +143,6 @@ export function YearlyStackedBars({
                   width={barW}
                   height={principalH}
                   fill={colors.principal}
-                />
-                <rect
-                  x={x}
-                  y={contribY}
-                  width={barW}
-                  height={contribH}
-                  fill={colors.contributions}
                 />
                 <rect
                   x={x}
