@@ -40,7 +40,7 @@ export function useCompoundInterestJsonLd() {
       }));
 
     const description =
-      "Free compound interest calculator for pure growth: starting principal, APR, compounding frequency, and years. Includes APY, charts, a detailed schedule, CSV export, and print-to-PDF.";
+      "Free compound interest calculator with optional regular additions: initial investment, APR, compounding frequency, and a time horizon in years or months. Includes APY, charts, schedules, CSV export, and print-to-PDF.";
 
     return {
       "@context": "https://schema.org",
@@ -76,7 +76,7 @@ export function useCompoundInterestJsonLd() {
           operatingSystem: "Web",
           url: canonical,
           description:
-            "Interactive compound interest tool that computes pure compound growth, APY (effective annual rate), end balance, and schedules by month and year.",
+            "Interactive compound interest tool that computes compound growth with optional regular additions, APY (effective annual rate), end balance, and schedules by month and year.",
           offers: {
             "@type": "Offer",
             price: "0",

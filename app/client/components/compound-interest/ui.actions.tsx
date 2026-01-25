@@ -46,11 +46,12 @@ export function useExportCsv(outputs: CalcOutputs, scheduleView: "yearly" | "mon
     };
 
     if (scheduleView === "monthly") {
-      const header = ["Year", "Month", "Starting balance", "Interest", "Ending balance"];
+      const header = ["Year", "Month", "Starting balance", "Addition", "Interest", "Ending balance"];
       const rows = outputs.monthlySchedule.map((r) => [
         String(r.year),
         String(r.month),
         String(round2(r.startingBalance)),
+        String(round2(r.addition)),
         String(round2(r.interest)),
         String(round2(r.endingBalance)),
       ]);
@@ -71,10 +72,11 @@ export function useExportCsv(outputs: CalcOutputs, scheduleView: "yearly" | "mon
       return;
     }
 
-    const header = ["Year", "Starting balance", "Interest", "Ending balance"];
+    const header = ["Year", "Starting balance", "Additions", "Interest", "Ending balance"];
     const rows = outputs.schedule.map((r) => [
       String(r.year),
       String(round2(r.startingBalance)),
+      String(round2(r.additions)),
       String(round2(r.interest)),
       String(round2(r.endingBalance)),
     ]);

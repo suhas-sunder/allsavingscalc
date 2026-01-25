@@ -1,18 +1,25 @@
-import type { Frequency } from "./compound.logic";
+import type { Frequency, HorizonUnit } from "./compound.logic";
 import { LabeledNumber, LabeledSelect } from "../home/ui.primitives";
 
 export function InputsSection({
-  principal,
-  setPrincipal,
+  initialInvestment,
+  setInitialInvestment,
+  regularAddition,
+  setRegularAddition,
   annualInterestRatePct,
   setAnnualInterestRatePct,
   frequency,
   setFrequency,
-  years,
-  setYears,
+  horizonUnit,
+  setHorizonUnit,
+  horizonValue,
+  setHorizonValue,
 }: {
-  principal: number;
-  setPrincipal: (n: number) => void;
+  initialInvestment: number;
+  setInitialInvestment: (n: number) => void;
+
+  regularAddition: number;
+  setRegularAddition: (n: number) => void;
 
   annualInterestRatePct: number;
   setAnnualInterestRatePct: (n: number) => void;
@@ -20,25 +27,31 @@ export function InputsSection({
   frequency: Frequency;
   setFrequency: (v: Frequency) => void;
 
-  years: number;
-  setYears: (n: number) => void;
+  horizonUnit: HorizonUnit;
+  setHorizonUnit: (v: HorizonUnit) => void;
+
+  horizonValue: number;
+  setHorizonValue: (n: number) => void;
 }) {
   return (
     <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:p-4">
-      <div className="text-xs font-black uppercase tracking-wide text-slate-700">
-        Inputs
-      </div>
-      <div className="mt-1 text-xs text-slate-500">
-        Enter a principal, rate, compounding frequency, and timeline. Outputs update instantly.
-      </div>
-
-      <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+      <div className=" grid grid-cols-1 gap-3 md:grid-cols-2">
         <LabeledNumber
-          label="Starting principal"
-          value={principal}
-          setValue={setPrincipal}
+          label="Initial investment"
+          value={initialInvestment}
+          setValue={setInitialInvestment}
           min={0}
           max={1e9}
+          maxFractionDigits={12}
+          prefix="$"
+        />
+
+        <LabeledNumber
+          label="Regular addition (each month)"
+          value={regularAddition}
+          setValue={setRegularAddition}
+          min={-1e8}
+          max={1e8}
           maxFractionDigits={12}
           prefix="$"
         />
@@ -70,12 +83,22 @@ export function InputsSection({
           ]}
         />
 
+        <LabeledSelect<HorizonUnit>
+          label="Time horizon"
+          value={horizonUnit}
+          setValue={setHorizonUnit}
+          options={[
+            { value: "years", label: "Years" },
+            { value: "months", label: "Months" },
+          ]}
+        />
+
         <LabeledNumber
-          label="Years"
-          value={years}
-          setValue={setYears}
+          label={horizonUnit === "months" ? "Months to grow" : "Years to grow"}
+          value={horizonValue}
+          setValue={setHorizonValue}
           min={0}
-          max={100}
+          max={horizonUnit === "months" ? 1200 : 100}
           maxFractionDigits={0}
           integer
         />

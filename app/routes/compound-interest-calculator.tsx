@@ -5,9 +5,9 @@ import {
   COLORS,
   COMPOUND_FAQS,
   type Frequency,
+  type HorizonUnit,
   clampNumber,
   computeCompoundGrowth,
-  computePercents,
 } from "../client/components/compound-interest/compound.logic";
 
 import {
@@ -32,12 +32,13 @@ import { DisclaimersSection } from "../client/components/compound-interest/ui.di
 import { Link } from "react-router";
 
 const MAX_YEARS = 100;
+const MAX_MONTHS = 1200;
 
 export function meta({}: Route.MetaArgs) {
   const title =
-    "Compound Interest Calculator | Pure Growth, APY, Yearly & Monthly Schedule";
+    "Compound Interest Calculator | Additions, APY, Yearly and Monthly Schedule";
   const description =
-    "Free compound interest calculator for pure growth with no deposits or withdrawals. Enter a starting principal, APR, compounding frequency, and years to get end balance, total interest, APY, charts, a detailed schedule, plus CSV export and print-to-PDF.";
+    "Free compound interest calculator with optional regular additions. Enter an initial investment, monthly contribution, APR, compounding frequency, and a time horizon in years or months to get end balance, total interest, APY, charts, a detailed schedule, plus CSV export and print-to-PDF.";
   const canonical =
     "https://www.allsavingscalculators.com/compound-interest-calculator";
 
@@ -47,7 +48,7 @@ export function meta({}: Route.MetaArgs) {
     {
       name: "keywords",
       content:
-        "compound interest calculator, pure compound growth calculator, APY calculator, effective annual rate calculator, compounding frequency calculator, interest growth schedule, monthly compound interest table, yearly compound interest table",
+        "compound interest calculator, compound interest with contributions, APY calculator, effective annual rate calculator, compounding frequency calculator, interest growth schedule, monthly compound interest table, yearly compound interest table, investment growth calculator",
     },
     { name: "robots", content: "index,follow" },
     { name: "theme-color", content: "#0b2447" },
@@ -68,57 +69,80 @@ export function loader({}: Route.LoaderArgs) {
 export default function CompoundInterestCalculator() {
   const jsonLd = useCompoundInterestJsonLd();
 
-  const [principal, setPrincipal] = React.useState(10000);
+  const [initialInvestment, setInitialInvestment] = React.useState(10000);
+  const [regularAddition, setRegularAddition] = React.useState(0);
   const [annualInterestRatePct, setAnnualInterestRatePct] = React.useState(5);
   const [frequency, setFrequency] = React.useState<Frequency>("monthly");
-  const [years, setYears] = React.useState(10);
+
+  const [horizonUnit, setHorizonUnit] = React.useState<HorizonUnit>("years");
+  const [horizonValue, setHorizonValue] = React.useState(10);
 
   // Single source of truth for schedule resolution (also used by CSV export).
   const [scheduleView, setScheduleView] = React.useState<"yearly" | "monthly">(
     "yearly",
   );
 
-  const setYearsSafe = React.useCallback((n: number) => {
-    setYears(clampNumber(Number(n) || 0, 0, MAX_YEARS));
+  const setInitialInvestmentSafe = React.useCallback((n: number) => {
+    setInitialInvestment(clampNumber(Number(n) || 0, 0, 1e9));
   }, []);
+
+  const setRegularAdditionSafe = React.useCallback((n: number) => {
+    setRegularAddition(clampNumber(Number(n) || 0, -1e8, 1e8));
+  }, []);
+
+  const setAprSafe = React.useCallback((n: number) => {
+    setAnnualInterestRatePct(clampNumber(Number(n) || 0, -50, 100));
+  }, []);
+
+  const setHorizonValueSafe = React.useCallback(
+    (n: number, unit: HorizonUnit) => {
+      const raw = Math.floor(Number(n) || 0);
+      const max = unit === "months" ? MAX_MONTHS : MAX_YEARS;
+      setHorizonValue(clampNumber(raw, 0, max));
+    },
+    [],
+  );
+
+  const onChangeHorizonUnit = React.useCallback(
+    (u: HorizonUnit) => {
+      setHorizonUnit(u);
+      setHorizonValueSafe(horizonValue, u);
+    },
+    [horizonValue, setHorizonValueSafe],
+  );
 
   const outputs = React.useMemo(() => {
     return computeCompoundGrowth({
-      principal: clampNumber(Number(principal) || 0, 0, 1e9),
+      initialInvestment: clampNumber(Number(initialInvestment) || 0, 0, 1e9),
+      regularAddition: clampNumber(Number(regularAddition) || 0, -1e8, 1e8),
       annualInterestRatePct: clampNumber(
         Number(annualInterestRatePct) || 0,
         -50,
         100,
       ),
       frequency,
-      years: clampNumber(Number(years) || 0, 0, MAX_YEARS),
+      horizonUnit,
+      horizonValue:
+        horizonUnit === "months"
+          ? clampNumber(Math.floor(Number(horizonValue) || 0), 0, MAX_MONTHS)
+          : clampNumber(Math.floor(Number(horizonValue) || 0), 0, MAX_YEARS),
     });
-  }, [principal, annualInterestRatePct, frequency, years]);
-
-  const breakdown = React.useMemo(() => {
-    const p = Number(principal) || 0;
-    const interest = outputs.totalInterest;
-
-    return [
-      { label: "Principal", value: Math.max(p, 0), color: COLORS.softBlue },
-      {
-        label: "Interest",
-        value: Math.max(interest, 0),
-        color: COLORS.softYellow,
-      },
-    ];
-  }, [outputs.totalInterest, principal]);
-
-  const pct = React.useMemo(
-    () => computePercents(breakdown.map((b) => b.value)),
-    [breakdown],
-  );
+  }, [
+    initialInvestment,
+    regularAddition,
+    annualInterestRatePct,
+    frequency,
+    horizonUnit,
+    horizonValue,
+  ]);
 
   // Keep bar colors mapped to donut colors.
   const normalizeChartColor = React.useCallback((c: string) => {
     switch (c) {
       case COLORS.softBlue:
         return "#2563eb";
+      case COLORS.softGreen:
+        return "#16a34a";
       case COLORS.softYellow:
         return "#f59e0b";
       default:
@@ -151,21 +175,23 @@ export default function CompoundInterestCalculator() {
               <HeaderSection />
 
               <InputsSection
-                principal={principal}
-                setPrincipal={setPrincipal}
+                initialInvestment={initialInvestment}
+                setInitialInvestment={setInitialInvestmentSafe}
+                regularAddition={regularAddition}
+                setRegularAddition={setRegularAdditionSafe}
                 annualInterestRatePct={annualInterestRatePct}
-                setAnnualInterestRatePct={setAnnualInterestRatePct}
+                setAnnualInterestRatePct={setAprSafe}
                 frequency={frequency}
                 setFrequency={setFrequency}
-                years={years}
-                setYears={setYearsSafe}
+                horizonUnit={horizonUnit}
+                setHorizonUnit={onChangeHorizonUnit}
+                horizonValue={horizonValue}
+                setHorizonValue={(n) => setHorizonValueSafe(n, horizonUnit)}
               />
 
               <ResultsSection
                 outputs={outputs}
-                principal={Number(principal) || 0}
-                breakdown={breakdown}
-                pct={pct}
+                initialInvestment={Number(initialInvestment) || 0}
                 normalizeChartColor={normalizeChartColor}
               />
 

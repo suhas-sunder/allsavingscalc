@@ -4,20 +4,21 @@ import { toCurrency } from "./compound.logic";
 type ScheduleRow = {
   year: number;
   startingBalance: number;
+  additions: number;
   interest: number;
   endingBalance: number;
 };
 
 export function YearlyStackedBars({
   schedule,
-  principal,
+  initialInvestment,
   colors,
   height = 240,
   cornerRadius = 8,
 }: {
   schedule: ScheduleRow[];
-  principal: number;
-  colors: { principal: string; interest: string };
+  initialInvestment: number;
+  colors: { initial: string; additions: string; interest: string };
   height?: number;
   cornerRadius?: number;
 }) {
@@ -25,15 +26,18 @@ export function YearlyStackedBars({
   if (years === 0) return null;
 
   let interestCum = 0;
+  let additionsCum = 0;
 
   const points = schedule.map((row) => {
     interestCum += row.interest;
+    additionsCum += row.additions;
 
-    const p = Math.max(principal, 0);
+    const initial = Math.max(initialInvestment, 0);
+    const additions = Math.max(additionsCum, 0);
     const interest = Math.max(interestCum, 0);
-    const total = p + interest;
+    const total = initial + additions + interest;
 
-    return { year: row.year, principal: p, interest, total };
+    return { year: row.year, initial, additions, interest, total };
   });
 
   const maxTotal = Math.max(...points.map((p) => p.total), 1);
@@ -120,29 +124,38 @@ export function YearlyStackedBars({
         {points.map((p, idx) => {
           const x = padL + idx * (barW + gap);
 
-          const principalH = h(p.principal);
+          const initialH = h(p.initial);
+          const additionsH = h(p.additions);
           const interestH = h(p.interest);
 
           const totalTopY = y(p.total);
 
           const interestY = totalTopY;
-          const principalY = totalTopY + interestH;
+          const additionsY = totalTopY + interestH;
+          const initialY = totalTopY + interestH + additionsH;
 
           return (
             <g key={p.year}>
               <title>
-                {`Year ${p.year}\nPrincipal: ${toCurrency(p.principal)}\nInterest: ${toCurrency(
-                  p.interest,
-                )}\nTotal: ${toCurrency(p.total)}`}
+                {`Year ${p.year}\nInitial: ${toCurrency(p.initial)}\nAdditions: ${toCurrency(
+                  p.additions,
+                )}\nInterest: ${toCurrency(p.interest)}\nTotal: ${toCurrency(p.total)}`}
               </title>
 
               <g clipPath={`url(#bar-clip-${p.year})`}>
                 <rect
                   x={x}
-                  y={principalY}
+                  y={initialY}
                   width={barW}
-                  height={principalH}
-                  fill={colors.principal}
+                  height={initialH}
+                  fill={colors.initial}
+                />
+                <rect
+                  x={x}
+                  y={additionsY}
+                  width={barW}
+                  height={additionsH}
+                  fill={colors.additions}
                 />
                 <rect
                   x={x}

@@ -7,9 +7,10 @@ export function HowItWorksSection() {
 
       <div className="mt-3 grid gap-3 text-sm leading-relaxed text-slate-700">
         <p>
-          This calculator models <strong>pure compound growth</strong> from a starting principal.
-          There are no deposits, withdrawals, taxes, or inflation adjustments. You enter:
-          principal, APR, compounding frequency, and years.
+          This calculator models <strong>compound growth</strong> from an initial investment, with an
+          optional regular addition each month. It does not model withdrawals, taxes, or inflation.
+          You enter: initial investment, regular addition, APR, compounding frequency, and a time horizon
+          measured in years or months.
         </p>
 
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
@@ -31,13 +32,15 @@ export function HowItWorksSection() {
         </div>
 
         <p>
-          For the monthly schedule, we convert your chosen compounding frequency into an
-          <strong> equivalent monthly rate</strong> so the monthly rows and the yearly totals stay aligned.
-          Yearly rows are just the sum of the 12 monthly steps.
+          For the schedule, we convert your chosen compounding frequency into an
+          <strong> equivalent monthly rate</strong>. Each month we apply your regular addition, then apply
+          interest for that month using the equivalent monthly rate. Yearly rows are aggregates of the
+          monthly steps.
         </p>
 
         <p className="text-slate-600">
-          If you need to include deposits or withdrawals over time, switch to the Savings Calculator.
+          If you need taxes, inflation, irregular deposits/withdrawals, or varying contribution growth,
+          use the Savings Calculator.
         </p>
       </div>
     </section>

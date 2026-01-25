@@ -13,7 +13,7 @@ export const COMPOUND_FAQS = [
   },
   {
     q: "Does this calculator include deposits, withdrawals, taxes, or inflation?",
-    a: "No. This tool is math-first and models pure compounding on a starting principal only. If you need contributions, taxes, or inflation, use the Savings Calculator.",
+    a: "It includes optional regular additions (contributions). It does not model withdrawals, taxes, or inflation.",
   },
   {
     q: "Why does the monthly schedule show a smooth rate even for quarterly or semiannual compounding?",
@@ -39,6 +39,7 @@ export type Frequency =
 export type YearlyRow = {
   year: number;
   startingBalance: number;
+  additions: number;
   interest: number;
   endingBalance: number;
 };
@@ -47,20 +48,27 @@ export type MonthlyRow = {
   year: number;
   month: number;
   startingBalance: number;
+  addition: number;
   interest: number;
   endingBalance: number;
 };
 
+export type HorizonUnit = "years" | "months";
+
 export type CalcInputs = {
-  principal: number;
+  initialInvestment: number;
+  regularAddition: number; // applied each month
   annualInterestRatePct: number;
   frequency: Frequency;
-  years: number;
+  horizonUnit: HorizonUnit;
+  horizonValue: number; // integer count in the selected unit
 };
 
 export type CalcOutputs = {
   endBalance: number;
   totalInterest: number;
+  totalAdditions: number;
+  totalContributions: number; // initial + additions
   growthMultiple: number;
   effectiveAnnualRatePct: number;
   schedule: YearlyRow[];
@@ -81,6 +89,12 @@ export function toCurrency(n: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+}
+
+function toTotalMonths(unit: HorizonUnit, value: number) {
+  const v = Math.max(0, Math.floor(Number(value) || 0));
+  if (unit === "months") return v;
+  return v * 12;
 }
 
 export function formatPercentLoose(pct: number) {
@@ -126,32 +140,55 @@ function getEffectiveAnnualRate(apr: number, freq: Frequency) {
 }
 
 /**
- * Pure compounding on a starting principal only.
+ * Compound growth with optional regular monthly additions.
  * Implementation detail:
  * - We simulate monthly using an equivalent monthly rate derived from the chosen frequency.
+ * - Each month: apply the addition, then apply interest.
  * - Yearly rows are aggregates of the monthly simulation so the chart, schedule, and totals stay aligned.
  */
 export function computeCompoundGrowth(inputs: CalcInputs): CalcOutputs {
-  const years = Math.max(0, Math.floor(inputs.years));
+  const totalMonths = toTotalMonths(inputs.horizonUnit, inputs.horizonValue);
   const apr = (Number(inputs.annualInterestRatePct) || 0) / 100;
 
   const rMonthly = getMonthlyRateFromNominalAPR(apr, inputs.frequency);
   const effectiveAnnualRatePct =
     getEffectiveAnnualRate(apr, inputs.frequency) * 100;
 
-  let balance = Number.isFinite(inputs.principal) ? inputs.principal : 0;
-  const principal = Number.isFinite(inputs.principal) ? inputs.principal : 0;
+  const initial = Number.isFinite(inputs.initialInvestment)
+    ? inputs.initialInvestment
+    : 0;
+  const monthlyAddition = Number.isFinite(inputs.regularAddition)
+    ? inputs.regularAddition
+    : 0;
+
+  let balance = initial;
+  const principal = initial;
 
   let totalInterest = 0;
+  let totalAdditions = 0;
 
   const schedule: YearlyRow[] = [];
   const monthlySchedule: MonthlyRow[] = [];
 
-  for (let year = 1; year <= years; year++) {
-    let interestThisYear = 0;
+  let monthIndex = 0;
+  const years = Math.ceil(totalMonths / 12);
 
-    for (let month = 1; month <= 12; month++) {
+  for (let year = 1; year <= years; year++) {
+    const monthsThisYear = Math.min(12, totalMonths - monthIndex);
+    if (monthsThisYear <= 0) break;
+
+    const yearStartBalance = balance;
+    let interestThisYear = 0;
+    let additionsThisYear = 0;
+
+    for (let month = 1; month <= monthsThisYear; month++) {
       const starting = balance;
+
+      // Regular addition at the start of the month.
+      const add = monthlyAddition;
+      balance += add;
+      additionsThisYear += add;
+      totalAdditions += add;
 
       const interest = balance * rMonthly;
       balance += interest;
@@ -163,19 +200,18 @@ export function computeCompoundGrowth(inputs: CalcInputs): CalcOutputs {
         year,
         month,
         startingBalance: round2(starting),
+        addition: round2(add),
         interest: round2(interest),
         endingBalance: round2(balance),
       });
-    }
 
-    const yearStart =
-      monthlySchedule.length >= 12
-        ? monthlySchedule[monthlySchedule.length - 12].startingBalance
-        : round2(principal);
+      monthIndex += 1;
+    }
 
     schedule.push({
       year,
-      startingBalance: round2(yearStart),
+      startingBalance: round2(yearStartBalance),
+      additions: round2(additionsThisYear),
       interest: round2(interestThisYear),
       endingBalance: round2(balance),
     });
@@ -183,6 +219,8 @@ export function computeCompoundGrowth(inputs: CalcInputs): CalcOutputs {
 
   const endBalance = round2(balance);
   const totalInterestRounded = round2(totalInterest);
+  const totalAdditionsRounded = round2(totalAdditions);
+  const totalContributions = round2(principal + totalAdditionsRounded);
 
   const growthMultiple =
     principal > 0 ? round2(endBalance / principal) : 0;
@@ -190,6 +228,8 @@ export function computeCompoundGrowth(inputs: CalcInputs): CalcOutputs {
   return {
     endBalance,
     totalInterest: totalInterestRounded,
+    totalAdditions: totalAdditionsRounded,
+    totalContributions,
     growthMultiple,
     effectiveAnnualRatePct: round2(effectiveAnnualRatePct),
     schedule,

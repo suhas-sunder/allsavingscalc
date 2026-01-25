@@ -5,7 +5,7 @@ export function HeaderSection() {
         Compound Interest Calculator
       </h1>
       <p className="max-w-3xl text-xs leading-snug text-slate-600 sm:text-base">
-        Pure compound growth from a starting principal. No deposits, no withdrawals, just the math.
+        Compound growth from an initial investment, with optional regular additions. No withdrawals, taxes, or inflation adjustments.
       </p>
     </div>
   );

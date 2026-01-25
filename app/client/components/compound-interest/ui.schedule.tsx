@@ -23,7 +23,7 @@ export function ScheduleSection({
             Schedule
           </div>
           <div className="mt-1 text-xs text-slate-500">
-            Detailed breakdown by year or by month for pure compounding.
+            Detailed breakdown by year or by month (adds contributions, then compounds).
           </div>
         </div>
 
@@ -178,6 +178,7 @@ function YearlyScheduleCards({
   rows: {
     year: number;
     startingBalance: number;
+    additions: number;
     interest: number;
     endingBalance: number;
   }[];
@@ -197,6 +198,7 @@ function YearlyScheduleCards({
               <MobileCardRow label="Year" value={r.year} />
               <div className="mt-2 grid gap-2">
                 <MobileCardRow label="Starting" value={toCurrency(r.startingBalance)} />
+                <MobileCardRow label="Additions" value={toCurrency(r.additions)} />
                 <MobileCardRow label="Interest" value={toCurrency(r.interest)} />
                 <MobileCardRow label="Ending" value={toCurrency(r.endingBalance)} />
               </div>
@@ -215,6 +217,7 @@ function MonthlyScheduleCards({
     year: number;
     month: number;
     startingBalance: number;
+    addition: number;
     interest: number;
     endingBalance: number;
   }[];
@@ -238,6 +241,7 @@ function MonthlyScheduleCards({
               </div>
               <div className="mt-2 grid gap-2">
                 <MobileCardRow label="Starting" value={toCurrency(r.startingBalance)} />
+                <MobileCardRow label="Addition" value={toCurrency(r.addition)} />
                 <MobileCardRow label="Interest" value={toCurrency(r.interest)} />
                 <MobileCardRow label="Ending" value={toCurrency(r.endingBalance)} />
               </div>
@@ -315,6 +319,7 @@ function YearlyScheduleTable({
   rows: {
     year: number;
     startingBalance: number;
+    additions: number;
     interest: number;
     endingBalance: number;
   }[];
@@ -325,6 +330,7 @@ function YearlyScheduleTable({
         <tr>
           <Th>Year</Th>
           <Th align="right">Starting</Th>
+          <Th align="right">Additions</Th>
           <Th align="right">Interest</Th>
           <Th align="right">Ending</Th>
         </tr>
@@ -334,6 +340,7 @@ function YearlyScheduleTable({
           <tr key={r.year}>
             <Td subtle>{r.year}</Td>
             <Td align="right">{toCurrency(r.startingBalance)}</Td>
+            <Td align="right">{toCurrency(r.additions)}</Td>
             <Td align="right">{toCurrency(r.interest)}</Td>
             <Td align="right">{toCurrency(r.endingBalance)}</Td>
           </tr>
@@ -350,6 +357,7 @@ function MonthlyScheduleTable({
     year: number;
     month: number;
     startingBalance: number;
+    addition: number;
     interest: number;
     endingBalance: number;
   }[];
@@ -361,6 +369,7 @@ function MonthlyScheduleTable({
           <Th>Year</Th>
           <Th>Month</Th>
           <Th align="right">Starting</Th>
+          <Th align="right">Addition</Th>
           <Th align="right">Interest</Th>
           <Th align="right">Ending</Th>
         </tr>
@@ -371,6 +380,7 @@ function MonthlyScheduleTable({
             <Td subtle>{r.year}</Td>
             <Td subtle>{r.month}</Td>
             <Td align="right">{toCurrency(r.startingBalance)}</Td>
+            <Td align="right">{toCurrency(r.addition)}</Td>
             <Td align="right">{toCurrency(r.interest)}</Td>
             <Td align="right">{toCurrency(r.endingBalance)}</Td>
           </tr>

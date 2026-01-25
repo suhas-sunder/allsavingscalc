@@ -7,10 +7,9 @@ export function DisclaimersSection() {
 
       <div className="mt-3 grid gap-3 text-sm leading-relaxed text-slate-700">
         <p>
-          This tool is for informational and educational use only. It shows pure
-          mathematical compounding based on your inputs and does not account for
-          fees, taxes, inflation, minimum balance rules, or real-world posting
-          schedules.
+          This tool is for informational and educational use only. It shows mathematical compounding
+          (with optional regular additions) based on your inputs and does not account for fees, taxes,
+          inflation, minimum balance rules, or real-world posting schedules.
         </p>
         <p>
           Verify results with your financial institution or a qualified

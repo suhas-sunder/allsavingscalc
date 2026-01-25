@@ -1,10 +1,31 @@
 import * as React from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import logoSrc from "../../assets/images/logo.png";
+
+type NavItem =
+  | { kind: "route"; to: string; label: string }
+  | { kind: "hash"; href: string; label: string };
+
+const NAV_ITEMS: NavItem[] = [
+  { kind: "route", to: "/", label: "Home" },
+  {
+    kind: "route",
+    to: "/compound-interest-calculator",
+    label: "Compound Interest",
+  },
+  {
+    kind: "route",
+    to: "/savings-balance-over-time-calculator",
+    label: "Savings Balance Over Time",
+  },
+  { kind: "hash", href: "#faq", label: "FAQ" },
+];
 
 export default function Navbar() {
   const [open, setOpen] = React.useState(false);
+  const location = useLocation();
 
+  // Close menu on ESC
   React.useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
@@ -13,16 +34,17 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
+  // Close mobile menu when the route changes
+  React.useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
+
   return (
     <header className="sticky top-0 z-40 bg-white">
       <div className="relative">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-3 py-3 sm:px-6 sm:py-4">
           {/* Left: Logo + Brand */}
-          <Link
-            to="/"
-            className="flex min-w-0 items-center gap-3"
-            onClick={() => setOpen(false)}
-          >
+          <Link to="/" className="flex min-w-0 items-center gap-3">
             <img
               src={logoSrc}
               alt="AllSavingsCalculators"
@@ -35,12 +57,38 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <nav className="hidden items-center gap-6 sm:flex">
-            <a
-              href="#faq"
-              className="text-sm font-bold text-slate-800 transition-colors hover:text-slate-600 hover:opacity-80"
-            >
-              FAQ
-            </a>
+            {NAV_ITEMS.map((item) => {
+              if (item.kind === "hash") {
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className="text-sm font-bold text-slate-800 transition-colors hover:text-slate-600 hover:opacity-80"
+                  >
+                    {item.label}
+                  </a>
+                );
+              }
+
+              const isActive =
+                item.to === "/"
+                  ? location.pathname === "/"
+                  : location.pathname.startsWith(item.to);
+
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  aria-current={isActive ? "page" : undefined}
+                  className={[
+                    "text-sm font-bold transition-colors hover:text-slate-600 hover:opacity-80",
+                    isActive ? "text-slate-900" : "text-slate-800",
+                  ].join(" ")}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Mobile burger */}
@@ -123,29 +171,76 @@ export default function Navbar() {
         >
           <div className="mx-auto max-w-6xl px-3 pb-3">
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-900/10">
-              <a
-                href="#faq"
-                onClick={() => setOpen(false)}
-                className="flex items-center justify-between px-4 py-4 text-sm font-bold text-slate-900 transition hover:bg-slate-50"
-              >
-                FAQ
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  aria-hidden="true"
-                  className="text-slate-400"
-                >
-                  <path
-                    d="M9 18l6-6-6-6"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </a>
+              {NAV_ITEMS.map((item, idx) => {
+                if (item.kind === "hash") {
+                  return (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      className={[
+                        "flex items-center justify-between px-4 py-4 text-sm font-bold text-slate-900 transition hover:bg-slate-50",
+                        idx !== 0 ? "border-t border-slate-200" : "",
+                      ].join(" ")}
+                    >
+                      {item.label}
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                        className="text-slate-400"
+                      >
+                        <path
+                          d="M9 18l6-6-6-6"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </a>
+                  );
+                }
+
+                const isActive =
+                  item.to === "/"
+                    ? location.pathname === "/"
+                    : location.pathname.startsWith(item.to);
+
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={() => setOpen(false)}
+                    className={[
+                      "flex items-center justify-between px-4 py-4 text-sm font-bold transition hover:bg-slate-50",
+                      idx !== 0 ? "border-t border-slate-200" : "",
+                      isActive ? "text-slate-900" : "text-slate-900",
+                    ].join(" ")}
+                  >
+                    {item.label}
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      aria-hidden="true"
+                      className="text-slate-400"
+                    >
+                      <path
+                        d="M9 18l6-6-6-6"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>
