@@ -104,6 +104,10 @@ export function LabeledNumber({
   suffix?: string;
   integer?: boolean;
 }) {
+  const inputId = React.useId();
+  const errorId = `${inputId}-err`;
+  const [error, setError] = React.useState<string | null>(null);
+
   const [text, setText] = React.useState(() => {
     const v = Number(value) || 0;
     return integer ? formatNumberLoose(Math.trunc(v)) : formatNumberLoose(v);
@@ -117,6 +121,11 @@ export function LabeledNumber({
 
   const hasPrefix = Boolean(prefix);
   const hasSuffix = Boolean(suffix);
+
+  const isInProgress = (raw: string) => {
+    const t = raw.trim();
+    return t === "" || t === "-" || t === "." || t === "-.";
+  };
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
@@ -138,9 +147,11 @@ export function LabeledNumber({
         ) : null}
 
         <input
+          id={inputId}
           className={[
             "w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-black text-slate-900 shadow-inner shadow-slate-900/5",
             "outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100 sm:text-base",
+            error ? "border-red-500 focus:border-red-600 focus:ring-red-100" : "",
             hasPrefix ? "pl-12" : "",
             hasSuffix ? "pr-24" : "",
           ].join(" ")}
@@ -150,14 +161,34 @@ export function LabeledNumber({
             const raw = e.target.value;
             setText(raw);
 
+            if (isInProgress(raw)) {
+              setError(null);
+              return;
+            }
+
             const parsed = parseNumericInput(raw);
-            if (parsed === null) return;
+            if (parsed === null) {
+              setError("Enter a valid number.");
+              return;
+            }
+
+            setError(null);
 
             const clamped = Math.max(min, Math.min(max, parsed));
             setValue(integer ? Math.trunc(clamped) : clamped);
           }}
           onBlur={() => {
             const parsed = parseNumericInput(text);
+
+            if (!isInProgress(text) && parsed === null) {
+              setError("Enter a valid number.");
+              const v = Number(value) || 0;
+              setText(integer ? formatNumberLoose(Math.trunc(v)) : formatNumberLoose(v));
+              return;
+            }
+
+            setError(null);
+
             const safe = parsed === null ? Number(value) || 0 : parsed;
             const clamped = Math.max(min, Math.min(max, safe));
             const final = integer ? Math.trunc(clamped) : clamped;
@@ -167,19 +198,24 @@ export function LabeledNumber({
             if (!didClamp && parsed !== null) {
               setText(formatNumericStringPreserveFraction(text, integer));
             } else {
-              setText(
-                integer ? formatNumberLoose(final) : formatNumberLoose(final),
-              );
+              setText(integer ? formatNumberLoose(final) : formatNumberLoose(final));
             }
 
             setValue(final);
           }}
           aria-label={label}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? errorId : undefined}
         />
+
+        <div id={errorId} className="sr-only" aria-live="polite">
+          {error ?? ""}
+        </div>
       </div>
     </div>
   );
 }
+
 
 export function LabeledSelect<T extends string>({
   label,

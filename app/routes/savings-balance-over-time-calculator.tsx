@@ -1,6 +1,8 @@
 import * as React from "react";
 import type { Route } from "./+types/savings-balance-over-time-calculator";
 
+import { json } from "@remix-run/node";
+
 import {
   COLORS,
   FAQS,
@@ -26,21 +28,32 @@ import {
   ActionsBar,
   usePrint,
   useExportCsv,
+  type HistorySnapshot,
 } from "../client/components/savings-balance-over-time/ui.actions";
 import { HowItWorksSection } from "../client/components/savings-balance-over-time/ui.howitworks";
 import { FAQSection } from "../client/components/savings-balance-over-time/ui.faq";
 import { DisclaimersSection } from "../client/components/savings-balance-over-time/ui.disclaimers";
 
+import {
+  buildCanonicalUrl,
+  getSiteUrlFromEnv,
+  pickPreferredHost,
+} from "../client/components/savings-balance-over-time/seo.server";
+import { useLoaderData } from "react-router";
+
 const MAX_YEARS = 100;
 const ROUTE_SLUG = "/savings-balance-over-time-calculator";
-const CANONICAL = `https://www.allsavingscalculators.com${ROUTE_SLUG}`;
+const DEFAULT_SITE_URL = "https://www.allsavingscalculators.com";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ data }: Route.MetaArgs) {
   const title =
     "Savings Balance Over Time Calculator | Chart Balance Growth by Period";
   const description =
     "Visualize how your savings balance grows over time. Chart-forward view of balance progression by month or year with contribution timing, compounding, taxes on interest, and optional inflation adjustment. Includes schedules, CSV export, and print-to-PDF.";
-  const canonical = CANONICAL;
+
+  // IMPORTANT: Route.MetaArgs types data as `never` in your setup, so do not read loader data here.
+  // Canonical must be stable anyway.
+  const canonical = `${DEFAULT_SITE_URL}${ROUTE_SLUG}`;
 
   return [
     { title },
@@ -58,16 +71,36 @@ export function meta({}: Route.MetaArgs) {
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { property: "og:url", content: canonical },
+    { property: "og:site_name", content: "AllSavingsCalculators" },
     { name: "twitter:card", content: "summary" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:url", content: canonical },
   ];
 }
 
-export function loader({}: Route.LoaderArgs) {
-  return { ok: true };
+export function loader({ request }: Route.LoaderArgs) {
+  const siteUrl = pickPreferredHost(
+    getSiteUrlFromEnv(process.env, DEFAULT_SITE_URL),
+  );
+  const canonical = buildCanonicalUrl(siteUrl, ROUTE_SLUG);
+
+  return json(
+    { ok: true, canonical },
+    {
+      headers: {
+        // Helps crawlers that pay attention to response headers.
+        Link: `<${canonical}>; rel="canonical"`,
+        "X-Robots-Tag": "index, follow",
+      },
+    },
+  );
 }
 
 export default function SavingsBalanceOverTimeCalculator() {
-  const jsonLd = useSavingsBalanceOverTimeJsonLd();
+  const data = useLoaderData<{ ok: boolean; canonical: string }>();
+  const canonical = data?.canonical ?? `${DEFAULT_SITE_URL}${ROUTE_SLUG}`;
+  const jsonLd = useSavingsBalanceOverTimeJsonLd(canonical);
 
   const [initialDeposit, setInitialDeposit] = React.useState(20000);
 
@@ -206,6 +239,51 @@ export default function SavingsBalanceOverTimeCalculator() {
   const onPrint = usePrint();
   const onExportCsv = useExportCsv(outputs, scheduleView);
 
+  const historySnapshot: HistorySnapshot = React.useMemo(
+    () => ({
+      id: "current",
+      savedAt: new Date(0).toISOString(),
+      scheduleView,
+      inputs: {
+        initialDeposit: Number(initialDeposit) || 0,
+        annualContribution: Number(annualContribution) || 0,
+        annualContributionGrowthPct: Number(annualContributionGrowthPct) || 0,
+        monthlyContribution: Number(monthlyContribution) || 0,
+        monthlyContributionGrowthPct: Number(monthlyContributionGrowthPct) || 0,
+        annualInterestRatePct: Number(annualInterestRatePct) || 0,
+        frequency,
+        years: Number(years) || 0,
+        taxRatePct: Number(taxRatePct) || 0,
+        inflationRatePct: Number(inflationRatePct) || 0,
+        contributionsAtPeriodEnd,
+      },
+      outputs: {
+        endBalance: outputs.endBalance,
+        realEndBalance: outputs.realEndBalance,
+        totalContributionsExInitial: outputs.totalContributionsExInitial,
+        totalInterest: outputs.totalInterest,
+      },
+    }),
+    [
+      scheduleView,
+      initialDeposit,
+      annualContribution,
+      annualContributionGrowthPct,
+      monthlyContribution,
+      monthlyContributionGrowthPct,
+      annualInterestRatePct,
+      frequency,
+      years,
+      taxRatePct,
+      inflationRatePct,
+      contributionsAtPeriodEnd,
+      outputs.endBalance,
+      outputs.realEndBalance,
+      outputs.totalContributionsExInitial,
+      outputs.totalInterest,
+    ],
+  );
+
   return (
     <PageShell>
       <div className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-6">
@@ -259,7 +337,7 @@ export default function SavingsBalanceOverTimeCalculator() {
                 outputs={outputs}
               />
 
-              <ActionsBar onExportCsv={onExportCsv} onPrint={onPrint} />
+              <ActionsBar onExportCsv={onExportCsv} onPrint={onPrint} historySnapshot={historySnapshot} />
             </div>
           </CardShell>
         </section>

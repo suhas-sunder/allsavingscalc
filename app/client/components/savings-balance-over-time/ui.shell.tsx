@@ -1,9 +1,6 @@
 import * as React from "react";
 import { FAQS } from "./savings.logic";
 
-const ROUTE_SLUG = "/savings-balance-over-time-calculator";
-const CANONICAL = `https://www.allsavingscalculators.com${ROUTE_SLUG}`;
-
 export function useMediaQuery(query: string) {
   const [matches, setMatches] = React.useState(() => {
     if (typeof window === "undefined") return false;
@@ -54,13 +51,19 @@ export function JsonLdScript({ jsonLd }: { jsonLd: any }) {
   );
 }
 
-export function useSavingsBalanceOverTimeJsonLd() {
+export function useSavingsBalanceOverTimeJsonLd(canonical: string) {
   return React.useMemo(() => {
-    const canonical = CANONICAL;
-    const faqId = `${canonical}#faq`;
-    const appId = `${canonical}#calculator`;
-    const orgId = `${canonical}#organization`;
-    const siteId = `https://www.allsavingscalculators.com/#website`;
+    const safeCanonical = canonical;
+    let origin = "https://www.allsavingscalculators.com";
+    try {
+      origin = new URL(safeCanonical).origin;
+    } catch {
+      // If canonical is somehow not absolute, fall back to the production origin.
+    }
+    const faqId = `${safeCanonical}#faq`;
+    const appId = `${safeCanonical}#calculator`;
+    const orgId = `${safeCanonical}#organization`;
+    const siteId = `${origin}/#website`;
 
     const faqs = (FAQS || [])
       .filter((f) => f && typeof f.q === "string" && typeof f.a === "string")
@@ -83,19 +86,19 @@ export function useSavingsBalanceOverTimeJsonLd() {
           "@type": "Organization",
           "@id": orgId,
           name: "AllSavingsCalculators",
-          url: "https://www.allsavingscalculators.com/",
+          url: `${origin}/`,
         },
         {
           "@type": "WebSite",
           "@id": siteId,
-          url: "https://www.allsavingscalculators.com/",
+          url: `${origin}/`,
           name: "AllSavingsCalculators",
           publisher: { "@id": orgId },
         },
         {
           "@type": "WebPage",
-          "@id": canonical,
-          url: canonical,
+          "@id": safeCanonical,
+          url: safeCanonical,
           name: "Savings Balance Over Time Calculator",
           description,
           isPartOf: { "@id": siteId },
@@ -108,7 +111,7 @@ export function useSavingsBalanceOverTimeJsonLd() {
           name: "Savings Balance Over Time Calculator",
           applicationCategory: "FinanceApplication",
           operatingSystem: "Web",
-          url: canonical,
+          url: safeCanonical,
           description:
             "Interactive balance progression tool with charts and schedules to project savings growth over time.",
           offers: {
@@ -121,12 +124,12 @@ export function useSavingsBalanceOverTimeJsonLd() {
         {
           "@type": "FAQPage",
           "@id": faqId,
-          url: canonical,
+          url: safeCanonical,
           mainEntity: faqs,
-          isPartOf: { "@id": canonical },
+          isPartOf: { "@id": safeCanonical },
           publisher: { "@id": orgId },
         },
       ],
     };
-  }, []);
+  }, [canonical]);
 }
