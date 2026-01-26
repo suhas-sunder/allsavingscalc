@@ -8,13 +8,13 @@ export function HowItWorksSection() {
         How this calculator works
       </h2>
 
-      <div className="mt-3 grid gap-3 text-sm leading-relaxed text-slate-700">
+      <div className="mt-3 grid gap-3 text-normal leading-relaxed text-slate-700">
         <div className="grid gap-2 sm:grid-cols-3">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
             <div className="text-xs font-black uppercase tracking-wide text-slate-700">
               The utility
             </div>
-            <div className="mt-1 text-sm leading-relaxed text-slate-700">
+            <div className="mt-1 text-normal leading-relaxed text-slate-700">
               See your balance change over time with a chart plus a clean schedule.
             </div>
           </div>
@@ -23,7 +23,7 @@ export function HowItWorksSection() {
             <div className="text-xs font-black uppercase tracking-wide text-slate-700">
               Best for
             </div>
-            <ul className="mt-1 ml-5 list-disc space-y-1 text-sm leading-relaxed text-slate-700">
+            <ul className="mt-1 ml-5 list-disc space-y-1 text-normal leading-relaxed text-slate-700">
               <li>Comparing monthly vs yearly contributions</li>
               <li>Seeing how compounding and timing change the path</li>
             </ul>
@@ -33,7 +33,7 @@ export function HowItWorksSection() {
             <div className="text-xs font-black uppercase tracking-wide text-slate-700">
               What you get
             </div>
-            <ul className="mt-1 ml-5 list-disc space-y-1 text-sm leading-relaxed text-slate-700">
+            <ul className="mt-1 ml-5 list-disc space-y-1 text-normal leading-relaxed text-slate-700">
               <li>Monthly or yearly timeline</li>
               <li>CSV export and print-to-PDF</li>
               <li>Saved results history (on this device)</li>

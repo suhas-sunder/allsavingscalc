@@ -9,23 +9,31 @@ export const COLORS = {
 export const FAQS = [
   {
     q: "Does this match what my bank will pay?",
-    a: "It is a close estimate, but banks can post interest on specific dates, apply different day-count rules, and round at different steps. Use your bank’s terms when you need exact figures.",
+    a: "It is a strong estimate for planning, but exact payouts can differ. Banks may use specific posting dates, day-count conventions, minimum balance rules, and rounding at different steps. If you need precision down to the penny, use your account’s stated interest method and statements as the source of truth.",
   },
   {
     q: "What compounding frequency should I pick?",
-    a: "Choose the frequency your account uses (monthly, daily, etc.). More frequent compounding credits interest more often, which can slightly increase the end balance at the same APR.",
+    a: "Pick the frequency your account actually uses (monthly, daily, continuous, and so on). More frequent compounding credits interest sooner, which can slightly increase the end balance at the same APR. If you are unsure, monthly is a common default for consumer savings products.",
   },
   {
-    q: "How are taxes and inflation applied here?",
-    a: "Tax is modeled as a percentage of interest earned each period. Inflation adjustment converts the final amount into today’s dollars using the inflation rate you enter.",
+    q: "How do tax on interest and inflation change the results?",
+    a: "Tax reduces interest as it is earned: each period’s gross interest is multiplied by (1 − tax rate) before being added to the balance. Inflation adjustment does not change the nominal account value. It reports an additional inflation-adjusted end balance so you can compare purchasing power in today’s dollars.",
   },
   {
     q: "Can contributions be negative?",
-    a: "Yes. A negative contribution models withdrawals. If withdrawals overwhelm the balance, the schedule will reflect a lower or zero balance depending on the inputs.",
+    a: "Yes. A negative contribution represents a withdrawal. If withdrawals exceed the available balance in a period, the schedule will show the balance dropping accordingly. For planning, treat negative contributions as periodic cash needs coming out of savings.",
   },
   {
     q: "Why does switching annual vs monthly contributions change the result?",
-    a: "The timing changes. Monthly contributions usually start earning interest earlier within the year, and the calculator applies growth to contributions based on the selected cadence.",
+    a: "It is mostly timing. Monthly contributions get added throughout the year, so more of your money starts earning interest earlier. Annual contributions land once per year. This calculator also applies contribution growth based on the selected cadence, so the pattern of deposits changes when you switch modes.",
+  },
+  {
+    q: "What does “contributions at period end” mean?",
+    a: "It controls deposit timing inside each period. At the beginning of the period, your deposit earns interest for the full period. At the end of the period, it earns interest starting next period. For monthly mode, the period is a month. For annual mode, it is the year-end deposit.",
+  },
+  {
+    q: "Why can my schedule view show monthly rows even if I pick quarterly compounding?",
+    a: "The schedule is displayed monthly or yearly for readability. Internally, the calculator converts your selected compounding frequency into an effective monthly rate so it can apply deposits, tax on interest, and timing rules consistently month by month.",
   },
 ];
 

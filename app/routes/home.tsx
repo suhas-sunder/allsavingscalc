@@ -281,7 +281,7 @@ export default function Home() {
       <div className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-6">
         <section className="grid gap-4">
           <CardShell>
-            <div className="p-3 sm:p-5">
+            <div id="calculator" className="p-3 sm:p-5">
               <HeaderSection />
 
               <InputsSection

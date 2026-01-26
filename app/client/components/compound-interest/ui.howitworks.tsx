@@ -22,7 +22,7 @@ export function HowItWorksSection() {
         How it works
       </h2>
 
-      <div className="mt-3 grid gap-4 text-sm leading-relaxed text-slate-700">
+      <div className="mt-3 grid gap-4 text-normal leading-relaxed text-slate-700">
         <p>
           This page models <strong>compound interest</strong> for a single
           account or investment. You can include a recurring monthly
@@ -153,7 +153,7 @@ export function HowItWorksSection() {
               Equivalent monthly rate
             </div>
 
-            <p className="mt-2 text-sm text-slate-700">
+            <p className="mt-2 text-normal text-slate-700">
               Discrete compounding uses the interest rate converted to a monthly
               equivalent so results can be applied consistently in a
               month-by-month schedule.
@@ -167,7 +167,7 @@ export function HowItWorksSection() {
               {" − 1"}
             </div>
 
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-normal text-slate-600">
               Here{" "}
               <strong>
                 {"r"}
