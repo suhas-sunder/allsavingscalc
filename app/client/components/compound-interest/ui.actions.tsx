@@ -2,6 +2,11 @@ import * as React from "react";
 import type { CalcOutputs } from "./compound.logic";
 import { round2 } from "./compound.logic";
 
+function moneyCsv(n: number) {
+  const v = Number.isFinite(n) ? n : 0;
+  return round2(v).toFixed(2);
+}
+
 export function ActionsBar({
   onPrint,
   onExportCsv,
@@ -50,10 +55,10 @@ export function useExportCsv(outputs: CalcOutputs, scheduleView: "yearly" | "mon
       const rows = outputs.monthlySchedule.map((r) => [
         String(r.year),
         String(r.month),
-        String(round2(r.startingBalance)),
-        String(round2(r.addition)),
-        String(round2(r.interest)),
-        String(round2(r.endingBalance)),
+        moneyCsv(r.startingBalance),
+        moneyCsv(r.addition),
+        moneyCsv(r.interest),
+        moneyCsv(r.endingBalance),
       ]);
       const csv =
         [header, ...rows].map((row) => row.map(esc).join(",")).join("\n") + "\n";
@@ -75,10 +80,10 @@ export function useExportCsv(outputs: CalcOutputs, scheduleView: "yearly" | "mon
     const header = ["Year", "Starting balance", "Additions", "Interest", "Ending balance"];
     const rows = outputs.schedule.map((r) => [
       String(r.year),
-      String(round2(r.startingBalance)),
-      String(round2(r.additions)),
-      String(round2(r.interest)),
-      String(round2(r.endingBalance)),
+      moneyCsv(r.startingBalance),
+      moneyCsv(r.additions),
+      moneyCsv(r.interest),
+      moneyCsv(r.endingBalance),
     ]);
     const csv =
       [header, ...rows].map((row) => row.map(esc).join(",")).join("\n") + "\n";

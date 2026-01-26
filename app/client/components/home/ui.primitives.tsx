@@ -99,6 +99,8 @@ export function LabeledNumber({
   suffix?: string;
   integer?: boolean;
 }) {
+  const inputId = React.useId();
+
   const [text, setText] = React.useState(() => {
     const v = Number(value) || 0;
     return integer ? formatNumberLoose(Math.trunc(v)) : formatNumberLoose(v);
@@ -115,9 +117,12 @@ export function LabeledNumber({
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-      <div className="text-xs font-black uppercase tracking-wide text-slate-700">
+      <label
+        htmlFor={inputId}
+        className="text-xs font-black uppercase tracking-wide text-slate-700"
+      >
         {label}
-      </div>
+      </label>
 
       <div className="relative mt-2">
         {hasPrefix ? (
@@ -133,6 +138,7 @@ export function LabeledNumber({
         ) : null}
 
         <input
+          id={inputId}
           className={[
             "w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-black text-slate-900 shadow-inner shadow-slate-900/5",
             "outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100 sm:text-base",
@@ -189,12 +195,18 @@ export function LabeledSelect<T extends string>({
   setValue: (v: T) => void;
   options: { value: T; label: string }[];
 }) {
+  const selectId = React.useId();
+
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-      <div className="text-xs font-black uppercase tracking-wide text-slate-700">
+      <label
+        htmlFor={selectId}
+        className="text-xs font-black uppercase tracking-wide text-slate-700"
+      >
         {label}
-      </div>
+      </label>
       <select
+        id={selectId}
         className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-black text-slate-900 shadow-sm outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
         value={value}
         onChange={(e) => setValue(e.target.value as T)}

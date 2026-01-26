@@ -25,6 +25,11 @@ function ContributionAmount({
   monthlyContribution: number;
   setMonthlyContribution: (n: number) => void;
 }) {
+  // Keep clamping consistent with the route calculation clamp so the input,
+  // results, schedule, CSV export, and print output never disagree.
+  const MIN_CONTRIB = -1e8;
+  const MAX_CONTRIB = 1e8;
+
   const value =
     contributionMode === "yearly" ? annualContribution : monthlyContribution;
 
@@ -73,7 +78,7 @@ function ContributionAmount({
             const parsed = parseNumericInput(raw);
             if (parsed === null) return;
 
-            const clamped = Math.max(-1e12, Math.min(1e12, parsed));
+            const clamped = Math.max(MIN_CONTRIB, Math.min(MAX_CONTRIB, parsed));
 
             if (contributionMode === "yearly") setAnnualContribution(clamped);
             else setMonthlyContribution(clamped);
@@ -81,7 +86,8 @@ function ContributionAmount({
           onBlur={() => {
             const parsed = parseNumericInput(text);
             const safe = parsed === null ? Number(value) || 0 : parsed;
-            const clamped = Math.max(-1e12, Math.min(1e12, safe));
+
+            const clamped = Math.max(MIN_CONTRIB, Math.min(MAX_CONTRIB, safe));
 
             const didClamp = clamped !== safe;
 

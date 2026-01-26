@@ -14,6 +14,8 @@ export function ScheduleSection({
   const DESKTOP_PREVIEW_ROWS = 12;
   const [yearlyExpanded, setYearlyExpanded] = React.useState(false);
   const [monthlyExpanded, setMonthlyExpanded] = React.useState(false);
+  const yearlyTableId = React.useId();
+  const monthlyTableId = React.useId();
 
   return (
     <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:p-4">
@@ -76,6 +78,7 @@ export function ScheduleSection({
               previewCount={DESKTOP_PREVIEW_ROWS}
               expanded={yearlyExpanded}
               setExpanded={setYearlyExpanded}
+              controlsId={yearlyTableId}
               renderTable={(visible) => <YearlyScheduleTable rows={visible} />}
               labelSingular="year"
               labelPlural="years"
@@ -94,6 +97,7 @@ export function ScheduleSection({
               previewCount={DESKTOP_PREVIEW_ROWS}
               expanded={monthlyExpanded}
               setExpanded={setMonthlyExpanded}
+              controlsId={monthlyTableId}
               renderTable={(visible) => <MonthlyScheduleTable rows={visible} />}
               labelSingular="row"
               labelPlural="rows"
@@ -110,6 +114,7 @@ function DesktopTableWithCap<T>({
   previewCount,
   expanded,
   setExpanded,
+  controlsId,
   renderTable,
   labelSingular,
   labelPlural,
@@ -118,6 +123,7 @@ function DesktopTableWithCap<T>({
   previewCount: number;
   expanded: boolean;
   setExpanded: (v: boolean) => void;
+  controlsId: string;
   renderTable: (visible: T[]) => React.ReactNode;
   labelSingular: string;
   labelPlural: string;
@@ -134,7 +140,9 @@ function DesktopTableWithCap<T>({
           expanded ? "max-h-[60vh] overflow-y-auto" : "",
         ].join(" ")}
       >
-        <div className="p-2">{renderTable(visible)}</div>
+        <div id={controlsId} className="p-2">
+          {renderTable(visible)}
+        </div>
       </div>
 
       {showToggle ? (
@@ -142,6 +150,8 @@ function DesktopTableWithCap<T>({
           <button
             type="button"
             onClick={() => setExpanded(!expanded)}
+            aria-expanded={expanded}
+            aria-controls={controlsId}
             className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-black text-slate-900 shadow-sm transition hover:bg-slate-50"
           >
             {expanded

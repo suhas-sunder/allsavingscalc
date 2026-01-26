@@ -2,10 +2,18 @@ import * as React from "react";
 import type { Route } from "./+types/compound-interest-calculator";
 
 import {
+  buildCanonical,
+  isLikelyDuplicateQuery,
+  normalizeJsonLdToCanonical,
+} from "../client/components/compound-interest/seo";
+
+import {
   COLORS,
   COMPOUND_FAQS,
   type Frequency,
   type HorizonUnit,
+  type ContributionTiming,
+  type ContributionGrowthFrequency,
   clampNumber,
   computeCompoundGrowth,
 } from "../client/components/compound-interest/compound.logic";
@@ -27,20 +35,25 @@ import {
   useExportCsv,
 } from "../client/components/compound-interest/ui.actions";
 import { HowItWorksSection } from "../client/components/compound-interest/ui.howitworks";
-import { FAQSection } from "../client/components/home/ui.faq";
+import { FAQSection } from "../client/components/compound-interest/ui.faq";
 import { DisclaimersSection } from "../client/components/compound-interest/ui.disclaimers";
+import { HistorySection } from "../client/components/compound-interest/ui.history";
 import { Link } from "react-router";
 
 const MAX_YEARS = 100;
 const MAX_MONTHS = 1200;
 
-export function meta({}: Route.MetaArgs) {
+const ROUTE_PATH = "/compound-interest-calculator";
+const CANONICAL_URL = buildCanonical(ROUTE_PATH);
+
+export function meta({ data }: Route.MetaArgs) {
   const title =
     "Compound Interest Calculator | Additions, APY, Yearly and Monthly Schedule";
   const description =
     "Free compound interest calculator with optional regular additions. Enter an initial investment, monthly contribution, APR, compounding frequency, and a time horizon in years or months to get end balance, total interest, APY, charts, a detailed schedule, plus CSV export and print-to-PDF.";
-  const canonical =
-    "https://www.allsavingscalculators.com/compound-interest-calculator";
+
+  const canonical = data?.canonical ?? CANONICAL_URL;
+  const robots = data?.robots ?? "index,follow";
 
   return [
     { title },
@@ -50,24 +63,38 @@ export function meta({}: Route.MetaArgs) {
       content:
         "compound interest calculator, compound interest with contributions, APY calculator, effective annual rate calculator, compounding frequency calculator, interest growth schedule, monthly compound interest table, yearly compound interest table, investment growth calculator",
     },
-    { name: "robots", content: "index,follow" },
+    { name: "robots", content: robots },
     { name: "theme-color", content: "#0b2447" },
     { name: "viewport", content: "width=device-width, initial-scale=1" },
     { tagName: "link", rel: "canonical", href: canonical },
+
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { property: "og:url", content: canonical },
+
     { name: "twitter:card", content: "summary" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:url", content: canonical },
   ];
 }
 
-export function loader({}: Route.LoaderArgs) {
-  return { ok: true };
+export function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const robots = isLikelyDuplicateQuery(url.searchParams)
+    ? "noindex,follow"
+    : "index,follow";
+
+  return { ok: true, canonical: CANONICAL_URL, robots };
 }
 
 export default function CompoundInterestCalculator() {
-  const jsonLd = useCompoundInterestJsonLd();
+  const jsonLdRaw = useCompoundInterestJsonLd();
+  const jsonLd = React.useMemo(
+    () => normalizeJsonLdToCanonical(jsonLdRaw, CANONICAL_URL),
+    [jsonLdRaw],
+  );
 
   const [initialInvestment, setInitialInvestment] = React.useState(10000);
   const [regularAddition, setRegularAddition] = React.useState(0);
@@ -77,28 +104,69 @@ export default function CompoundInterestCalculator() {
   const [horizonUnit, setHorizonUnit] = React.useState<HorizonUnit>("years");
   const [horizonValue, setHorizonValue] = React.useState(10);
 
+  // Advanced options (collapsed by default in UI). Defaults preserve legacy behavior.
+  const [contributionDelayMonths, setContributionDelayMonths] =
+    React.useState(0);
+  const [contributionTiming, setContributionTiming] =
+    React.useState<ContributionTiming>("start");
+  const [contributionGrowthAnnualPct, setContributionGrowthAnnualPct] =
+    React.useState(0);
+
+  const [contributionGrowthFrequency, setContributionGrowthFrequency] =
+    React.useState<ContributionGrowthFrequency>("annual");
+
   // Single source of truth for schedule resolution (also used by CSV export).
   const [scheduleView, setScheduleView] = React.useState<"yearly" | "monthly">(
     "yearly",
   );
 
   const setInitialInvestmentSafe = React.useCallback((n: number) => {
-    setInitialInvestment(clampNumber(Number(n) || 0, 0, 1e9));
+    if (!Number.isFinite(n)) return;
+    setInitialInvestment(clampNumber(n, 0, 1e9));
   }, []);
 
   const setRegularAdditionSafe = React.useCallback((n: number) => {
-    setRegularAddition(clampNumber(Number(n) || 0, -1e8, 1e8));
+    if (!Number.isFinite(n)) return;
+    // Regular additions represent contributions. Withdrawals are out of scope for this calculator.
+    setRegularAddition(clampNumber(n, 0, 1e8));
   }, []);
 
   const setAprSafe = React.useCallback((n: number) => {
-    setAnnualInterestRatePct(clampNumber(Number(n) || 0, -50, 100));
+    if (!Number.isFinite(n)) return;
+    setAnnualInterestRatePct(clampNumber(n, -50, 100));
   }, []);
 
   const setHorizonValueSafe = React.useCallback(
     (n: number, unit: HorizonUnit) => {
-      const raw = Math.floor(Number(n) || 0);
+      if (!Number.isFinite(n)) return;
+      const raw = Math.floor(n);
       const max = unit === "months" ? MAX_MONTHS : MAX_YEARS;
       setHorizonValue(clampNumber(raw, 0, max));
+    },
+    [],
+  );
+
+  const setContributionDelayMonthsSafe = React.useCallback((n: number) => {
+    if (!Number.isFinite(n)) return;
+    const raw = Math.floor(n);
+    setContributionDelayMonths(clampNumber(raw, 0, MAX_MONTHS));
+  }, []);
+
+  const setContributionGrowthAnnualPctSafe = React.useCallback((n: number) => {
+    if (!Number.isFinite(n)) return;
+    setContributionGrowthAnnualPct(clampNumber(n, 0, 1000));
+  }, []);
+
+  const setContributionTimingSafe = React.useCallback(
+    (v: ContributionTiming) => {
+      setContributionTiming(v === "end" ? "end" : "start");
+    },
+    [],
+  );
+
+  const setContributionGrowthFrequencySafe = React.useCallback(
+    (v: ContributionGrowthFrequency) => {
+      setContributionGrowthFrequency(v === "monthly" ? "monthly" : "annual");
     },
     [],
   );
@@ -114,7 +182,7 @@ export default function CompoundInterestCalculator() {
   const outputs = React.useMemo(() => {
     return computeCompoundGrowth({
       initialInvestment: clampNumber(Number(initialInvestment) || 0, 0, 1e9),
-      regularAddition: clampNumber(Number(regularAddition) || 0, -1e8, 1e8),
+      regularAddition: clampNumber(Number(regularAddition) || 0, 0, 1e8),
       annualInterestRatePct: clampNumber(
         Number(annualInterestRatePct) || 0,
         -50,
@@ -126,6 +194,20 @@ export default function CompoundInterestCalculator() {
         horizonUnit === "months"
           ? clampNumber(Math.floor(Number(horizonValue) || 0), 0, MAX_MONTHS)
           : clampNumber(Math.floor(Number(horizonValue) || 0), 0, MAX_YEARS),
+
+      // Advanced options
+      contributionDelayMonths: clampNumber(
+        Math.floor(Number(contributionDelayMonths) || 0),
+        0,
+        MAX_MONTHS,
+      ),
+      contributionTiming,
+      contributionGrowthAnnualPct: clampNumber(
+        Number(contributionGrowthAnnualPct) || 0,
+        0,
+        1000,
+      ),
+      contributionGrowthFrequency,
     });
   }, [
     initialInvestment,
@@ -134,6 +216,11 @@ export default function CompoundInterestCalculator() {
     frequency,
     horizonUnit,
     horizonValue,
+
+    contributionDelayMonths,
+    contributionTiming,
+    contributionGrowthAnnualPct,
+    contributionGrowthFrequency,
   ]);
 
   // Keep bar colors mapped to donut colors.
@@ -187,6 +274,22 @@ export default function CompoundInterestCalculator() {
                 setHorizonUnit={onChangeHorizonUnit}
                 horizonValue={horizonValue}
                 setHorizonValue={(n) => setHorizonValueSafe(n, horizonUnit)}
+
+                contributionDelayMonths={contributionDelayMonths}
+                setContributionDelayMonths={setContributionDelayMonthsSafe}
+
+                contributionTiming={contributionTiming}
+                setContributionTiming={setContributionTimingSafe}
+
+                contributionGrowthAnnualPct={contributionGrowthAnnualPct}
+                setContributionGrowthAnnualPct={
+                  setContributionGrowthAnnualPctSafe
+                }
+
+                contributionGrowthFrequency={contributionGrowthFrequency}
+                setContributionGrowthFrequency={
+                  setContributionGrowthFrequencySafe
+                }
               />
 
               <ResultsSection
@@ -202,6 +305,53 @@ export default function CompoundInterestCalculator() {
               />
 
               <ActionsBar onExportCsv={onExportCsv} onPrint={onPrint} />
+
+              <HistorySection
+                currentInputs={{
+                  initialInvestment: Number(initialInvestment) || 0,
+                  regularAddition: Number(regularAddition) || 0,
+                  annualInterestRatePct: Number(annualInterestRatePct) || 0,
+                  frequency,
+                  horizonUnit,
+                  horizonValue: Number(horizonValue) || 0,
+
+                  contributionDelayMonths:
+                    Math.floor(Number(contributionDelayMonths) || 0),
+                  contributionTiming,
+                  contributionGrowthAnnualPct:
+                    Number(contributionGrowthAnnualPct) || 0,
+
+                  contributionGrowthFrequency,
+                }}
+                currentSummary={{
+                  endBalance: outputs.endBalance,
+                  totalInterest: outputs.totalInterest,
+                  totalAdditions: outputs.totalAdditions,
+                  effectiveAnnualRatePct: outputs.effectiveAnnualRatePct,
+                }}
+                onLoad={(inputs) => {
+                  setInitialInvestmentSafe(inputs.initialInvestment);
+                  setRegularAdditionSafe(inputs.regularAddition);
+                  setAprSafe(inputs.annualInterestRatePct);
+                  setFrequency(inputs.frequency);
+                  onChangeHorizonUnit(inputs.horizonUnit);
+                  setHorizonValueSafe(inputs.horizonValue, inputs.horizonUnit);
+
+                  // Backward compatible: older saved results may not have advanced options.
+                  setContributionDelayMonthsSafe(inputs.contributionDelayMonths ?? 0);
+                  setContributionTimingSafe(
+                    (inputs.contributionTiming as ContributionTiming) ?? "start",
+                  );
+                  setContributionGrowthAnnualPctSafe(
+                    inputs.contributionGrowthAnnualPct ?? 0,
+                  );
+
+                  setContributionGrowthFrequencySafe(
+                    (inputs.contributionGrowthFrequency as ContributionGrowthFrequency) ??
+                      "annual",
+                  );
+                }}
+              />
             </div>
           </CardShell>
         </section>

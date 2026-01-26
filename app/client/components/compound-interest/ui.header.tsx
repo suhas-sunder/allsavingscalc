@@ -4,8 +4,8 @@ export function HeaderSection() {
       <h1 className="text-xl font-black leading-[1.08] tracking-tight text-blue-950 sm:text-2xl">
         Compound Interest Calculator
       </h1>
-      <p className="max-w-3xl text-xs leading-snug text-slate-600 sm:text-base">
-        Compound growth from an initial investment, with optional regular additions. No withdrawals, taxes, or inflation adjustments.
+      <p className="text-xs leading-snug text-slate-600 sm:text-base">
+        See end balance, total interest, APY, and a detailed monthly or yearly schedule based on your contributions.
       </p>
     </div>
   );

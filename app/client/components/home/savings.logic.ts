@@ -8,20 +8,24 @@ export const COLORS = {
 
 export const FAQS = [
   {
-    q: "Why does my result differ from my bank?",
-    a: "Banks can use different rounding, posting schedules, fee rules, and calendars. Use this as an estimate and confirm with your institution.",
+    q: "Does this match what my bank will pay?",
+    a: "It is a close estimate, but banks can post interest on specific dates, apply different day-count rules, and round at different steps. Use your bank’s terms when you need exact figures.",
   },
   {
-    q: "What does tax on interest do here?",
-    a: "We apply your tax rate to interest as it is earned, then add the net interest to the balance. This approximates taxable accounts.",
+    q: "What compounding frequency should I pick?",
+    a: "Choose the frequency your account uses (monthly, daily, etc.). More frequent compounding credits interest more often, which can slightly increase the end balance at the same APR.",
   },
   {
-    q: "What does inflation-adjusted end balance mean?",
-    a: "It shows the end balance in today’s purchasing power using your inflation rate.",
+    q: "How are taxes and inflation applied here?",
+    a: "Tax is modeled as a percentage of interest earned each period. Inflation adjustment converts the final amount into today’s dollars using the inflation rate you enter.",
   },
   {
-    q: "Can I model withdrawals?",
-    a: "Yes. Enter a negative monthly or annual contribution to represent withdrawals.",
+    q: "Can contributions be negative?",
+    a: "Yes. A negative contribution models withdrawals. If withdrawals overwhelm the balance, the schedule will reflect a lower or zero balance depending on the inputs.",
+  },
+  {
+    q: "Why does switching annual vs monthly contributions change the result?",
+    a: "The timing changes. Monthly contributions usually start earning interest earlier within the year, and the calculator applies growth to contributions based on the selected cadence.",
   },
 ];
 

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { FAQS } from "./savings.logic";
+import { getSiteOrigin } from "./site-url";
 
 export function useMediaQuery(query: string) {
   const [matches, setMatches] = React.useState(() => {
@@ -51,13 +52,28 @@ export function JsonLdScript({ jsonLd }: { jsonLd: any }) {
   );
 }
 
-export function useSavingsJsonLd() {
+function siteRootFromCanonical(canonicalUrl?: string): string {
+  if (canonicalUrl) {
+    try {
+      const u = new URL(canonicalUrl);
+      return `${u.origin}/`;
+    } catch {
+      // Fall through to env-based origin below.
+    }
+  }
+  return `${getSiteOrigin()}/`;
+}
+
+export function useSavingsJsonLd(canonicalUrl?: string) {
   return React.useMemo(() => {
-    const canonical = "https://www.allsavingscalculators.com/";
+    const canonical =
+      canonicalUrl || "https://www.allsavingscalculators.com/";
+    const siteRoot = siteRootFromCanonical(canonical);
+
     const faqId = `${canonical}#faq`;
     const appId = `${canonical}#calculator`;
-    const orgId = `${canonical}#organization`;
-    const siteId = `${canonical}#website`;
+    const orgId = `${siteRoot}#organization`;
+    const siteId = `${siteRoot}#website`;
 
     const faqs = (FAQS || [])
       .filter((f) => f && typeof f.q === "string" && typeof f.a === "string")
@@ -80,12 +96,12 @@ export function useSavingsJsonLd() {
           "@type": "Organization",
           "@id": orgId,
           name: "AllSavingsCalculators",
-          url: canonical,
+          url: siteRoot,
         },
         {
           "@type": "WebSite",
           "@id": siteId,
-          url: canonical,
+          url: siteRoot,
           name: "AllSavingsCalculators",
           publisher: { "@id": orgId },
         },
@@ -118,12 +134,13 @@ export function useSavingsJsonLd() {
         {
           "@type": "FAQPage",
           "@id": faqId,
-          url: canonical,
+          url: faqId,
           mainEntity: faqs,
+          mainEntityOfPage: { "@id": canonical },
           isPartOf: { "@id": canonical },
           publisher: { "@id": orgId },
         },
       ],
     };
-  }, []);
+  }, [canonicalUrl]);
 }

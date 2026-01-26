@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useLoaderData } from "react-router";
 import type { Route } from "./+types/home";
 
 import {
@@ -30,15 +31,16 @@ import {
 import { HowItWorksSection } from "../client/components/home/ui.howitworks";
 import { FAQSection } from "../client/components/home/ui.faq";
 import { DisclaimersSection } from "../client/components/home/ui.disclaimers";
+import { HistorySection, useSavingsHistory, type HistorySummary } from "../client/components/home/ui.history";
 
 const MAX_YEARS = 100;
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ data }: Route.MetaArgs) {
   const title =
     "Savings Calculator | End Balance, Interest Earned, Taxes, Inflation";
   const description =
     "Free savings calculator to estimate an ending balance from an initial deposit, ongoing contributions, interest rate, compounding frequency, tax on interest, and inflation. Includes a yearly schedule, charts, and CSV export.";
-  const canonical = "https://www.allsavingscalculators.com/";
+  const canonical = data?.canonical ?? "https://www.allsavingscalculators.com/";
 
   return [
     { title },
@@ -56,16 +58,25 @@ export function meta({}: Route.MetaArgs) {
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { property: "og:url", content: canonical },
+    { property: "og:site_name", content: "AllSavingsCalculators" },
+    { name: "twitter:url", content: canonical },
     { name: "twitter:card", content: "summary" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
   ];
 }
 
-export function loader({}: Route.LoaderArgs) {
-  return { ok: true };
+export async function loader({ request }: Route.LoaderArgs) {
+  // Dynamic import ensures server-only code never reaches the client bundle.
+  const { canonicalFromRequest } = await import(
+    "../client/components/home/site-url.server"
+  );
+  return { ok: true, canonical: canonicalFromRequest(request.url) };
 }
 
 export default function Home() {
-  const jsonLd = useSavingsJsonLd();
+  const { canonical } = useLoaderData<typeof loader>();
+  const jsonLd = useSavingsJsonLd(canonical);
 
   const [initialDeposit, setInitialDeposit] = React.useState(20000);
 
@@ -204,6 +215,67 @@ export default function Home() {
   const onPrint = usePrint();
   const onExportCsv = useExportCsv(outputs, scheduleView);
 
+  const history = useSavingsHistory();
+
+  const saveCurrent = React.useCallback(() => {
+    history.add({
+      summary: {
+        endBalance: outputs.endBalance,
+        interestEarned: outputs.totalInterest,
+        totalContributionsExInitial: outputs.totalContributionsExInitial,
+        years: Number(years) || 0,
+        annualInterestRatePct: Number(annualInterestRatePct) || 0,
+        frequency,
+        contributionMode: scheduleView,
+        annualContribution: Number(annualContribution) || 0,
+        annualContributionGrowthPct: Number(annualContributionGrowthPct) || 0,
+        monthlyContribution: Number(monthlyContribution) || 0,
+        monthlyContributionGrowthPct: Number(monthlyContributionGrowthPct) || 0,
+        taxRatePct: Number(taxRatePct) || 0,
+        inflationRatePct: Number(inflationRatePct) || 0,
+        contributionsAtPeriodEnd: Boolean(contributionsAtPeriodEnd),
+        initialDeposit: Number(initialDeposit) || 0,
+      },
+    });
+  }, [
+    history,
+    outputs.endBalance,
+    outputs.totalInterest,
+    outputs.totalContributionsExInitial,
+    years,
+    annualInterestRatePct,
+    frequency,
+    scheduleView,
+    annualContribution,
+    annualContributionGrowthPct,
+    monthlyContribution,
+    monthlyContributionGrowthPct,
+    taxRatePct,
+    inflationRatePct,
+    contributionsAtPeriodEnd,
+    initialDeposit,
+  ]);
+
+  const loadSaved = React.useCallback((s: HistorySummary) => {
+    // Apply values back into UI state
+    setInitialDeposit(s.initialDeposit);
+    setScheduleView(s.contributionMode);
+
+    setAnnualContribution(s.annualContribution);
+    setAnnualContributionGrowthPct(s.annualContributionGrowthPct);
+
+    setMonthlyContribution(s.monthlyContribution);
+    setMonthlyContributionGrowthPct(s.monthlyContributionGrowthPct);
+
+    setAnnualInterestRatePct(s.annualInterestRatePct);
+    setFrequency(s.frequency);
+    setYearsSafe(s.years);
+
+    setTaxRatePct(s.taxRatePct);
+    setInflationRatePct(s.inflationRatePct);
+    setContributionsAtPeriodEnd(s.contributionsAtPeriodEnd);
+  }, [setYearsSafe]);
+
   return (
     <PageShell>
       <div className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-6">
@@ -257,6 +329,14 @@ export default function Home() {
               />
 
               <ActionsBar onExportCsv={onExportCsv} onPrint={onPrint} />
+
+              <HistorySection
+                items={history.items}
+                onSaveCurrent={saveCurrent}
+                onLoad={loadSaved}
+                onRemove={history.remove}
+                onClear={history.clear}
+              />
             </div>
           </CardShell>
         </section>

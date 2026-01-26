@@ -18,6 +18,15 @@ export function ResultsSection({
   initialInvestment: number;
   normalizeChartColor: (c: string) => string;
 }) {
+  const growthMultipleLabel = React.useMemo(() => {
+    const n = outputs.growthMultiple;
+    if (!(n > 0) || !Number.isFinite(n)) return "—";
+    return `${n.toLocaleString(undefined, {
+      useGrouping: true,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 4,
+    })}×`;
+  }, [outputs.growthMultiple]);
   const strongColors = React.useMemo(
     () => ({
       initial: normalizeChartColor(COLORS.softBlue),
@@ -116,7 +125,7 @@ export function ResultsSection({
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2">
           <div className="text-sm font-semibold text-slate-700">Growth multiple</div>
           <div className="mt-2 break-words text-lg font-black tracking-tight text-slate-900 sm:text-xl">
-            {outputs.growthMultiple > 0 ? `${outputs.growthMultiple}×` : "—"}
+            {growthMultipleLabel}
           </div>
           <div className="mt-1 text-xs text-slate-500">
             End balance divided by initial investment (ignores additions).

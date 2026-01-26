@@ -10,4 +10,9 @@ export default [
     "savings-balance-over-time-calculator",
     "routes/savings-balance-over-time-calculator.tsx",
   ),
+  route("savings-calculator", "routes/savings-calculator.tsx"),
+  route("cookies-policy", "routes/cookies-policy.tsx"),
+  route("privacy-policy", "routes/privacy-policy.tsx"),
+  route("terms-of-service", "routes/terms-of-service.tsx"),
+  route("contact", "routes/contact.tsx"),
 ] satisfies RouteConfig;

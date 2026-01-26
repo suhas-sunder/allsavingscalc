@@ -21,7 +21,7 @@ export function HeaderSection() {
           Savings Balance Over Time Calculator
         </h1>
 
-        <p className="w-full max-w-none text-[12px] leading-snug text-slate-700 sm:text-base sm:leading-snug">
+        <p className="w-full text-[12px] leading-snug text-slate-700 sm:text-base sm:leading-snug">
           Savings balance over time based on starting balance, contributions,
           frequency, and interest.
         </p>

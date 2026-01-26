@@ -7,7 +7,7 @@ type NavItem =
   | { kind: "hash"; href: string; label: string };
 
 const NAV_ITEMS: NavItem[] = [
-  { kind: "route", to: "/", label: "Home" },
+  { kind: "route", to: "/savings-calculator", label: "Savings Calculator" },
   {
     kind: "route",
     to: "/compound-interest-calculator",

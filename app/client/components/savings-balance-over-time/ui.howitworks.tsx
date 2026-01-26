@@ -1,12 +1,5 @@
 import * as React from "react";
-
-function LatexBlock({ children }: { children: string }) {
-  return (
-    <pre className="overflow-x-auto rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-900">
-      <code>{children}</code>
-    </pre>
-  );
-}
+import { MathBlock } from "./ui.math";
 
 export function HowItWorksSection() {
   return (
@@ -66,7 +59,7 @@ export function HowItWorksSection() {
         </p>
 
         <h3 className="mt-2 text-base font-black text-slate-900">
-          The math (LaTeX)
+          The math
         </h3>
         <p>
           The simulation uses an effective monthly interest rate derived from
@@ -78,21 +71,168 @@ export function HowItWorksSection() {
           and <code className="px-1">r_m</code> be the effective monthly rate.
         </p>
 
-        <LatexBlock>
-          {String.raw`r_m = \left(1 + \frac{\text{APR}}{n}\right)^{\frac{n}{12}} - 1 \quad \text{for compounding } n \text{ times per year}
-r_m = e^{\frac{\text{APR}}{12}} - 1 \quad \text{for continuous compounding}
+                <div className="grid gap-3">
+          <MathBlock
+            latex={String.raw`r_m = \left(1 + \frac{\text{APR}}{n}\right)^{\frac{n}{12}} - 1`}
+            mathml={
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <mrow>
+                  <msub><mi>r</mi><mi>m</mi></msub>
+                  <mo>=</mo>
+                  <msup>
+                    <mrow>
+                      <mo>(</mo>
+                      <mn>1</mn>
+                      <mo>+</mo>
+                      <mfrac>
+                        <mrow><mi>A</mi><mi>P</mi><mi>R</mi></mrow>
+                        <mi>n</mi>
+                      </mfrac>
+                      <mo>)</mo>
+                    </mrow>
+                    <mrow>
+                      <mfrac><mi>n</mi><mn>12</mn></mfrac>
+                    </mrow>
+                  </msup>
+                  <mo>&#x2212;</mo>
+                  <mn>1</mn>
+                </mrow>
+              </math>
+            }
+            caption="Effective monthly rate when the nominal annual APR compounds n times per year."
+          />
 
-\text{interest}_{\text{gross}} = B \cdot r_m
-\text{interest}_{\text{net}} = \text{interest}_{\text{gross}} \cdot (1 - t)
+          <MathBlock
+            latex={String.raw`r_m = e^{\frac{\text{APR}}{12}} - 1`}
+            mathml={
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <mrow>
+                  <msub><mi>r</mi><mi>m</mi></msub>
+                  <mo>=</mo>
+                  <msup>
+                    <mi>e</mi>
+                    <mrow>
+                      <mfrac>
+                        <mrow><mi>A</mi><mi>P</mi><mi>R</mi></mrow>
+                        <mn>12</mn>
+                      </mfrac>
+                    </mrow>
+                  </msup>
+                  <mo>&#x2212;</mo>
+                  <mn>1</mn>
+                </mrow>
+              </math>
+            }
+            caption="Effective monthly rate for continuous compounding."
+          />
 
-\text{If contributions happen at the start of the month:}
-B' = B + C
-B_{\text{end}} = B' + (B' \cdot r_m) \cdot (1 - t)
+          <MathBlock
+            latex={String.raw`\text{interest}_{\text{gross}} = B \cdot r_m\;\;\;\text{interest}_{\text{net}} = \text{interest}_{\text{gross}} \cdot (1 - t)`}
+            mathml={
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <mrow>
+                  <msub>
+                    <mi>interest</mi>
+                    <mi>gross</mi>
+                  </msub>
+                  <mo>=</mo>
+                  <mi>B</mi>
+                  <mo>&#x22C5;</mo>
+                  <msub><mi>r</mi><mi>m</mi></msub>
+                </mrow>
+                <mspace width="2em" />
+                <mrow>
+                  <msub>
+                    <mi>interest</mi>
+                    <mi>net</mi>
+                  </msub>
+                  <mo>=</mo>
+                  <msub>
+                    <mi>interest</mi>
+                    <mi>gross</mi>
+                  </msub>
+                  <mo>&#x22C5;</mo>
+                  <mrow>
+                    <mo>(</mo>
+                    <mn>1</mn>
+                    <mo>&#x2212;</mo>
+                    <mi>t</mi>
+                    <mo>)</mo>
+                  </mrow>
+                </mrow>
+              </math>
+            }
+            caption="Gross interest is computed from the starting balance. Net interest applies the tax rate t (0 to 1)."
+          />
 
-\text{If contributions happen at the end of the month:}
-B' = B + (B \cdot r_m) \cdot (1 - t)
-B_{\text{end}} = B' + C`}
-        </LatexBlock>
+          <MathBlock
+            latex={String.raw`\text{Start-of-month contributions:}\;\;B' = B + C\;\;B_{\text{end}} = B' + (B' \cdot r_m)\cdot (1 - t)`}
+            mathml={
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <mrow>
+                  <mi>B</mi><mo>&#x2032;</mo>
+                  <mo>=</mo>
+                  <mi>B</mi>
+                  <mo>+</mo>
+                  <mi>C</mi>
+                </mrow>
+                <mspace width="2em" />
+                <mrow>
+                  <msub><mi>B</mi><mi>end</mi></msub>
+                  <mo>=</mo>
+                  <mi>B</mi><mo>&#x2032;</mo>
+                  <mo>+</mo>
+                  <mrow>
+                    <mo>(</mo>
+                    <mi>B</mi><mo>&#x2032;</mo>
+                    <mo>&#x22C5;</mo>
+                    <msub><mi>r</mi><mi>m</mi></msub>
+                    <mo>)</mo>
+                  </mrow>
+                  <mo>&#x22C5;</mo>
+                  <mrow>
+                    <mo>(</mo><mn>1</mn><mo>&#x2212;</mo><mi>t</mi><mo>)</mo>
+                  </mrow>
+                </mrow>
+              </math>
+            }
+            caption="If contributions happen at the start of the month, the contribution earns interest for that month."
+          />
+
+          <MathBlock
+            latex={String.raw`\text{End-of-month contributions:}\;\;B' = B + (B \cdot r_m)\cdot (1 - t)\;\;B_{\text{end}} = B' + C`}
+            mathml={
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <mrow>
+                  <mi>B</mi><mo>&#x2032;</mo>
+                  <mo>=</mo>
+                  <mi>B</mi>
+                  <mo>+</mo>
+                  <mrow>
+                    <mo>(</mo>
+                    <mi>B</mi>
+                    <mo>&#x22C5;</mo>
+                    <msub><mi>r</mi><mi>m</mi></msub>
+                    <mo>)</mo>
+                  </mrow>
+                  <mo>&#x22C5;</mo>
+                  <mrow>
+                    <mo>(</mo><mn>1</mn><mo>&#x2212;</mo><mi>t</mi><mo>)</mo>
+                  </mrow>
+                </mrow>
+                <mspace width="2em" />
+                <mrow>
+                  <msub><mi>B</mi><mi>end</mi></msub>
+                  <mo>=</mo>
+                  <mi>B</mi><mo>&#x2032;</mo>
+                  <mo>+</mo>
+                  <mi>C</mi>
+                </mrow>
+              </math>
+            }
+            caption="If contributions happen at the end of the month, interest is computed first, then the contribution is added."
+          />
+        </div>
 
         <p>
           If inflation adjustment is enabled, the calculator also reports a
@@ -100,9 +240,29 @@ B_{\text{end}} = B' + C`}
           today’s dollars using the provided annual inflation rate.
         </p>
 
-        <LatexBlock>
-          {String.raw`\text{Real End Balance} = \frac{\text{Nominal End Balance}}{(1 + i)^{Y}}`}
-        </LatexBlock>
+                <MathBlock
+          latex={String.raw`\text{Real End Balance} = \frac{\text{Nominal End Balance}}{(1 + i)^{Y}}`}
+          mathml={
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mrow>
+                <mi>Real</mi><mspace width="0.2em"/><mi>End</mi><mspace width="0.2em"/><mi>Balance</mi>
+                <mo>=</mo>
+                <mfrac>
+                  <mrow>
+                    <mi>Nominal</mi><mspace width="0.2em"/><mi>End</mi><mspace width="0.2em"/><mi>Balance</mi>
+                  </mrow>
+                  <msup>
+                    <mrow>
+                      <mo>(</mo><mn>1</mn><mo>+</mo><mi>i</mi><mo>)</mo>
+                    </mrow>
+                    <mi>Y</mi>
+                  </msup>
+                </mfrac>
+              </mrow>
+            </math>
+          }
+          caption="Inflation adjustment converts the nominal end balance into today’s dollars using annual inflation rate i over Y years."
+        />
 
         <h3 className="mt-2 text-base font-black text-slate-900">
           Practical step-by-step example
