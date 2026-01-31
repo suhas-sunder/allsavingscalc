@@ -47,22 +47,19 @@ const ROUTE_PATH = "/compound-interest-calculator";
 const CANONICAL_URL = buildCanonical(ROUTE_PATH);
 
 export function meta({ data }: Route.MetaArgs) {
-  const title =
-    "Compound Interest Calculator | Additions, APY, Yearly and Monthly Schedule";
+  const title = "Compound Interest Calculator (APY + Contributions)";
   const description =
-    "Free compound interest calculator with optional regular additions. Enter an initial investment, monthly contribution, APR, compounding frequency, and a time horizon in years or months to get end balance, total interest, APY, charts, a detailed schedule, plus CSV export and print-to-PDF.";
+    "Calculate compound interest with monthly contributions. See ending balance, total interest, APY, charts, and a full monthly or yearly schedule. Export CSV or print.";
 
   const canonical = data?.canonical ?? CANONICAL_URL;
   const robots = data?.robots ?? "index,follow";
 
+  // Optional if you have it:
+  // const ogImage = data?.ogImage ?? `${canonical}/og.png`;
+
   return [
     { title },
     { name: "description", content: description },
-    {
-      name: "keywords",
-      content:
-        "compound interest calculator, compound interest with contributions, APY calculator, effective annual rate calculator, compounding frequency calculator, interest growth schedule, monthly compound interest table, yearly compound interest table, investment growth calculator",
-    },
     { name: "robots", content: robots },
     { name: "theme-color", content: "#0b2447" },
     { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -72,11 +69,13 @@ export function meta({ data }: Route.MetaArgs) {
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { property: "og:url", content: canonical },
+    // { property: "og:image", content: ogImage },
 
-    { name: "twitter:card", content: "summary" },
+    { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
     { name: "twitter:url", content: canonical },
+    // { name: "twitter:image", content: ogImage },
   ];
 }
 
@@ -274,18 +273,14 @@ export default function CompoundInterestCalculator() {
                 setHorizonUnit={onChangeHorizonUnit}
                 horizonValue={horizonValue}
                 setHorizonValue={(n) => setHorizonValueSafe(n, horizonUnit)}
-
                 contributionDelayMonths={contributionDelayMonths}
                 setContributionDelayMonths={setContributionDelayMonthsSafe}
-
                 contributionTiming={contributionTiming}
                 setContributionTiming={setContributionTimingSafe}
-
                 contributionGrowthAnnualPct={contributionGrowthAnnualPct}
                 setContributionGrowthAnnualPct={
                   setContributionGrowthAnnualPctSafe
                 }
-
                 contributionGrowthFrequency={contributionGrowthFrequency}
                 setContributionGrowthFrequency={
                   setContributionGrowthFrequencySafe
@@ -315,8 +310,9 @@ export default function CompoundInterestCalculator() {
                   horizonUnit,
                   horizonValue: Number(horizonValue) || 0,
 
-                  contributionDelayMonths:
-                    Math.floor(Number(contributionDelayMonths) || 0),
+                  contributionDelayMonths: Math.floor(
+                    Number(contributionDelayMonths) || 0,
+                  ),
                   contributionTiming,
                   contributionGrowthAnnualPct:
                     Number(contributionGrowthAnnualPct) || 0,
@@ -338,9 +334,12 @@ export default function CompoundInterestCalculator() {
                   setHorizonValueSafe(inputs.horizonValue, inputs.horizonUnit);
 
                   // Backward compatible: older saved results may not have advanced options.
-                  setContributionDelayMonthsSafe(inputs.contributionDelayMonths ?? 0);
+                  setContributionDelayMonthsSafe(
+                    inputs.contributionDelayMonths ?? 0,
+                  );
                   setContributionTimingSafe(
-                    (inputs.contributionTiming as ContributionTiming) ?? "start",
+                    (inputs.contributionTiming as ContributionTiming) ??
+                      "start",
                   );
                   setContributionGrowthAnnualPctSafe(
                     inputs.contributionGrowthAnnualPct ?? 0,

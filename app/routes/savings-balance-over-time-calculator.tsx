@@ -46,33 +46,27 @@ const ROUTE_SLUG = "/savings-balance-over-time-calculator";
 const DEFAULT_SITE_URL = "https://www.allsavingscalculators.com";
 
 export function meta({ data }: Route.MetaArgs) {
-  const title =
-    "Savings Balance Over Time Calculator | Chart Balance Growth by Period";
+  const title = "Savings Balance Over Time Calculator (Monthly or Yearly)";
   const description =
-    "Visualize how your savings balance grows over time. Chart-forward view of balance progression by month or year with contribution timing, compounding, taxes on interest, and optional inflation adjustment. Includes schedules, CSV export, and print-to-PDF.";
+    "See how your savings balance grows over time with a clear monthly or yearly chart. Includes contribution timing, compounding, taxes on interest, inflation adjustment, schedules, CSV export, and print to PDF.";
 
-  // IMPORTANT: Route.MetaArgs types data as `never` in your setup, so do not read loader data here.
-  // Canonical must be stable anyway.
   const canonical = `${DEFAULT_SITE_URL}${ROUTE_SLUG}`;
 
   return [
     { title },
     { name: "description", content: description },
-    {
-      name: "keywords",
-      content:
-        "savings balance over time calculator, balance growth chart, savings growth by month, savings growth by year, balance progression calculator, compounding schedule, contribution timing, interest growth chart, savings timeline",
-    },
     { name: "robots", content: "index,follow" },
     { name: "theme-color", content: "#0b2447" },
     { name: "viewport", content: "width=device-width, initial-scale=1" },
     { tagName: "link", rel: "canonical", href: canonical },
+
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { property: "og:url", content: canonical },
     { property: "og:site_name", content: "AllSavingsCalculators" },
-    { name: "twitter:card", content: "summary" },
+
+    { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
     { name: "twitter:url", content: canonical },
@@ -337,7 +331,11 @@ export default function SavingsBalanceOverTimeCalculator() {
                 outputs={outputs}
               />
 
-              <ActionsBar onExportCsv={onExportCsv} onPrint={onPrint} historySnapshot={historySnapshot} />
+              <ActionsBar
+                onExportCsv={onExportCsv}
+                onPrint={onPrint}
+                historySnapshot={historySnapshot}
+              />
             </div>
           </CardShell>
         </section>

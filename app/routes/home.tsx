@@ -31,36 +31,37 @@ import {
 import { HowItWorksSection } from "../client/components/home/ui.howitworks";
 import { FAQSection } from "../client/components/home/ui.faq";
 import { DisclaimersSection } from "../client/components/home/ui.disclaimers";
-import { HistorySection, useSavingsHistory, type HistorySummary } from "../client/components/home/ui.history";
+import {
+  HistorySection,
+  useSavingsHistory,
+  type HistorySummary,
+} from "../client/components/home/ui.history";
 
 const MAX_YEARS = 100;
 
 export function meta({ data }: Route.MetaArgs) {
-  const title =
-    "Savings Calculator | End Balance, Interest Earned, Taxes, Inflation";
+  const title = "Savings Calculator (Taxes + Inflation)";
   const description =
-    "Free savings calculator to estimate an ending balance from an initial deposit, ongoing contributions, interest rate, compounding frequency, tax on interest, and inflation. Includes a yearly schedule, charts, and CSV export.";
-  const canonical = data?.canonical ?? "https://www.allsavingscalculators.com/";
+    "Calculate savings growth with contributions and compound interest, including tax on interest and inflation adjustment. View charts, a yearly schedule, and export CSV.";
+
+  const canonical = data?.canonical ?? "https://www.allsavingscalculators.com";
 
   return [
     { title },
     { name: "description", content: description },
-    {
-      name: "keywords",
-      content:
-        "savings calculator, compound interest calculator, end balance calculator, interest earned calculator, inflation adjusted savings calculator, tax on interest calculator, contribution growth calculator",
-    },
     { name: "robots", content: "index,follow" },
     { name: "theme-color", content: "#0b2447" },
     { name: "viewport", content: "width=device-width, initial-scale=1" },
     { tagName: "link", rel: "canonical", href: canonical },
+
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { property: "og:url", content: canonical },
     { property: "og:site_name", content: "AllSavingsCalculators" },
+
+    { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:url", content: canonical },
-    { name: "twitter:card", content: "summary" },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
   ];
@@ -256,25 +257,28 @@ export default function Home() {
     initialDeposit,
   ]);
 
-  const loadSaved = React.useCallback((s: HistorySummary) => {
-    // Apply values back into UI state
-    setInitialDeposit(s.initialDeposit);
-    setScheduleView(s.contributionMode);
+  const loadSaved = React.useCallback(
+    (s: HistorySummary) => {
+      // Apply values back into UI state
+      setInitialDeposit(s.initialDeposit);
+      setScheduleView(s.contributionMode);
 
-    setAnnualContribution(s.annualContribution);
-    setAnnualContributionGrowthPct(s.annualContributionGrowthPct);
+      setAnnualContribution(s.annualContribution);
+      setAnnualContributionGrowthPct(s.annualContributionGrowthPct);
 
-    setMonthlyContribution(s.monthlyContribution);
-    setMonthlyContributionGrowthPct(s.monthlyContributionGrowthPct);
+      setMonthlyContribution(s.monthlyContribution);
+      setMonthlyContributionGrowthPct(s.monthlyContributionGrowthPct);
 
-    setAnnualInterestRatePct(s.annualInterestRatePct);
-    setFrequency(s.frequency);
-    setYearsSafe(s.years);
+      setAnnualInterestRatePct(s.annualInterestRatePct);
+      setFrequency(s.frequency);
+      setYearsSafe(s.years);
 
-    setTaxRatePct(s.taxRatePct);
-    setInflationRatePct(s.inflationRatePct);
-    setContributionsAtPeriodEnd(s.contributionsAtPeriodEnd);
-  }, [setYearsSafe]);
+      setTaxRatePct(s.taxRatePct);
+      setInflationRatePct(s.inflationRatePct);
+      setContributionsAtPeriodEnd(s.contributionsAtPeriodEnd);
+    },
+    [setYearsSafe],
+  );
 
   return (
     <PageShell>
