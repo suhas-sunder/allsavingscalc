@@ -12,42 +12,62 @@ declare global {
         HTMLElement
       >;
       mrow: React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
+        React.HTMLAttributes<HTMLElement> & {
+          xmlns?: string;
+        },
         HTMLElement
       >;
       mi: React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
+        React.HTMLAttributes<HTMLElement> & {
+          xmlns?: string;
+        },
         HTMLElement
       >;
       mo: React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
+        React.HTMLAttributes<HTMLElement> & {
+          xmlns?: string;
+        },
         HTMLElement
       >;
       mn: React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
+        React.HTMLAttributes<HTMLElement> & {
+          xmlns?: string;
+        },
         HTMLElement
       >;
       msup: React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
+        React.HTMLAttributes<HTMLElement> & {
+          xmlns?: string;
+        },
         HTMLElement
       >;
       mfrac: React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
+        React.HTMLAttributes<HTMLElement> & {
+          xmlns?: string;
+        },
         HTMLElement
       >;
       msub: React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
+        React.HTMLAttributes<HTMLElement> & {
+          xmlns?: string;
+        },
         HTMLElement
       >;
       mtext: React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
+        React.HTMLAttributes<HTMLElement> & {
+          xmlns?: string;
+        },
+        HTMLElement
+      >;
+      mstyle: React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          xmlns?: string;
+        },
         HTMLElement
       >;
     }
   }
 }
-
-export {};
 
 export function HowItWorksSection() {
   const latexBase = "A = P(1 + r/n)^{nt}";
@@ -62,11 +82,11 @@ export function HowItWorksSection() {
       id="how-it-works"
       className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5"
     >
-      <h2 className="text-lg font-black tracking-tight text-slate-900">
+      <h2 className="text-lg font-black tracking-tight text-sky-900">
         How this savings calculator works
       </h2>
 
-      <p className="mt-3 text-normal leading-relaxed text-slate-700">
+      <p className="mt-3 text-normal leading-relaxed text-slate-800">
         This calculator estimates your future savings balance by simulating the
         account period by period. That lets it apply your contribution timing,
         compounding frequency, taxes on interest, and optional inflation
@@ -74,8 +94,8 @@ export function HowItWorksSection() {
       </p>
 
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-        <p className="text-normal font-bold text-slate-900">What you control</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-normal leading-relaxed text-slate-700">
+        <p className="text-normal font-bold text-sky-900">What you control</p>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-normal leading-relaxed text-slate-800">
           <li>Initial deposit.</li>
           <li>
             Contribution mode: annual or monthly (one mode at a time), plus an
@@ -93,7 +113,7 @@ export function HowItWorksSection() {
           <h3 className="text-lg font-medium">
             1) The baseline compound interest
           </h3>
-          <p className="text-normal leading-relaxed text-slate-700">
+          <p className="text-normal leading-relaxed text-slate-800">
             If you make no additional contributions, the classic compound
             interest model is:
           </p>
@@ -128,7 +148,7 @@ export function HowItWorksSection() {
             caption="P is your initial deposit, r is the annual interest rate (as a decimal), n is the number of compounding periods per year, and t is the number of years."
           />
 
-          <p className="text-normal leading-relaxed text-slate-700">
+          <p className="text-normal leading-relaxed text-slate-800">
             This calculator also supports recurring contributions. If the
             contribution amount is constant and happens once per compounding
             period, an annuity-style form is often shown as:
@@ -202,13 +222,12 @@ export function HowItWorksSection() {
             2) Contribution growth, taxes, and inflation
           </h3>
 
-          <p className="text-normal leading-relaxed text-slate-700">
+          <p className="text-normal leading-relaxed text-slate-800">
             In real savings plans, contributions often change over time. If a
-            yearly contribution starts at{" "}
-            <span className="font-bold">C</span> and grows at a constant
-            rate <span className="font-bold">g</span> per year, a common
-            reference formula for the future value of those growing
-            contributions is:
+            yearly contribution starts at <span className="font-bold">C</span>{" "}
+            and grows at a constant rate <span className="font-bold">g</span>{" "}
+            per year, a common reference formula for the future value of those
+            growing contributions is:
           </p>
 
           <MathBlock
@@ -259,25 +278,23 @@ export function HowItWorksSection() {
             caption="C is the first contribution amount, g is the contribution growth rate, r is the return rate, and t is years. If r equals g, the growing-annuity form changes; the calculator avoids this edge case by computing period by period."
           />
 
-          <p className="text-normal leading-relaxed text-slate-700">
+          <p className="text-normal leading-relaxed text-slate-800">
             Taxes and inflation are modeled in the most transparent way:
           </p>
 
-          <ul className="list-disc space-y-2 pl-5 text-normal leading-relaxed text-slate-700">
+          <ul className="list-disc space-y-2 pl-5 text-normal leading-relaxed text-slate-800">
             <li>
-              <span className="font-bold">Tax on interest</span> is applied
-              to the interest earned in each period, not to your principal or
+              <span className="font-bold">Tax on interest</span> is applied to
+              the interest earned in each period, not to your principal or
               contributions. If interest earned for a period is{" "}
               <span className="font-bold">I</span> and your tax rate is{" "}
-              <span className="font-bold">τ</span>, the net interest added
-              is
+              <span className="font-bold">τ</span>, the net interest added is
               <span className="font-bold"> I × (1 − τ)</span>.
             </li>
             <li>
-              <span className="font-bold">Inflation adjustment</span>{" "}
-              converts the final nominal balance into today’s dollars
-              (purchasing power) using the inflation rate{" "}
-              <span className="font-bold">i</span>.
+              <span className="font-bold">Inflation adjustment</span> converts
+              the final nominal balance into today’s dollars (purchasing power)
+              using the inflation rate <span className="font-bold">i</span>.
             </li>
           </ul>
 
@@ -313,10 +330,10 @@ export function HowItWorksSection() {
 
       <div className="mt-6 space-y-4">
         <h3 className="text-lg font-medium">Practical step-by-step example</h3>
-        <p className="text-normal leading-relaxed text-slate-700">
+        <p className="text-normal leading-relaxed text-slate-800">
           Example scenario:
         </p>
-        <ul className="list-disc space-y-1 pl-5 text-normal text-slate-700">
+        <ul className="list-disc space-y-1 pl-5 text-normal text-slate-800">
           <li>Initial deposit: $20,000</li>
           <li>Annual contribution: $5,000 (end of each year)</li>
           <li>Contribution growth: 3% per year</li>
@@ -325,7 +342,7 @@ export function HowItWorksSection() {
           <li>Time: 3 years (short horizon so you can follow it manually)</li>
         </ul>
 
-        <p className="text-normal leading-relaxed text-slate-700">
+        <p className="text-normal leading-relaxed text-slate-800">
           First compute the monthly rate implied by the APR and compounding
           frequency. With 5% APR compounded monthly, the monthly rate is about
           0.05 / 12 ≈ 0.0041667. Month by month, the balance grows by roughly
@@ -333,7 +350,7 @@ export function HowItWorksSection() {
         </p>
 
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-          <ol className="list-decimal space-y-2 pl-5 text-normal leading-relaxed text-slate-700">
+          <ol className="list-decimal space-y-2 pl-5 text-normal leading-relaxed text-slate-800">
             <li>
               Start with $20,000. After 12 months of monthly compounding, the
               approximate balance is $20,000 × (1 + 0.05/12)^{12} ≈ $21,023.
@@ -358,7 +375,7 @@ export function HowItWorksSection() {
           </ol>
         </div>
 
-        <p className="text-normal leading-relaxed text-slate-700">
+        <p className="text-normal leading-relaxed text-slate-800">
           The calculator performs this same process at the selected cadence
           (monthly schedule or yearly summary). If you enable tax, it reduces
           the interest credited each period. If you enable inflation, it reports
@@ -370,10 +387,10 @@ export function HowItWorksSection() {
         <h3 className="text-lg font-medium">Definitions used on this page</h3>
         <div className="grid gap-3 md:grid-cols-2">
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-normal font-bold text-slate-900">
+            <p className="text-normal font-bold text-sky-900">
               Compounding frequency
             </p>
-            <p className="mt-1 text-normal leading-relaxed text-slate-700">
+            <p className="mt-1 text-normal leading-relaxed text-slate-800">
               How often interest is credited. More frequent compounding credits
               interest more often, which can slightly increase the end balance
               at the same APR. Select the frequency that matches your account
@@ -381,30 +398,30 @@ export function HowItWorksSection() {
             </p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-normal font-bold text-slate-900">
+            <p className="text-normal font-bold text-sky-900">
               Contribution growth
             </p>
-            <p className="mt-1 text-normal leading-relaxed text-slate-700">
+            <p className="mt-1 text-normal leading-relaxed text-slate-800">
               The percent change applied to your contribution amount over time.
               This is not your investment return. It models saving more (or
               less) each year or month.
             </p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-normal font-bold text-slate-900">
+            <p className="text-normal font-bold text-sky-900">
               Tax on interest
             </p>
-            <p className="mt-1 text-normal leading-relaxed text-slate-700">
+            <p className="mt-1 text-normal leading-relaxed text-slate-800">
               A percentage applied to interest earned each period. If your tax
               rate is 30%, you keep 70% of the period’s interest and the rest is
               treated as paid tax.
             </p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-normal font-bold text-slate-900">
+            <p className="text-normal font-bold text-sky-900">
               Inflation adjustment
             </p>
-            <p className="mt-1 text-normal leading-relaxed text-slate-700">
+            <p className="mt-1 text-normal leading-relaxed text-slate-800">
               Converts the end balance into today’s dollars so you can compare
               purchasing power. A higher nominal balance can still have lower
               purchasing power if inflation is high.
@@ -415,7 +432,7 @@ export function HowItWorksSection() {
 
       <div className="mt-6 space-y-3">
         <h3 className="text-lg font-medium">Assumptions</h3>
-        <ul className="list-disc space-y-1 pl-5 text-normal leading-relaxed text-slate-700">
+        <ul className="list-disc space-y-1 pl-5 text-normal leading-relaxed text-slate-800">
           <li>12 months per year in the schedule.</li>
           <li>
             APR is converted into an effective monthly rate based on the
@@ -438,7 +455,7 @@ export function HowItWorksSection() {
           </li>
         </ul>
 
-        <p className="text-normal leading-relaxed text-slate-700">
+        <p className="text-normal leading-relaxed text-slate-800">
           Tip: Save multiple scenarios using the History section. Your saved
           runs stay in your browser (local storage) so you can compare
           strategies without creating an account.

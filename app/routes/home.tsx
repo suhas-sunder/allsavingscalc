@@ -19,7 +19,6 @@ import {
   useSavingsJsonLd,
 } from "../client/components/home/ui.shell";
 
-import { HeaderSection } from "../client/components/home/ui.header";
 import { InputsSection } from "../client/components/home/ui.inputs";
 import { ResultsSection } from "../client/components/home/ui.results";
 import { ScheduleSection } from "../client/components/home/ui.schedule";
@@ -282,11 +281,19 @@ export default function Home() {
 
   return (
     <PageShell>
-      <div className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-6">
+      <div className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-6 min-w-[320px]">
         <section className="grid gap-4">
           <CardShell>
-            <div id="calculator" className="p-3 sm:p-5">
-              <HeaderSection />
+            <div id="calculator" className="p-3  sm:p-5">
+              <div className="flex flex-col gap-2">
+                <h1 className="text-xl font-black leading-[1.08] tracking-tight text-sky-700 sm:text-2xl">
+                  Savings Calculator
+                </h1>
+                <p className="text-xs leading-snug text-slate-800 hidden sm:flex sm:text-base">
+                  Compare annual vs monthly contributions, compounding, taxes,
+                  and inflation with a full schedule and charts.
+                </p>
+              </div>
 
               <InputsSection
                 contributionMode={scheduleView}

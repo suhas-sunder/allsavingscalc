@@ -21,10 +21,10 @@ export function ScheduleSection({
     <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:p-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <div className="text-xs font-black uppercase tracking-wide text-slate-700">
+          <div className="text-xs font-black uppercase tracking-wide text-sky-700">
             Schedule
           </div>
-          <div className="mt-1 text-xs text-slate-500">
+          <div className="mt-1 text-xs text-slate-800">
             Year-by-year and month-by-month breakdown (matches the contribution
             mode above).
           </div>
@@ -43,7 +43,7 @@ export function ScheduleSection({
               "flex-1 rounded-xl border px-3 py-2 text-sm font-black shadow-sm transition md:flex-none",
               scheduleView === "yearly"
                 ? "border-blue-600 bg-blue-600 text-white shadow-blue-600/20"
-                : "border-slate-200 bg-white text-slate-900 hover:bg-slate-50",
+                : "border-slate-200 bg-white text-sky-900 hover:bg-slate-50",
             ].join(" ")}
           >
             Yearly
@@ -56,7 +56,7 @@ export function ScheduleSection({
               "flex-1 rounded-xl border px-3 py-2 text-sm font-black shadow-sm transition md:flex-none",
               scheduleView === "monthly"
                 ? "border-blue-600 bg-blue-600 text-white shadow-blue-600/20"
-                : "border-slate-200 bg-white text-slate-900 hover:bg-slate-50",
+                : "border-slate-200 bg-white text-sky-900 hover:bg-slate-50",
             ].join(" ")}
           >
             Monthly
@@ -152,7 +152,7 @@ function DesktopTableWithCap<T>({
             onClick={() => setExpanded(!expanded)}
             aria-expanded={expanded}
             aria-controls={controlsId}
-            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-black text-slate-900 shadow-sm transition hover:bg-slate-50"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-black text-sky-900 shadow-sm transition hover:bg-slate-50"
           >
             {expanded
               ? `Show first ${previewCount} ${
@@ -177,10 +177,10 @@ function MobileCardRow({
 }) {
   return (
     <div className="flex items-baseline justify-between gap-3">
-      <div className="text-xs font-black uppercase tracking-wide text-slate-500">
+      <div className="text-xs font-black uppercase tracking-wide text-slate-800">
         {label}
       </div>
-      <div className="text-sm font-black tabular-nums text-slate-900">
+      <div className="text-sm font-black tabular-nums text-sky-900">
         {value}
       </div>
     </div>
@@ -200,7 +200,7 @@ function YearlyScheduleCards({
   return (
     <div className="rounded-xl border border-slate-200">
       <div className="max-h-[420px] overflow-y-auto p-2">
-        <div className="mb-2 text-xs text-slate-500">
+        <div className="mb-2 text-xs text-slate-800">
           Yearly totals are aggregates of the underlying monthly simulation.
         </div>
         <div className="grid gap-2">
@@ -243,7 +243,7 @@ function MonthlyScheduleCards({
   return (
     <div className="rounded-xl border border-slate-200">
       <div className="max-h-[420px] overflow-y-auto p-2">
-        <div className="mb-2 text-xs text-slate-500">
+        <div className="mb-2 text-xs text-slate-800">
           Monthly rows reflect contribution timing, tax on interest, and
           compounding converted to an effective monthly rate.
         </div>
@@ -254,7 +254,7 @@ function MonthlyScheduleCards({
               className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
             >
               <div className="flex items-baseline justify-between gap-3">
-                <div className="text-sm font-black text-slate-900">
+                <div className="text-sm font-black text-sky-900">
                   Year {r.year}, Month {r.month}
                 </div>
               </div>
@@ -287,7 +287,7 @@ function TableShell({
   return (
     <table className="w-full min-w-[720px] border-collapse text-sm">
       {caption ? (
-        <caption className="caption-bottom pt-2 text-left text-xs text-slate-500">
+        <caption className="caption-bottom pt-2 text-left text-xs text-slate-800">
           {caption}
         </caption>
       ) : null}
@@ -306,7 +306,7 @@ function Th({
   return (
     <th
       className={[
-        "sticky top-0 z-10 border-b border-slate-200 bg-white px-3 py-2 text-xs font-black uppercase tracking-wide text-slate-700",
+        "sticky top-0 z-10 border-b border-slate-200 bg-white px-3 py-2 text-xs font-black uppercase tracking-wide text-sky-700",
         align === "right" ? "text-right" : "text-left",
       ].join(" ")}
     >
@@ -327,7 +327,7 @@ function Td({
   return (
     <td
       className={[
-        "border-b border-slate-100 px-3 py-2 text-slate-700",
+        "border-b border-slate-100 px-3 py-2 text-sky-700",
         align === "right" ? "text-right tabular-nums" : "text-left",
         mono ? "font-mono" : "",
       ].join(" ")}

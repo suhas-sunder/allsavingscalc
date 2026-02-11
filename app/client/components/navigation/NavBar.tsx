@@ -40,20 +40,26 @@ export default function Navbar() {
   }, [location.pathname]);
 
   return (
-    <header className="sticky top-0 z-40 bg-white">
+    <header className="block top-0 z-40 bg-sky-950/95">
       <div className="relative">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-3 py-3 sm:px-6 sm:py-4">
+        <Link
+          to="/"
+          className="mx-auto cursor-pointer group flex max-w-6xl items-center justify-between px-3 py-3 sm:px-6 sm:py-4"
+        >
           {/* Left: Logo + Brand */}
-          <Link to="/" className="flex min-w-0 items-center gap-3">
+          <div className="flex min-w-0 items-center ">
             <img
               src={logoSrc}
               alt="AllSavingsCalculators"
-              className="h-9 w-9 shrink-0 rounded-md"
+              className="h-9 w-9 shrink-0 rounded-md mr-2"
             />
-            <span className="min-w-0 truncate text-base font-black tracking-tight text-slate-800 sm:text-xl">
+            <span className="group-hover:text-sky-100 min-w-0 truncate text-base font-black tracking-tight text-white sm:text-lg">
               AllSavingsCalculators
             </span>
-          </Link>
+            <span className="text-base font-black tracking-tight text-sky-200 sm:text-lg">
+              .com
+            </span>
+          </div>
 
           {/* Desktop nav */}
           <nav className="hidden items-center gap-6 sm:flex">
@@ -63,7 +69,7 @@ export default function Navbar() {
                   <a
                     key={item.href}
                     href={item.href}
-                    className="text-sm font-bold text-slate-800 transition-colors hover:text-slate-600 hover:opacity-80"
+                    className="text-sm font-bold text-white hover:text-sky-100 "
                   >
                     {item.label}
                   </a>
@@ -81,8 +87,8 @@ export default function Navbar() {
                   to={item.to}
                   aria-current={isActive ? "page" : undefined}
                   className={[
-                    "text-sm font-bold transition-colors hover:text-slate-600 hover:opacity-80",
-                    isActive ? "text-slate-900" : "text-slate-800",
+                    "text-sm font-bold hover:text-sky-100 ",
+                    isActive ? "text-sky-100" : "text-white",
                   ].join(" ")}
                 >
                   {item.label}
@@ -94,7 +100,7 @@ export default function Navbar() {
           {/* Mobile burger */}
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white p-2 text-slate-900 shadow-sm transition hover:bg-slate-50 sm:hidden"
+            className="inline-flex items-center justify-center rounded-xl border border-sky-200 bg-white p-2 text-sky-900 shadow-sm transition hover:bg-sky-50 sm:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-controls="mobile-nav"
             aria-expanded={open}
@@ -146,7 +152,7 @@ export default function Navbar() {
               )}
             </svg>
           </button>
-        </div>
+        </Link>
 
         {/* Backdrop */}
         {open && (
@@ -170,7 +176,7 @@ export default function Navbar() {
           style={{ top: "100%" }}
         >
           <div className="mx-auto max-w-6xl px-3 pb-3">
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-900/10">
+            <div className="overflow-hidden rounded-2xl border border-sky-200 bg-white shadow-lg shadow-sky-900/10">
               {NAV_ITEMS.map((item, idx) => {
                 if (item.kind === "hash") {
                   return (
@@ -179,8 +185,8 @@ export default function Navbar() {
                       href={item.href}
                       onClick={() => setOpen(false)}
                       className={[
-                        "flex items-center justify-between px-4 py-4 text-sm font-bold text-slate-900 transition hover:bg-slate-50",
-                        idx !== 0 ? "border-t border-slate-200" : "",
+                        "flex items-center justify-between px-4 py-4 text-sm font-bold text-sky-900 transition hover:bg-sky-50",
+                        idx !== 0 ? "border-t border-sky-200" : "",
                       ].join(" ")}
                     >
                       {item.label}
@@ -190,7 +196,7 @@ export default function Navbar() {
                         viewBox="0 0 24 24"
                         fill="none"
                         aria-hidden="true"
-                        className="text-slate-400"
+                        className="text-sky-400"
                       >
                         <path
                           d="M9 18l6-6-6-6"
@@ -216,9 +222,9 @@ export default function Navbar() {
                     aria-current={isActive ? "page" : undefined}
                     onClick={() => setOpen(false)}
                     className={[
-                      "flex items-center justify-between px-4 py-4 text-sm font-bold transition hover:bg-slate-50",
-                      idx !== 0 ? "border-t border-slate-200" : "",
-                      isActive ? "text-slate-900" : "text-slate-900",
+                      "flex items-center justify-between px-4 py-4 text-sm font-bold transition hover:bg-sky-50",
+                      idx !== 0 ? "border-t border-sky-200" : "",
+                      isActive ? "text-sky-900" : "text-sky-900",
                     ].join(" ")}
                   >
                     {item.label}
@@ -228,7 +234,7 @@ export default function Navbar() {
                       viewBox="0 0 24 24"
                       fill="none"
                       aria-hidden="true"
-                      className="text-slate-400"
+                      className="text-sky-400"
                     >
                       <path
                         d="M9 18l6-6-6-6"

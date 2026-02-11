@@ -5,7 +5,7 @@ export function FAQSection({ faqs }: { faqs: { q: string; a: string }[] }) {
 
   return (
     <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
-      <h2 className="text-lg font-black tracking-tight text-slate-900">FAQ</h2>
+      <h2 className="text-lg font-black tracking-tight text-sky-900">FAQ</h2>
 
       <div id="faq" className="mt-4 grid gap-2">
         {faqs.map((f, idx) => {
@@ -23,10 +23,10 @@ export function FAQSection({ faqs }: { faqs: { q: string; a: string }[] }) {
                 aria-controls={panelId}
                 onClick={() => setOpenIndex((cur) => (cur === idx ? null : idx))}
               >
-                <span className="text-sm font-semibold text-slate-900">{f.q}</span>
+                <span className="text-sm font-semibold text-sky-900">{f.q}</span>
                 <span
                   aria-hidden="true"
-                  className="mt-0.5 select-none text-sm font-black text-slate-500"
+                  className="mt-0.5 select-none text-sm font-black text-slate-800"
                 >
                   {isOpen ? "−" : "+"}
                 </span>
@@ -38,7 +38,7 @@ export function FAQSection({ faqs }: { faqs: { q: string; a: string }[] }) {
                 aria-labelledby={btnId}
                 className={isOpen ? "px-3 pb-3" : "hidden"}
               >
-                <p className="text-sm leading-relaxed text-slate-700">{f.a}</p>
+                <p className="text-sm leading-relaxed text-sky-700">{f.a}</p>
               </div>
             </div>
           );

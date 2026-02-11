@@ -33,7 +33,7 @@ export function MathBlock({ latex, mathml, caption }: MathBlockProps) {
       </div>
 
       {caption ? (
-        <div className="border-t border-slate-200 px-4 py-3 text-sm text-slate-700">
+        <div className="border-t border-slate-200 px-4 py-3 text-sm text-sky-700">
           {caption}
         </div>
       ) : null}

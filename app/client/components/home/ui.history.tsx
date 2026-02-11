@@ -122,8 +122,8 @@ export function HistorySection({
     <section className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3 sm:p-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="grid gap-0.5">
-          <h2 className="text-sm font-black tracking-tight text-slate-900">Saved results</h2>
-          <p className="text-xs text-slate-600">
+          <h2 className="text-sm font-black tracking-tight text-sky-900">Saved results</h2>
+          <p className="text-xs text-slate-800">
             Save snapshots to compare scenarios later on this device.
           </p>
         </div>
@@ -148,7 +148,7 @@ export function HistorySection({
       </div>
 
       {items.length === 0 ? (
-        <p className="mt-3 text-sm text-slate-700">
+        <p className="mt-3 text-sm text-sky-700">
           No saved results yet. Use “Save current” after you tweak inputs.
         </p>
       ) : (
@@ -166,14 +166,14 @@ export function HistorySection({
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <div className="grid gap-1">
-                    <div className="text-xs text-slate-500">{timeLabel}</div>
-                    <div className="text-sm font-semibold text-slate-900">
+                    <div className="text-xs text-slate-800">{timeLabel}</div>
+                    <div className="text-sm font-semibold text-sky-900">
                       End balance: {toCurrency(s.endBalance)}
                     </div>
-                    <div className="text-xs text-slate-600">
+                    <div className="text-xs text-slate-800">
                       {modeLabel} contributions • {s.years} year{s.years === 1 ? "" : "s"} • {s.annualInterestRatePct}% • {s.frequency}
                     </div>
-                    <div className="text-xs text-slate-600">
+                    <div className="text-xs text-slate-800">
                       Interest earned: {toCurrency(s.interestEarned)} • Contributions: {toCurrency(s.totalContributionsExInitial)}
                     </div>
                   </div>

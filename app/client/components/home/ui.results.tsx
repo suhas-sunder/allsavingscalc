@@ -37,65 +37,65 @@ export function ResultsSection({
   );
 
   return (
-    <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:p-4">
+    <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-600 p-3 shadow-sm md:p-4">
       <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
         <div className="rounded-xl border border-slate-200 border-l-4 border-l-green-600 bg-white p-4 shadow-sm">
-          <div className="text-sm font-semibold text-slate-700">
+          <div className="text-sm font-semibold text-sky-700">
             End balance
           </div>
           <div className="mt-2 break-words text-2xl font-black tracking-tight text-green-700 sm:text-3xl">
             {toCurrency(outputs.endBalance)}
           </div>
-          <div className="mt-1 text-xs text-slate-500">
+          <div className="mt-1 text-xs text-slate-800">
             Balance after interest, contributions, taxes, and timing.
           </div>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="text-sm font-semibold text-slate-700">
+          <div className="text-sm font-semibold text-sky-700">
             Initial deposit
           </div>
-          <div className="mt-2 break-words text-lg font-black tracking-tight text-slate-900 sm:text-xl">
+          <div className="mt-2 break-words text-lg font-black tracking-tight text-sky-900 sm:text-xl">
             {toCurrency(initialDeposit)}
           </div>
-          <div className="mt-1 text-xs text-slate-500">
+          <div className="mt-1 text-xs text-slate-800">
             Your starting principal.
           </div>
         </div>
 
         <div className="rounded-xl border border-slate-200 border-l-4 border-l-blue-600 bg-white p-4 shadow-sm">
-          <div className="text-sm font-semibold text-slate-700">
+          <div className="text-sm font-semibold text-sky-700">
             Total contributions
           </div>
-          <div className="mt-2 break-words text-lg font-black tracking-tight text-blue-700 sm:text-xl">
+          <div className="mt-2 break-words text-lg font-black tracking-tight text-sky-700 sm:text-xl">
             {toCurrency(outputs.totalContributionsExInitial)}
           </div>
-          <div className="mt-1 text-xs text-slate-500">
+          <div className="mt-1 text-xs text-slate-800">
             Total contributed over the timeline (excluding the initial deposit).
           </div>
         </div>
 
         <div className="rounded-xl border border-slate-200 border-l-4 border-l-amber-500 bg-white p-4 shadow-sm">
-          <div className="text-sm font-semibold text-slate-700">
+          <div className="text-sm font-semibold text-sky-700">
             Total interest earned
           </div>
           <div className="mt-2 break-words text-lg font-black tracking-tight text-amber-700 sm:text-xl">
             {toCurrency(outputs.totalInterest)}
           </div>
-          <div className="mt-1 text-xs text-slate-500">
+          <div className="mt-1 text-xs text-slate-800">
             Net interest after tax (if enabled).
           </div>
         </div>
 
         {inflationRatePct > 0 && (
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm md:col-span-2">
-            <div className="text-sm font-semibold text-slate-700">
+            <div className="text-sm font-semibold text-sky-700">
               Inflation-adjusted end balance
             </div>
-            <div className="mt-2 break-words text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
+            <div className="mt-2 break-words text-xl font-black tracking-tight text-sky-900 sm:text-2xl">
               {toCurrency(outputs.realEndBalance)}
             </div>
-            <div className="mt-1 text-xs text-slate-500">
+            <div className="mt-1 text-xs text-slate-800">
               Expressed in today’s purchasing power.
             </div>
           </div>
@@ -104,7 +104,7 @@ export function ResultsSection({
 
       <div className="mt-4">
         <div className="mx-auto w-fit">
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
+          <div className="flex flex-col items-center gap-4 sm:flex-row bg-white p-4 rounded-xl sm:items-center">
             <div className="h-28 w-28 shrink-0 sm:h-32 sm:w-32">
               <DonutChart
                 parts={donutParts}
@@ -124,12 +124,12 @@ export function ResultsSection({
                     style={{ background: b.color }}
                     aria-hidden="true"
                   />
-                  <span className="break-words text-slate-700">
+                  <span className="break-words text-sky-700">
                     {b.label}:{" "}
-                    <strong className="inline-block max-w-full break-words font-black text-slate-900">
+                    <strong className="inline-block max-w-full break-words font-black text-sky-900">
                       {toCurrency(b.value)}
                     </strong>{" "}
-                    <span className="text-slate-500">({pct[i]}%)</span>
+                    <span className="text-slate-800">({pct[i]}%)</span>
                   </span>
                 </li>
               ))}
@@ -143,12 +143,12 @@ export function ResultsSection({
         <details className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:hidden">
           <summary className="cursor-pointer list-none select-none">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-black text-slate-900">
+              <div className="text-sm font-black text-sky-900">
                 Balance growth chart
               </div>
-              <span className="text-xs font-black text-slate-600">Show</span>
+              <span className="text-xs font-black text-slate-800">Show</span>
             </div>
-            <div className="mt-1 text-xs leading-relaxed text-slate-600">
+            <div className="mt-1 text-xs leading-relaxed text-slate-800">
               Stacked balance by year (initial deposit, contributions,
               interest).
             </div>
@@ -172,12 +172,12 @@ export function ResultsSection({
         >
           <summary className="cursor-pointer list-none select-none">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-black text-slate-900">
+              <div className="text-sm font-black text-sky-900">
                 Balance growth chart
               </div>
-              <span className="text-xs font-black text-slate-600">Hide</span>
+              <span className="text-xs font-black text-slate-800">Hide</span>
             </div>
-            <div className="mt-1 text-xs leading-relaxed text-slate-600">
+            <div className="mt-1 text-xs leading-relaxed text-slate-800">
               Stacked balance by year (initial deposit, contributions,
               interest).
             </div>

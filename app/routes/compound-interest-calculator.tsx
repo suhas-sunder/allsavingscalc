@@ -25,7 +25,6 @@ import {
   useCompoundInterestJsonLd,
 } from "../client/components/compound-interest/ui.shell";
 
-import { HeaderSection } from "../client/components/compound-interest/ui.header";
 import { InputsSection } from "../client/components/compound-interest/ui.inputs";
 import { ResultsSection } from "../client/components/compound-interest/ui.results";
 import { ScheduleSection } from "../client/components/compound-interest/ui.schedule";
@@ -245,20 +244,15 @@ export default function CompoundInterestCalculator() {
         <section className="grid gap-4">
           <CardShell>
             <div className="p-3 sm:p-5">
-              {/* Breadcrumb: hidden on mobile to avoid pushing header down */}
-              <div className="noPrint hidden sm:block">
-                <div className="mb-2 text-xs font-black text-slate-500">
-                  <Link to="/" className="hover:text-slate-700">
-                    Home
-                  </Link>{" "}
-                  <span className="mx-1 text-slate-300">/</span>
-                  <span className="text-slate-700">
-                    Compound Interest Calculator
-                  </span>
-                </div>
+              <div className="flex flex-col gap-2">
+                <h1 className="text-xl font-black leading-[1.08] tracking-tight text-sky-700 sm:text-2xl">
+                  Compound Interest Calculator
+                </h1>
+                <p className="text-xs leading-snug text-slate-600 hidden sm:flex sm:text-base">
+                  See end balance, total interest, APY, and a detailed monthly
+                  or yearly schedule based on your contributions.
+                </p>
               </div>
-
-              <HeaderSection />
 
               <InputsSection
                 initialInvestment={initialInvestment}
@@ -356,6 +350,16 @@ export default function CompoundInterestCalculator() {
         </section>
 
         <HowItWorksSection />
+        {/* Breadcrumb: hidden on mobile to avoid pushing header down */}
+        <div className="noPrint hidden sm:block">
+          <div className="mt-4 text-xs font-black text-slate-500">
+            <Link to="/" className="hover:text-slate-700">
+              Home
+            </Link>{" "}
+            <span className="mx-1 text-slate-300">/</span>
+            <span className="text-slate-700">Compound Interest Calculator</span>
+          </div>
+        </div>
         <FAQSection faqs={COMPOUND_FAQS} />
         <DisclaimersSection />
       </div>

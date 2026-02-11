@@ -14,14 +14,14 @@ export function ActionsBar({
       <button
         type="button"
         onClick={onExportCsv}
-        className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-900 shadow-sm transition hover:bg-slate-50"
+        className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-sky-900 shadow-sm transition hover:bg-slate-50"
       >
         Export CSV
       </button>
       <button
         type="button"
         onClick={onPrint}
-        className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-900 shadow-sm transition hover:bg-slate-50"
+        className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-sky-900 shadow-sm transition hover:bg-slate-50"
       >
         Print / Save PDF
       </button>

@@ -54,7 +54,7 @@ export function ResultsSection({
   }, [outputs.monthlySchedule, outputs.schedule, scheduleView]);
 
   return (
-    <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:p-4">
+    <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-600 p-3 shadow-sm md:p-4">
       <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
         <div className="rounded-xl border border-slate-200 border-l-4 border-l-green-600 bg-white p-4 shadow-sm">
           <div className="text-sm font-semibold text-slate-700">
@@ -121,8 +121,8 @@ export function ResultsSection({
 
       <div className="mt-4">
         <div className="mx-auto w-fit">
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
-            <div className="h-28 w-28 shrink-0 sm:h-32 sm:w-32">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center bg-white p-4 rounded-xl">
+            <div className="h-28 w-28 shrink-0 sm:h-32 sm:w-32 bg-white">
               <DonutChart
                 parts={donutParts}
                 percents={pct}
@@ -170,7 +170,7 @@ export function ResultsSection({
             </div>
           </summary>
 
-          <div className="mt-3">
+          <div className="mt-3 b">
             <BalanceLineChart
               points={linePoints}
               height={240}

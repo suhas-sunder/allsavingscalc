@@ -119,20 +119,20 @@ export function LabeledNumber({
     <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
       <label
         htmlFor={inputId}
-        className="text-xs font-black uppercase tracking-wide text-slate-700"
+        className="text-xs font-black uppercase tracking-wide text-sky-700"
       >
         {label}
       </label>
 
       <div className="relative mt-2">
         {hasPrefix ? (
-          <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-black text-slate-900 shadow-sm sm:text-xs">
+          <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-black text-sky-900 shadow-sm sm:text-xs">
             {prefix}
           </span>
         ) : null}
 
         {hasSuffix ? (
-          <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-black text-slate-700 shadow-sm sm:text-xs">
+          <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-black text-sky-700 shadow-sm sm:text-xs">
             {suffix}
           </span>
         ) : null}
@@ -140,7 +140,7 @@ export function LabeledNumber({
         <input
           id={inputId}
           className={[
-            "w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-black text-slate-900 shadow-inner shadow-slate-900/5",
+            "w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-black text-sky-900 shadow-inner shadow-slate-900/5",
             "outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100 sm:text-base",
             hasPrefix ? "pl-12" : "",
             hasSuffix ? "pr-24" : "",
@@ -201,13 +201,13 @@ export function LabeledSelect<T extends string>({
     <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
       <label
         htmlFor={selectId}
-        className="text-xs font-black uppercase tracking-wide text-slate-700"
+        className="text-xs font-black uppercase tracking-wide text-sky-700"
       >
         {label}
       </label>
       <select
         id={selectId}
-        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-black text-slate-900 shadow-sm outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
+        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-black text-sky-900 shadow-sm outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
         value={value}
         onChange={(e) => setValue(e.target.value as T)}
         aria-label={label}
